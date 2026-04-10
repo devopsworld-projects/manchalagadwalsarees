@@ -463,6 +463,6 @@ function ProductDetail() {
       <Footer />
     </div>
   );
-};
+}
 
 export default ProductDetail;
