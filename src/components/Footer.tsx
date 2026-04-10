@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer className="bg-foreground text-primary-foreground/80">
       <div className="container py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-1">
             <img src={logo} alt="Kavi Women's World" className="h-20 w-auto mb-4 brightness-200" loading="lazy" width={512} height={512} />
