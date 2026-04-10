@@ -206,12 +206,35 @@ export default function Checkout() {
               <Textarea value={form.notes} onChange={e => update('notes', e.target.value)} rows={2} placeholder="Special instructions..." className="font-body" />
             </div>
 
+            {/* Payment Method */}
+            <div>
+              <h2 className="font-display text-lg font-semibold mb-3">Payment Method</h2>
+              <RadioGroup value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as 'razorpay' | 'cod')} className="gap-3">
+                <Label htmlFor="razorpay" className="flex items-center gap-3 border border-border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
+                  <RadioGroupItem value="razorpay" id="razorpay" />
+                  <CreditCard className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex-1">
+                    <p className="font-body text-sm font-medium">Pay Online (Razorpay)</p>
+                    <p className="font-body text-xs text-muted-foreground">UPI, Cards, Netbanking, Wallets</p>
+                  </div>
+                </Label>
+                <Label htmlFor="cod" className="flex items-center gap-3 border border-border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
+                  <RadioGroupItem value="cod" id="cod" />
+                  <Truck className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex-1">
+                    <p className="font-body text-sm font-medium">Cash on Delivery</p>
+                    <p className="font-body text-xs text-muted-foreground">Pay when your order arrives</p>
+                  </div>
+                </Label>
+              </RadioGroup>
+            </div>
+
             <Button type="submit" disabled={loading} className="w-full h-12 font-body tracking-wider uppercase text-xs">
-              {loading ? 'Placing Order...' : `Pay ₹${totalPrice.toLocaleString()}`}
+              {loading ? 'Placing Order...' : paymentMethod === 'cod' ? `Place Order — ₹${totalPrice.toLocaleString()}` : `Pay ₹${totalPrice.toLocaleString()}`}
             </Button>
 
             <p className="text-xs text-muted-foreground text-center font-body">
-              Powered by Razorpay (Sandbox Mode)
+              {paymentMethod === 'razorpay' ? 'Powered by Razorpay (Sandbox Mode)' : 'Pay cash when your order is delivered'}
             </p>
           </form>
 
