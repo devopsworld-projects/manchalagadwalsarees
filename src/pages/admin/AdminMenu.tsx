@@ -255,9 +255,10 @@ export default function AdminMenu() {
           <TabsTrigger value="main">Main Navigation</TabsTrigger>
           <TabsTrigger value="footer">Footer Links</TabsTrigger>
           <TabsTrigger value="mobile">Mobile Only</TabsTrigger>
+          <TabsTrigger value="topbar">Top Bar</TabsTrigger>
         </TabsList>
 
-        {['main', 'footer', 'mobile'].map(group => (
+        {['main', 'footer', 'mobile', 'topbar'].map(group => (
           <TabsContent key={group} value={group}>
             {isLoading ? (
               <div className="text-center py-12 text-muted-foreground">Loading...</div>
@@ -351,6 +352,7 @@ export default function AdminMenu() {
                     <SelectItem value="main">Main Nav</SelectItem>
                     <SelectItem value="footer">Footer</SelectItem>
                     <SelectItem value="mobile">Mobile Only</SelectItem>
+                    <SelectItem value="topbar">Top Bar</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

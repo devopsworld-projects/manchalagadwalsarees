@@ -8,10 +8,6 @@ import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useMenuItems, type MenuItem } from '@/hooks/useMenuItems';
 import logo from '@/assets/logo.png';
 
-const topLinks = [
-  { label: 'About Us', path: '/about' },
-  { label: 'Contact Us', path: '/contact' },
-];
 
 function getItemUrl(item: MenuItem) {
   if (item.url) return item.url;
@@ -103,6 +99,7 @@ export function Navbar() {
   const { data: settings } = useStoreSettings();
   const { data: menuItems = [] } = useMenuItems();
   const { data: mobileMenuItems = [] } = useMenuItems('mobile');
+  const { data: topBarItems = [] } = useMenuItems('topbar');
   const logoSrc = settings?.logo_url || logo;
 
   return (
@@ -111,13 +108,13 @@ export function Navbar() {
       <div className="bg-foreground text-background hidden md:block">
         <div className="container flex items-center justify-between h-9">
           <nav className="flex items-center gap-5">
-            {topLinks.map(link => (
+            {topBarItems.map(item => (
               <Link
-                key={link.path}
-                to={link.path}
+                key={item.id}
+                to={getItemUrl(item)}
                 className="text-[11px] tracking-[0.1em] font-body text-background/80 hover:text-background transition-colors"
               >
-                {link.label}
+                {item.label}
               </Link>
             ))}
           </nav>
@@ -254,14 +251,14 @@ export function Navbar() {
             >
               <User className="h-4 w-4" /> {user ? 'MY ORDERS' : 'LOGIN'}
             </Link>
-            {topLinks.map(link => (
+            {topBarItems.map(item => (
               <Link
-                key={link.path}
-                to={link.path}
+                key={item.id}
+                to={getItemUrl(item)}
                 onClick={() => setMobileOpen(false)}
                 className="block py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px]"
               >
-                {link.label.toUpperCase()}
+                {item.label.toUpperCase()}
               </Link>
             ))}
           </div>
