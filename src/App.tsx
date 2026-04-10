@@ -71,7 +71,9 @@ const App = () => (
                 <Route path="categories" element={<AdminCategories />} />
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="contacts" element={<AdminContacts />} />
+                <Route path="menu" element={<AdminMenu />} />
                 <Route path="users" element={<AdminUsers />} />
+                <Route path="settings" element={<AdminSettings />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
               <Route path="*" element={<NotFound />} />
