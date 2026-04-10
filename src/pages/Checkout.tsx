@@ -23,6 +23,13 @@ export default function Checkout() {
   const [showPayment, setShowPayment] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay');
 
+  // Redirect to collections if cart is empty
+  useEffect(() => {
+    if (items.length === 0) {
+      navigate('/collections', { replace: true });
+    }
+  }, [items.length, navigate]);
+
   const [form, setForm] = useState({
     name: '',
     email: user?.email || '',
