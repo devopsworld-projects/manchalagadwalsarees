@@ -30,6 +30,7 @@ const ProductDetail = () => {
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [showZoom, setShowZoom] = useState(false);
+  const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
 
   const { data: product, isLoading } = useQuery({
     queryKey: ['storefront-product', id],
@@ -44,6 +45,20 @@ const ProductDetail = () => {
       return data;
     },
     enabled: !!id,
+  });
+
+  const { data: variants } = useQuery({
+    queryKey: ['storefront-variants', product?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('product_variants')
+        .select('*')
+        .eq('product_id', product!.id)
+        .eq('is_active', true);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!product?.id,
   });
 
   if (isLoading) {
@@ -88,7 +103,36 @@ const ProductDetail = () => {
 
   const images = product.images && product.images.length > 0 ? product.images : ['/placeholder.svg'];
   const colors = product.colors || [];
-  const isInStock = (product.stock ?? 0) > 0;
+  const hasVariants = variants && variants.length > 0;
+
+  // Compute attribute options from variants
+  const variantAttrKeys = hasVariants
+    ? Array.from(new Set(variants.flatMap(v => Object.keys((v.attributes as Record<string, string>) || {}))))
+    : [];
+  const attrOptions: Record<string, string[]> = {};
+  variantAttrKeys.forEach(key => {
+    attrOptions[key] = Array.from(new Set(
+      variants!.map(v => ((v.attributes as Record<string, string>) || {})[key]).filter(Boolean)
+    ));
+  });
+
+  // Find selected variant
+  const selectedVariant = hasVariants
+    ? variants.find(v => {
+        const attrs = (v.attributes as Record<string, string>) || {};
+        return variantAttrKeys.every(k => attrs[k] === selectedAttributes[k]);
+      })
+    : null;
+
+  const allAttributesSelected = hasVariants
+    ? variantAttrKeys.every(k => selectedAttributes[k])
+    : true;
+
+  // Use variant price/stock if a variant is selected, otherwise base product
+  const displayPrice = selectedVariant ? selectedVariant.price : product.price;
+  const displayOriginalPrice = selectedVariant ? selectedVariant.original_price : product.original_price;
+  const displayStock = selectedVariant ? selectedVariant.stock : (product.stock ?? 0);
+  const isInStock = hasVariants ? (selectedVariant ? displayStock > 0 : false) : (product.stock ?? 0) > 0;
   const categoryName = (product as any).categories?.name || '';
 
   const prevImage = () => setCurrentImage(i => (i === 0 ? images.length - 1 : i - 1));
@@ -103,14 +147,14 @@ const ProductDetail = () => {
   };
 
   const whatsappMessage = encodeURIComponent(
-    `Hi, I'm interested in ${product.name} (SKU: ${product.sku}) priced at ₹${product.price.toLocaleString()}. Please share more details.`
+    `Hi, I'm interested in ${product.name} (SKU: ${selectedVariant?.sku || product.sku}) priced at ₹${Number(displayPrice).toLocaleString()}. Please share more details.`
   );
 
   const cartProduct = {
-    id: product.sku,
-    name: product.name,
-    price: product.price,
-    originalPrice: product.original_price ?? undefined,
+    id: selectedVariant?.sku || product.sku,
+    name: product.name + (selectedVariant ? ` (${Object.values((selectedVariant.attributes as Record<string, string>) || {}).join(', ')})` : ''),
+    price: Number(displayPrice),
+    originalPrice: displayOriginalPrice ? Number(displayOriginalPrice) : undefined,
     image: images[0],
     category: categoryName,
     colors: colors,
@@ -126,7 +170,7 @@ const ProductDetail = () => {
     image: images[0],
     offers: {
       '@type': 'Offer',
-      price: product.price,
+      price: displayPrice,
       priceCurrency: 'INR',
       availability: isInStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       url: `https://kaviwomensworld.lovable.app/product/${product.sku}`,
@@ -210,18 +254,18 @@ const ProductDetail = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <span className="font-display text-3xl font-bold">₹{product.price.toLocaleString()}</span>
-              {product.original_price && (
-                <span className="font-body text-base text-muted-foreground line-through">₹{product.original_price.toLocaleString()}</span>
+              <span className="font-display text-3xl font-bold">₹{Number(displayPrice).toLocaleString()}</span>
+              {displayOriginalPrice && (
+                <span className="font-body text-base text-muted-foreground line-through">₹{Number(displayOriginalPrice).toLocaleString()}</span>
               )}
               <span className={`text-xs font-body font-semibold px-3 py-1 rounded-full border ${isInStock ? 'text-emerald-700 border-emerald-300 bg-emerald-50' : 'text-red-700 border-red-300 bg-red-50'}`}>
-                {isInStock ? 'In Stock' : 'Out of Stock'}
+                {hasVariants && !allAttributesSelected ? 'Select Options' : isInStock ? 'In Stock' : 'Out of Stock'}
               </span>
             </div>
 
-            {product.original_price && (
+            {displayOriginalPrice && (
               <span className="inline-block bg-primary/10 text-primary text-xs font-body font-bold px-3 py-1 rounded">
-                {Math.round((1 - product.price / product.original_price) * 100)}% OFF
+                {Math.round((1 - Number(displayPrice) / Number(displayOriginalPrice)) * 100)}% OFF
               </span>
             )}
 
@@ -249,21 +293,40 @@ const ProductDetail = () => {
               </div>
             )}
 
-            <div>
-              <h3 className="font-body text-sm font-semibold mb-2">Size <span className="text-primary">*</span></h3>
-              <div className="inline-block border border-primary rounded px-5 py-2 text-sm font-body font-medium text-foreground">Free Size</div>
-            </div>
+            {/* Variant attribute selectors */}
+            {hasVariants && variantAttrKeys.map(key => (
+              <div key={key}>
+                <h3 className="font-body text-sm font-semibold mb-2">{key} <span className="text-primary">*</span></h3>
+                <div className="flex flex-wrap gap-2">
+                  {attrOptions[key]?.map(val => (
+                    <button key={val} onClick={() => setSelectedAttributes(prev => ({ ...prev, [key]: val }))}
+                      className={`px-4 py-1.5 rounded text-xs font-body font-medium border transition-all ${selectedAttributes[key] === val ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:border-foreground/40'}`}>
+                      {val}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {/* Free Size fallback (only when no variants) */}
+            {!hasVariants && (
+              <div>
+                <h3 className="font-body text-sm font-semibold mb-2">Size <span className="text-primary">*</span></h3>
+                <div className="inline-block border border-primary rounded px-5 py-2 text-sm font-body font-medium text-foreground">Free Size</div>
+              </div>
+            )}
 
             <div className="space-y-3 pt-2">
               <button
                 onClick={() => {
                   if (!isInStock) return;
                   if (colors.length > 0 && selectedColor === null) return;
+                  if (hasVariants && !allAttributesSelected) return;
                   addToCart(cartProduct);
                 }}
-                disabled={!isInStock || (colors.length > 0 && selectedColor === null)}
+                disabled={!isInStock || (colors.length > 0 && selectedColor === null) || (hasVariants && !allAttributesSelected)}
                 className={`w-full py-3.5 text-sm tracking-[0.15em] font-body flex items-center justify-center gap-2 transition-colors ${
-                  !isInStock
+                  !isInStock || (hasVariants && !allAttributesSelected)
                     ? 'bg-muted text-muted-foreground cursor-not-allowed'
                     : colors.length > 0 && selectedColor === null
                     ? 'bg-muted text-muted-foreground cursor-not-allowed'
@@ -271,7 +334,7 @@ const ProductDetail = () => {
                 }`}
               >
                 <ShoppingBag className="h-4 w-4" />
-                {!isInStock ? 'OUT OF STOCK' : colors.length > 0 && selectedColor === null ? 'Please Select Options Above' : 'ADD TO CART'}
+                {hasVariants && !allAttributesSelected ? 'Please Select Options Above' : !isInStock ? 'OUT OF STOCK' : colors.length > 0 && selectedColor === null ? 'Please Select Options Above' : 'ADD TO CART'}
               </button>
 
               <a

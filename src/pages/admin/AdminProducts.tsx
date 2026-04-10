@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2, X, Upload, FileSpreadsheet, Loader2 } from 'lucid
 import { useToast } from '@/hooks/use-toast';
 import type { Tables, TablesInsert } from '@/integrations/supabase/types';
 import * as XLSX from 'xlsx';
+import { ProductVariantsEditor, VariantRow } from '@/components/admin/ProductVariantsEditor';
 
 type Product = Tables<'products'>;
 
@@ -16,6 +17,7 @@ const AdminProducts = () => {
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [bulkImporting, setBulkImporting] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [variants, setVariants] = useState<VariantRow[]>([]);
   const [form, setForm] = useState({
     sku: '', name: '', description: '', price: '', original_price: '',
     category_id: '', colors: '', is_new: false, is_best_seller: false,
@@ -41,12 +43,34 @@ const AdminProducts = () => {
 
   const saveMutation = useMutation({
     mutationFn: async (product: TablesInsert<'products'>) => {
+      let productId: string;
       if (editingProduct) {
         const { error } = await supabase.from('products').update(product).eq('id', editingProduct.id);
         if (error) throw error;
+        productId = editingProduct.id;
       } else {
-        const { error } = await supabase.from('products').insert(product);
+        const { data, error } = await supabase.from('products').insert(product).select('id').single();
         if (error) throw error;
+        productId = data.id;
+      }
+      // Save variants
+      if (editingProduct) {
+        await supabase.from('product_variants').delete().eq('product_id', productId);
+      }
+      if (variants.length > 0) {
+        const variantRows = variants.filter(v => v.sku && v.price).map(v => ({
+          product_id: productId,
+          sku: v.sku,
+          attributes: v.attributes,
+          price: Number(v.price),
+          original_price: v.original_price ? Number(v.original_price) : null,
+          stock: Number(v.stock || 0),
+          is_active: v.is_active,
+        }));
+        if (variantRows.length > 0) {
+          const { error: vErr } = await supabase.from('product_variants').insert(variantRows);
+          if (vErr) throw vErr;
+        }
       }
     },
     onSuccess: () => {
@@ -70,11 +94,12 @@ const AdminProducts = () => {
 
   const resetForm = () => {
     setForm({ sku: '', name: '', description: '', price: '', original_price: '', category_id: '', colors: '', is_new: false, is_best_seller: false, is_active: true, stock: '0', images: '' });
+    setVariants([]);
     setEditingProduct(null);
     setShowForm(false);
   };
 
-  const startEdit = (p: Product) => {
+  const startEdit = async (p: Product) => {
     setEditingProduct(p);
     setForm({
       sku: p.sku, name: p.name, description: p.description || '',
@@ -84,6 +109,15 @@ const AdminProducts = () => {
       is_active: p.is_active !== false, stock: String(p.stock || 0),
       images: (p.images || []).join(', '),
     });
+    // Load existing variants
+    const { data: existingVariants } = await supabase
+      .from('product_variants').select('*').eq('product_id', p.id);
+    setVariants((existingVariants || []).map(v => ({
+      id: v.id, sku: v.sku,
+      attributes: (v.attributes as Record<string, string>) || {},
+      price: String(v.price), original_price: v.original_price ? String(v.original_price) : '',
+      stock: String(v.stock), is_active: v.is_active,
+    })));
     setShowForm(true);
   };
 
@@ -331,6 +365,7 @@ const AdminProducts = () => {
                   </div>
                 )}
               </div>
+              <ProductVariantsEditor variants={variants} onChange={setVariants} />
               <div className="flex gap-6">
                 <label className="flex items-center gap-2 font-body text-sm">
                   <input type="checkbox" checked={form.is_new} onChange={e => setForm(f => ({ ...f, is_new: e.target.checked }))} /> New Arrival
