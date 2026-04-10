@@ -377,10 +377,9 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
-        <div className="container">
-          <ProductReviews productId={product.id} />
-          <RecentlyViewed currentSku={product.sku} />
-        </div>
+        <ProductReviews productId={product.id} />
+        <RelatedProducts productId={product.id} currentSku={product.sku} />
+        <RecentlyViewed currentSku={product.sku} />
       </main>
 
       {showZoom && (
