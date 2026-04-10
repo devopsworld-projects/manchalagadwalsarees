@@ -40,13 +40,13 @@ export function Footer() {
                 {description}
               </p>
               <div className="flex gap-3 mt-3">
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+                <a href={igUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
                   <Instagram className="h-4 w-4" />
                 </a>
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+                <a href={fbUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
                   <Facebook className="h-4 w-4" />
                 </a>
-                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+                <a href={ytUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
                   <Youtube className="h-4 w-4" />
                 </a>
               </div>
@@ -86,15 +86,15 @@ export function Footer() {
               <ul className="space-y-2.5 font-body text-sm">
                 <li className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-gold" />
-                  <span>+91 94946 44998</span>
+                  <span>{phone}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Mail className="h-4 w-4 text-gold shrink-0 mt-0.5" />
-                  <span className="break-all">info@kaviwomensworld.com</span>
+                  <span className="break-all">{email}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 text-gold mt-0.5" />
-                  <span>Hyderabad, Telangana, India</span>
+                  <span>{address}</span>
                 </li>
               </ul>
             </div>
