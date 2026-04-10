@@ -237,7 +237,7 @@ export const CollectionsSidebar = (props: CollectionsSidebarProps) => {
   return (
     <aside
       className={cn(
-        'shrink-0 border-r border-border transition-all duration-300 relative',
+        'shrink-0 border-r border-border transition-all duration-300 relative sticky top-4 self-start max-h-[calc(100vh-6rem)] overflow-y-auto',
         collapsed ? 'w-10' : 'w-56 md:w-60 pr-4'
       )}
     >
