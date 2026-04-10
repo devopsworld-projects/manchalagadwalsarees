@@ -15,8 +15,9 @@ import { toast } from 'sonner';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
   ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, MessageCircle, X,
+  Copy, Facebook, Twitter,
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const colorNameMap: Record<string, string> = {
   '#c41e3a': 'RED', '#d4af37': 'GOLD', '#8b0000': 'MAROON',
@@ -37,6 +38,8 @@ const ProductDetail = () => {
   const [currentImage, setCurrentImage] = useState(0);
   const [showZoom, setShowZoom] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const shareRef = useRef<HTMLDivElement>(null);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ['storefront-product', id],
@@ -77,7 +80,17 @@ const ProductDetail = () => {
     }
   }, [product]);
 
-  if (isLoading) {
+  // Close share menu on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (shareRef.current && !shareRef.current.contains(e.target as Node)) {
+        setShowShareMenu(false);
+      }
+    };
+    if (showShareMenu) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showShareMenu]);
+
     return (
       <div className="min-h-screen">
         <AnnouncementBar />
@@ -154,22 +167,25 @@ const ProductDetail = () => {
   const prevImage = () => setCurrentImage(i => (i === 0 ? images.length - 1 : i - 1));
   const nextImage = () => setCurrentImage(i => (i === images.length - 1 ? 0 : i + 1));
 
-  const handleShare = async () => {
+  const productUrl = window.location.href;
+  const shareText = `Check out ${product.name} at ₹${Number(displayPrice).toLocaleString()}`;
+
+  const shareLinks = [
+    { label: 'WhatsApp', icon: '💬', url: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + productUrl)}` },
+    { label: 'Facebook', icon: '📘', url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}` },
+    { label: 'X (Twitter)', icon: '𝕏', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(productUrl)}` },
+    { label: 'Pinterest', icon: '📌', url: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(productUrl)}&media=${encodeURIComponent(images[0])}&description=${encodeURIComponent(shareText)}` },
+    { label: 'Email', icon: '✉️', url: `mailto:?subject=${encodeURIComponent(product.name)}&body=${encodeURIComponent(shareText + '\n' + productUrl)}` },
+  ];
+
+  const handleCopyLink = async () => {
     try {
-      if (navigator.share) {
-        await navigator.share({ title: product.name, url: window.location.href });
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success('Link copied to clipboard!');
-      }
+      await navigator.clipboard.writeText(productUrl);
+      toast.success('Link copied to clipboard!');
     } catch {
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success('Link copied to clipboard!');
-      } catch {
-        toast.error('Unable to share');
-      }
+      toast.error('Unable to copy link');
     }
+    setShowShareMenu(false);
   };
 
   const whatsappMessage = encodeURIComponent(
@@ -283,9 +299,41 @@ const ProductDetail = () => {
                 >
                   <Heart className={`h-5 w-5 ${isWishlisted(product.id) ? 'fill-current' : ''}`} />
                 </button>
-                <button onClick={handleShare} className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors" aria-label="Share product">
-                  <Share2 className="h-5 w-5" />
-                </button>
+                <div className="relative" ref={shareRef}>
+                  <button
+                    onClick={() => setShowShareMenu(prev => !prev)}
+                    className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors"
+                    aria-label="Share product"
+                  >
+                    <Share2 className="h-5 w-5" />
+                  </button>
+                  {showShareMenu && (
+                    <div className="absolute right-0 top-12 z-50 bg-card border border-border rounded-lg shadow-lg py-2 w-52 animate-in fade-in slide-in-from-top-2 duration-200">
+                      <p className="px-4 py-1.5 font-body text-xs text-muted-foreground font-semibold uppercase tracking-wider">Share via</p>
+                      {shareLinks.map(link => (
+                        <a
+                          key={link.label}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setShowShareMenu(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 font-body text-sm hover:bg-muted transition-colors"
+                        >
+                          <span className="text-base">{link.icon}</span>
+                          {link.label}
+                        </a>
+                      ))}
+                      <div className="border-t border-border my-1" />
+                      <button
+                        onClick={handleCopyLink}
+                        className="flex items-center gap-3 px-4 py-2.5 font-body text-sm hover:bg-muted transition-colors w-full text-left"
+                      >
+                        <Copy className="h-4 w-4" />
+                        Copy Link
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
