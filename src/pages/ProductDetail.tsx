@@ -80,7 +80,17 @@ const ProductDetail = () => {
     }
   }, [product]);
 
-  if (isLoading) {
+  // Close share menu on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (shareRef.current && !shareRef.current.contains(e.target as Node)) {
+        setShowShareMenu(false);
+      }
+    };
+    if (showShareMenu) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showShareMenu]);
+
     return (
       <div className="min-h-screen">
         <AnnouncementBar />
@@ -177,17 +187,6 @@ const ProductDetail = () => {
     }
     setShowShareMenu(false);
   };
-
-  // Close share menu on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (shareRef.current && !shareRef.current.contains(e.target as Node)) {
-        setShowShareMenu(false);
-      }
-    };
-    if (showShareMenu) document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [showShareMenu]);
 
   const whatsappMessage = encodeURIComponent(
     `Hi, I'm interested in ${product.name} (SKU: ${selectedVariant?.sku || product.sku}) priced at ₹${Number(displayPrice).toLocaleString()}. Please share more details.`
