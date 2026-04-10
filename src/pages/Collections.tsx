@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,8 +6,10 @@ import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { ProductCard } from '@/components/ProductCard';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CollectionsSidebar } from '@/components/CollectionsSidebar';
+import { ArrowUp } from 'lucide-react';
 
 const filterTabs = [
   { name: 'All Collections', slug: 'all' },
@@ -26,6 +28,13 @@ const Collections = () => {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
   const [page, setPage] = useState(1);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setShowBackToTop(window.scrollY > 400);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const { data: categories = [] } = useQuery({
     queryKey: ['storefront-categories-list'],
@@ -180,6 +189,17 @@ const Collections = () => {
         </div>
       </main>
       <Footer />
+
+      {showBackToTop && (
+        <Button
+          size="icon"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-6 right-6 z-50 rounded-full shadow-lg h-11 w-11"
+          aria-label="Back to top"
+        >
+          <ArrowUp className="h-5 w-5" />
+        </Button>
+      )}
     </div>
   );
 };
