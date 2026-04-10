@@ -15,6 +15,7 @@ import Contact from "./pages/Contact.tsx";
 import Login from "./pages/Login.tsx";
 import Signup from "./pages/Signup.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
+import Checkout from "./pages/Checkout.tsx";
 import Wishlist from "./pages/Wishlist.tsx";
 import AdminLogin from "./pages/admin/AdminLogin.tsx";
 import AdminLayout from "./pages/admin/AdminLayout.tsx";
