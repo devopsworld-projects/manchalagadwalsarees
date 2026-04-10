@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { X, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, SlidersHorizontal, ChevronDown, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
@@ -40,7 +40,7 @@ export const AVAILABLE_MATERIALS = [
   'Linen',
 ];
 
-interface CollectionsSidebarProps {
+export interface CollectionsSidebarProps {
   allTabs: FilterTab[];
   activeFilter: string;
   onFilterChange: (slug: string) => void;
@@ -89,7 +89,6 @@ const SidebarContent = ({
   return (
     <ScrollArea className="h-full">
       <div className="space-y-6 p-1">
-        {/* Clear all */}
         {hasActiveFilters && (
           <button
             onClick={onClearFilters}
@@ -99,11 +98,10 @@ const SidebarContent = ({
           </button>
         )}
 
-        {/* Collections */}
         <Collapsible defaultOpen>
           <CollapsibleTrigger className="flex w-full items-center justify-between py-2 font-display text-sm font-semibold tracking-wide uppercase text-foreground">
             Collections
-            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className="flex flex-col gap-1 pt-1">
@@ -125,12 +123,11 @@ const SidebarContent = ({
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Categories */}
         {categoryTabs.length > 0 && (
           <Collapsible defaultOpen>
             <CollapsibleTrigger className="flex w-full items-center justify-between py-2 font-display text-sm font-semibold tracking-wide uppercase text-foreground">
               Categories
-              <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="flex flex-col gap-1 pt-1">
@@ -153,11 +150,10 @@ const SidebarContent = ({
           </Collapsible>
         )}
 
-        {/* Price Range */}
         <Collapsible defaultOpen>
           <CollapsibleTrigger className="flex w-full items-center justify-between py-2 font-display text-sm font-semibold tracking-wide uppercase text-foreground">
             Price Range
-            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className="pt-3 px-1">
@@ -177,11 +173,10 @@ const SidebarContent = ({
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Colors */}
         <Collapsible defaultOpen>
           <CollapsibleTrigger className="flex w-full items-center justify-between py-2 font-display text-sm font-semibold tracking-wide uppercase text-foreground">
             Colors
-            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className="flex flex-wrap gap-2 pt-3">
@@ -208,11 +203,10 @@ const SidebarContent = ({
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Material / Fabric */}
         <Collapsible defaultOpen>
           <CollapsibleTrigger className="flex w-full items-center justify-between py-2 font-display text-sm font-semibold tracking-wide uppercase text-foreground">
             Material
-            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className="flex flex-col gap-2 pt-2">
@@ -237,33 +231,44 @@ const SidebarContent = ({
   );
 };
 
-// Desktop sidebar
-export const CollectionsSidebarDesktop = (props: CollectionsSidebarProps) => (
-  <aside className="hidden lg:block w-60 shrink-0 border-r border-border pr-6">
-    <h2 className="font-display text-lg font-bold mb-4">Filters</h2>
-    <SidebarContent {...props} />
-  </aside>
-);
+export const CollectionsSidebar = (props: CollectionsSidebarProps) => {
+  const [collapsed, setCollapsed] = useState(false);
 
-// Mobile filter drawer
-export const CollectionsSidebarMobile = (props: CollectionsSidebarProps) => (
-  <Sheet>
-    <SheetTrigger asChild>
-      <button className="lg:hidden flex items-center gap-2 text-sm font-body text-foreground hover:text-primary transition-colors">
-        <SlidersHorizontal className="h-4 w-4" />
-        Filters
-        {props.hasActiveFilters && (
-          <span className="h-2 w-2 rounded-full bg-primary" />
-        )}
+  return (
+    <aside
+      className={cn(
+        'shrink-0 border-r border-border transition-all duration-300 relative',
+        collapsed ? 'w-10' : 'w-56 md:w-60 pr-4'
+      )}
+    >
+      {/* Collapse / Expand toggle */}
+      <button
+        onClick={() => setCollapsed(c => !c)}
+        className="absolute -right-3 top-2 z-10 h-6 w-6 rounded-full border border-border bg-background flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-sm"
+        title={collapsed ? 'Expand filters' : 'Collapse filters'}
+      >
+        {collapsed ? <PanelLeftOpen className="h-3.5 w-3.5" /> : <PanelLeftClose className="h-3.5 w-3.5" />}
       </button>
-    </SheetTrigger>
-    <SheetContent side="left" className="w-72 p-6">
-      <SheetHeader>
-        <SheetTitle className="font-display text-lg">Filters</SheetTitle>
-      </SheetHeader>
-      <div className="mt-4">
-        <SidebarContent {...props} />
-      </div>
-    </SheetContent>
-  </Sheet>
-);
+
+      {collapsed ? (
+        <div className="flex flex-col items-center pt-10 gap-3">
+          <button
+            onClick={() => setCollapsed(false)}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+            title="Show filters"
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+          </button>
+          {props.hasActiveFilters && (
+            <span className="h-2 w-2 rounded-full bg-primary" />
+          )}
+        </div>
+      ) : (
+        <>
+          <h2 className="font-display text-lg font-bold mb-4">Filters</h2>
+          <SidebarContent {...props} />
+        </>
+      )}
+    </aside>
+  );
+};
