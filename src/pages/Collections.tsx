@@ -133,6 +133,11 @@ const Collections = () => {
 
   return (
     <div className="min-h-screen">
+      <PageMeta
+        title={activeLabel}
+        description={`Shop ${activeLabel} — Premium handcrafted sarees with free shipping across India.`}
+        canonicalPath="/collections"
+      />
       <AnnouncementBar />
       <Navbar />
       <main className="container py-10">
