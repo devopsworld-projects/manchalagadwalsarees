@@ -162,7 +162,7 @@ export default function Checkout() {
 
         <div className="grid lg:grid-cols-5 gap-8">
           {/* Shipping form */}
-          <form onSubmit={handleProceedToPay} className="lg:col-span-3 space-y-5">
+          <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-5">
             <h2 className="font-display text-lg font-semibold">Shipping Details</h2>
 
             <div className="grid sm:grid-cols-2 gap-4">
