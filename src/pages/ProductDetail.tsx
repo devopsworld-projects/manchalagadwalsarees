@@ -30,7 +30,7 @@ const colorNameMap: Record<string, string> = {
 const getColorName = (hex: string) =>
   colorNameMap[hex.toLowerCase()] || hex.replace('#', '').toUpperCase().slice(0, 3);
 
-const ProductDetail = () => {
+function ProductDetail() {
   const { id } = useParams();
   const { addToCart } = useCart();
   const { isWishlisted, toggleWishlist, isLoggedIn } = useWishlist();
