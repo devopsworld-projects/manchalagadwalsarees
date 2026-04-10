@@ -33,6 +33,7 @@ const App = () => (
         <AuthProvider>
           <CartProvider>
             <CartDrawer />
+            <WhatsAppButton />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/collections" element={<Collections />} />
