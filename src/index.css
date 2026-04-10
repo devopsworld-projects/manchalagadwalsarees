@@ -106,8 +106,8 @@
 
 /* Add bottom spacing on mobile so content isn't hidden behind bottom nav */
 @media (max-width: 767px) {
-  footer {
-    padding-bottom: 3.5rem;
+  main {
+    padding-bottom: 4rem;
   }
 }
 
