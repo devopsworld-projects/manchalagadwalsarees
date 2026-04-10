@@ -157,23 +157,37 @@ const ProductDetail = () => {
   const prevImage = () => setCurrentImage(i => (i === 0 ? images.length - 1 : i - 1));
   const nextImage = () => setCurrentImage(i => (i === images.length - 1 ? 0 : i + 1));
 
-  const handleShare = async () => {
+  const productUrl = window.location.href;
+  const shareText = `Check out ${product.name} at ₹${Number(displayPrice).toLocaleString()}`;
+
+  const shareLinks = [
+    { label: 'WhatsApp', icon: '💬', url: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + productUrl)}` },
+    { label: 'Facebook', icon: '📘', url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}` },
+    { label: 'X (Twitter)', icon: '𝕏', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(productUrl)}` },
+    { label: 'Pinterest', icon: '📌', url: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(productUrl)}&media=${encodeURIComponent(images[0])}&description=${encodeURIComponent(shareText)}` },
+    { label: 'Email', icon: '✉️', url: `mailto:?subject=${encodeURIComponent(product.name)}&body=${encodeURIComponent(shareText + '\n' + productUrl)}` },
+  ];
+
+  const handleCopyLink = async () => {
     try {
-      if (navigator.share) {
-        await navigator.share({ title: product.name, url: window.location.href });
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success('Link copied to clipboard!');
-      }
+      await navigator.clipboard.writeText(productUrl);
+      toast.success('Link copied to clipboard!');
     } catch {
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success('Link copied to clipboard!');
-      } catch {
-        toast.error('Unable to share');
-      }
+      toast.error('Unable to copy link');
     }
+    setShowShareMenu(false);
   };
+
+  // Close share menu on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (shareRef.current && !shareRef.current.contains(e.target as Node)) {
+        setShowShareMenu(false);
+      }
+    };
+    if (showShareMenu) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showShareMenu]);
 
   const whatsappMessage = encodeURIComponent(
     `Hi, I'm interested in ${product.name} (SKU: ${selectedVariant?.sku || product.sku}) priced at ₹${Number(displayPrice).toLocaleString()}. Please share more details.`
