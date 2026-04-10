@@ -6,9 +6,9 @@ export function Footer() {
   return (
     <footer className="bg-foreground text-primary-foreground/80">
       <div className="container py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand */}
-          <div className="md:col-span-1">
+          <div className="col-span-2 md:col-span-1">
             <img src={logo} alt="Kavi Women's World" className="h-20 w-auto mb-4 brightness-200" loading="lazy" width={512} height={512} />
             <p className="font-body text-sm leading-relaxed text-primary-foreground/60">
               Discover the finest collection of handcrafted sarees that blend traditional artistry with contemporary grace.
@@ -51,9 +51,9 @@ export function Footer() {
                 <Phone className="h-4 w-4 text-gold" />
                 <span>+91 94946 44998</span>
               </li>
-              <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-gold" />
-                <span>info@kaviwomensworld.com</span>
+              <li className="flex items-start gap-2">
+                <Mail className="h-4 w-4 text-gold shrink-0 mt-0.5" />
+                <span className="break-all">info@kaviwomensworld.com</span>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 text-gold mt-0.5" />
@@ -63,15 +63,15 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-primary-foreground/10 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="font-body text-xs text-primary-foreground/40">
-            © 2024 Kavi Women's World. All rights reserved.
-          </p>
-          <div className="flex gap-6 font-body text-xs text-primary-foreground/40">
+        <div className="border-t border-primary-foreground/10 mt-10 pt-6 flex flex-col items-center gap-3 text-center">
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-1 font-body text-xs text-primary-foreground/40">
             <Link to="#" className="hover:text-primary-foreground/70 transition-colors">Privacy Policy</Link>
             <Link to="#" className="hover:text-primary-foreground/70 transition-colors">Terms & Conditions</Link>
             <Link to="#" className="hover:text-primary-foreground/70 transition-colors">Shipping Policy</Link>
           </div>
+          <p className="font-body text-xs text-primary-foreground/40">
+            © 2024 Kavi Women's World. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
