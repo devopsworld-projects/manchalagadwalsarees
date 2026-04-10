@@ -9,8 +9,10 @@ import { Footer } from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ShoppingBag, ArrowLeft, CheckCircle } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, CheckCircle, CreditCard, Truck } from 'lucide-react';
 import { RazorpayPayment } from '@/components/RazorpayPayment';
 
 export default function Checkout() {
