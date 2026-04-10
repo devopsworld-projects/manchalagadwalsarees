@@ -114,18 +114,18 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
-            <img src={logo} alt="Kavi Women's World" className="h-20 w-auto mb-4 brightness-200" loading="lazy" width={512} height={512} />
+            <img src={logoSrc} alt="Kavi Women's World" className="h-20 w-auto mb-4 brightness-200" loading="lazy" width={512} height={512} />
             <p className="font-body text-sm leading-relaxed text-primary-foreground/60">
-              Discover the finest collection of handcrafted sarees that blend traditional artistry with contemporary grace.
+              {description}
             </p>
             <div className="flex gap-3 mt-4">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+              <a href={igUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
                 <Instagram className="h-4 w-4" />
               </a>
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+              <a href={fbUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
                 <Facebook className="h-4 w-4" />
               </a>
-              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+              <a href={ytUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
                 <Youtube className="h-4 w-4" />
               </a>
             </div>
@@ -165,15 +165,15 @@ export function Footer() {
             <ul className="space-y-3 font-body text-sm">
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-gold" />
-                <span>+91 94946 44998</span>
+                <span>{phone}</span>
               </li>
               <li className="flex items-start gap-2">
                 <Mail className="h-4 w-4 text-gold shrink-0 mt-0.5" />
-                <span className="break-all">info@kaviwomensworld.com</span>
+                <span className="break-all">{email}</span>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 text-gold mt-0.5" />
-                <span>Hyderabad, Telangana, India</span>
+                <span>{address}</span>
               </li>
             </ul>
           </div>
