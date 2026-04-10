@@ -4,14 +4,52 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { products } from '@/data/products';
 import { useCart } from '@/context/CartContext';
-import { ShoppingBag, Heart, Truck, Shield, RotateCcw } from 'lucide-react';
+import {
+  ShoppingBag,
+  Heart,
+  Share2,
+  Truck,
+  Shield,
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn,
+  ArrowLeft,
+  MessageCircle,
+} from 'lucide-react';
 import { useState } from 'react';
+
+const colorNameMap: Record<string, string> = {
+  '#c41e3a': 'RED',
+  '#d4af37': 'GOLD',
+  '#8b0000': 'MAROON',
+  '#0047ab': 'BLUE',
+  '#1a237e': 'NAVY',
+  '#2e8b57': 'GREEN',
+  '#006400': 'FOREST',
+  '#ff00ff': 'MAGENTA',
+  '#ffc0cb': 'PINK',
+  '#c71585': 'ROSE',
+  '#ff8c00': 'ORANGE',
+  '#ff4500': 'VERMILION',
+  '#fffdd0': 'CREAM',
+  '#f5f5dc': 'BEIGE',
+  '#800000': 'MAROON',
+};
+
+const getColorName = (hex: string) =>
+  colorNameMap[hex.toLowerCase()] || hex.replace('#', '').toUpperCase().slice(0, 3);
 
 const ProductDetail = () => {
   const { id } = useParams();
   const product = products.find(p => p.id === id);
   const { addToCart } = useCart();
-  const [selectedColor, setSelectedColor] = useState(0);
+  const [selectedColor, setSelectedColor] = useState<number | null>(null);
+  const [currentImage, setCurrentImage] = useState(0);
+  const [showZoom, setShowZoom] = useState(false);
+
+  // For demo, use the same image repeated; in production these come from product.images[]
+  const images = product ? [product.image, product.image, product.image] : [];
 
   if (!product) {
     return (
@@ -27,104 +65,256 @@ const ProductDetail = () => {
     );
   }
 
+  const prevImage = () => setCurrentImage(i => (i === 0 ? images.length - 1 : i - 1));
+  const nextImage = () => setCurrentImage(i => (i === images.length - 1 ? 0 : i + 1));
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      await navigator.share({ title: product.name, url: window.location.href });
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+    }
+  };
+
+  const whatsappMessage = encodeURIComponent(
+    `Hi, I'm interested in ${product.name} (SKU: ${product.id}) priced at ₹${product.price.toLocaleString()}. Please share more details.`
+  );
+
+  const isInStock = true; // from DB in production
+
   return (
     <div className="min-h-screen">
       <AnnouncementBar />
       <Navbar />
-      <main className="container py-8 md:py-12">
-        {/* Breadcrumb */}
-        <nav className="font-body text-xs text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-primary">Home</Link>
-          <span className="mx-2">/</span>
-          <Link to="/collections" className="hover:text-primary">Collections</Link>
-          <span className="mx-2">/</span>
-          <span className="text-foreground">{product.name}</span>
-        </nav>
+      <main className="container py-6 md:py-10">
+        {/* Back link */}
+        <Link
+          to="/collections"
+          className="inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-primary transition-colors mb-6"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Collections
+        </Link>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-          {/* Image */}
-          <div className="aspect-[3/4] overflow-hidden rounded-sm bg-muted">
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-full object-cover"
-              width={800}
-              height={1024}
-            />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14">
+          {/* Image carousel */}
+          <div className="relative group">
+            <div className="aspect-[3/4] overflow-hidden bg-muted relative">
+              <img
+                src={images[currentImage]}
+                alt={product.name}
+                className="w-full h-full object-cover"
+                width={800}
+                height={1067}
+              />
+              {/* Zoom button */}
+              <button
+                onClick={() => setShowZoom(true)}
+                className="absolute top-4 right-4 bg-background/80 backdrop-blur p-2 rounded-full shadow-sm hover:bg-background transition-colors"
+                aria-label="Zoom image"
+              >
+                <ZoomIn className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Navigation arrows */}
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={prevImage}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={nextImage}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </>
+            )}
+
+            {/* Thumbnail dots */}
+            {images.length > 1 && (
+              <div className="flex justify-center gap-2 mt-3">
+                {images.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentImage(i)}
+                    className={`h-2 w-2 rounded-full transition-colors ${
+                      i === currentImage ? 'bg-primary' : 'bg-border'
+                    }`}
+                    aria-label={`Image ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Details */}
-          <div className="space-y-6">
-            <div>
-              <p className="font-body text-xs text-muted-foreground tracking-wider uppercase mb-1">{product.category}</p>
-              <h1 className="font-display text-3xl md:text-4xl font-bold">{product.name}</h1>
-              <p className="font-body text-xs text-muted-foreground mt-1">SKU: {product.id}</p>
-            </div>
-
-            <div className="flex items-baseline gap-3">
-              <span className="font-display text-3xl font-bold text-primary">₹{product.price.toLocaleString()}</span>
-              {product.originalPrice && (
-                <>
-                  <span className="font-body text-lg text-muted-foreground line-through">₹{product.originalPrice.toLocaleString()}</span>
-                  <span className="bg-primary/10 text-primary text-xs font-body font-bold px-2 py-1 rounded">
-                    {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
-                  </span>
-                </>
-              )}
-            </div>
-
-            <p className="font-body text-muted-foreground leading-relaxed">{product.description}</p>
-
-            {/* Colors */}
-            <div>
-              <p className="font-body text-sm font-semibold mb-2">Colors</p>
+          {/* Product details */}
+          <div className="space-y-5">
+            {/* Title row with wishlist & share */}
+            <div className="flex items-start justify-between">
+              <div>
+                <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight">
+                  {product.id}
+                </h1>
+                <p className="font-body text-xs text-muted-foreground mt-0.5">
+                  SKU: {product.id}
+                </p>
+              </div>
               <div className="flex gap-2">
+                <button
+                  className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors"
+                  aria-label="Add to wishlist"
+                >
+                  <Heart className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={handleShare}
+                  className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors"
+                  aria-label="Share product"
+                >
+                  <Share2 className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Price + Stock */}
+            <div className="flex items-center gap-4">
+              <span className="font-display text-3xl font-bold">
+                ₹{product.price.toLocaleString()}
+              </span>
+              {product.originalPrice && (
+                <span className="font-body text-base text-muted-foreground line-through">
+                  ₹{product.originalPrice.toLocaleString()}
+                </span>
+              )}
+              <span
+                className={`text-xs font-body font-semibold px-3 py-1 rounded-full border ${
+                  isInStock
+                    ? 'text-emerald-700 border-emerald-300 bg-emerald-50'
+                    : 'text-red-700 border-red-300 bg-red-50'
+                }`}
+              >
+                {isInStock ? 'In Stock' : 'Out of Stock'}
+              </span>
+            </div>
+
+            {product.originalPrice && (
+              <span className="inline-block bg-primary/10 text-primary text-xs font-body font-bold px-3 py-1 rounded">
+                {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
+              </span>
+            )}
+
+            {/* Description */}
+            <div>
+              <h3 className="font-display text-base font-semibold mb-1">Description</h3>
+              <p className="font-body text-sm text-muted-foreground leading-relaxed">
+                {product.description}
+              </p>
+            </div>
+
+            {/* Color chips */}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="font-body text-sm font-semibold">Color:</span>
+                <span className="font-body text-sm text-muted-foreground">
+                  {selectedColor !== null ? getColorName(product.colors[selectedColor]) : 'Select a color'}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
                 {product.colors.map((color, i) => (
                   <button
                     key={i}
                     onClick={() => setSelectedColor(i)}
-                    className={`h-8 w-8 rounded-full border-2 transition-all ${
-                      selectedColor === i ? 'border-primary scale-110' : 'border-border'
+                    className={`px-3 py-1.5 rounded-full text-xs font-body font-medium border transition-all ${
+                      selectedColor === i
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border text-muted-foreground hover:border-foreground/40'
                     }`}
-                    style={{ backgroundColor: color }}
-                    aria-label={`Color ${i + 1}`}
-                  />
+                  >
+                    {getColorName(color)}
+                  </button>
                 ))}
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="flex gap-3">
+            {/* Size */}
+            <div>
+              <h3 className="font-body text-sm font-semibold mb-2">
+                Size <span className="text-primary">*</span>
+              </h3>
+              <div className="inline-block border border-primary rounded px-5 py-2 text-sm font-body font-medium text-foreground">
+                Free Size
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="space-y-3 pt-2">
+              {/* Add to Cart */}
               <button
-                onClick={() => addToCart(product)}
-                className="flex-1 bg-primary text-primary-foreground py-3.5 text-sm tracking-[0.15em] font-body hover:bg-burgundy-light transition-colors flex items-center justify-center gap-2"
+                onClick={() => {
+                  if (selectedColor === null) return;
+                  addToCart(product);
+                }}
+                disabled={selectedColor === null}
+                className={`w-full py-3.5 text-sm tracking-[0.15em] font-body flex items-center justify-center gap-2 transition-colors ${
+                  selectedColor === null
+                    ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                    : 'bg-primary text-primary-foreground hover:bg-burgundy-light'
+                }`}
               >
                 <ShoppingBag className="h-4 w-4" />
-                ADD TO CART
+                {selectedColor === null ? 'Please Select Options Above' : 'ADD TO CART'}
               </button>
-              <button className="p-3.5 border border-border hover:border-primary hover:text-primary transition-colors" aria-label="Add to wishlist">
-                <Heart className="h-5 w-5" />
-              </button>
+
+              {/* WhatsApp / Buy Now */}
+              <a
+                href={`https://wa.me/919494644998?text=${whatsappMessage}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3.5 text-sm tracking-[0.1em] font-body flex items-center justify-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Order on WhatsApp
+              </a>
             </div>
 
             {/* Trust badges */}
             <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
-              <div className="text-center">
-                <Truck className="h-5 w-5 mx-auto mb-1 text-gold" />
-                <p className="font-body text-[10px] text-muted-foreground">Free Shipping</p>
-              </div>
-              <div className="text-center">
-                <Shield className="h-5 w-5 mx-auto mb-1 text-gold" />
-                <p className="font-body text-[10px] text-muted-foreground">Secure Payment</p>
-              </div>
-              <div className="text-center">
-                <RotateCcw className="h-5 w-5 mx-auto mb-1 text-gold" />
-                <p className="font-body text-[10px] text-muted-foreground">Easy Returns</p>
-              </div>
+              {[
+                { icon: Truck, label: 'Free Shipping' },
+                { icon: Shield, label: 'Secure Payment' },
+                { icon: RotateCcw, label: 'Easy Returns' },
+              ].map(({ icon: Icon, label }) => (
+                <div key={label} className="text-center">
+                  <Icon className="h-5 w-5 mx-auto mb-1 text-gold" />
+                  <p className="font-body text-[10px] text-muted-foreground">{label}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </main>
+
+      {/* Zoom modal */}
+      {showZoom && (
+        <div
+          className="fixed inset-0 z-50 bg-foreground/90 flex items-center justify-center p-4"
+          onClick={() => setShowZoom(false)}
+        >
+          <img
+            src={images[currentImage]}
+            alt={product.name}
+            className="max-w-full max-h-full object-contain"
+          />
+        </div>
+      )}
+
       <Footer />
     </div>
   );
