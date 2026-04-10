@@ -165,7 +165,7 @@ export function Navbar() {
 
       {/* Main navigation */}
       <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
-        <div className="container flex items-center justify-between h-16 md:h-20">
+        <div className="container flex items-center justify-between h-20 md:h-24">
           {/* Mobile menu button */}
           <button
             className="md:hidden p-2"
