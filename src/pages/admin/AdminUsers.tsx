@@ -1,7 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, ShieldCheck, ShieldX } from 'lucide-react';
+import { Shield, ShieldCheck, Trash2 } from 'lucide-react';
+
+const roleBadgeStyles: Record<string, string> = {
+  admin: 'bg-primary/10 text-primary',
+  moderator: 'bg-purple-100 text-purple-700',
+  user: 'bg-muted text-muted-foreground',
+};
 
 const AdminUsers = () => {
   const { toast } = useToast();
@@ -25,13 +31,13 @@ const AdminUsers = () => {
     },
   });
 
-  const toggleAdmin = useMutation({
-    mutationFn: async ({ userId, isAdmin }: { userId: string; isAdmin: boolean }) => {
-      if (isAdmin) {
-        const { error } = await supabase.from('user_roles').delete().eq('user_id', userId).eq('role', 'admin');
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('user_roles').insert({ user_id: userId, role: 'admin' });
+  const changeRole = useMutation({
+    mutationFn: async ({ userId, newRole }: { userId: string; newRole: string }) => {
+      // Remove existing role
+      await supabase.from('user_roles').delete().eq('user_id', userId);
+      // If not "user" (default), insert the new role
+      if (newRole !== 'user') {
+        const { error } = await supabase.from('user_roles').insert({ user_id: userId, role: newRole as any });
         if (error) throw error;
       }
     },
@@ -42,13 +48,30 @@ const AdminUsers = () => {
     onError: (err: Error) => toast({ title: 'Error', description: err.message, variant: 'destructive' }),
   });
 
+  const removeUser = useMutation({
+    mutationFn: async (userId: string) => {
+      // Remove roles first
+      await supabase.from('user_roles').delete().eq('user_id', userId);
+      // Note: We can't delete from auth.users via client SDK.
+      // We remove their roles so they have no access.
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-user-roles'] });
+      toast({ title: 'User roles removed' });
+    },
+    onError: (err: Error) => toast({ title: 'Error', description: err.message, variant: 'destructive' }),
+  });
+
   const getUserRole = (userId: string) => {
     return roles?.find(r => r.user_id === userId)?.role || 'user';
   };
 
   return (
     <div>
-      <h2 className="font-display text-2xl font-bold mb-6">Users</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="font-display text-2xl font-bold">Users</h2>
+        <span className="font-body text-sm text-muted-foreground">{users?.length || 0} registered users</span>
+      </div>
 
       {isLoading ? (
         <div className="text-center py-12 text-muted-foreground font-body">Loading users...</div>
@@ -67,17 +90,19 @@ const AdminUsers = () => {
             <tbody className="divide-y divide-border">
               {users?.map((user) => {
                 const role = getUserRole(user.id);
-                const isAdmin = role === 'admin';
                 return (
                   <tr key={user.id} className="hover:bg-muted/30 transition-colors">
                     <td className="p-3 font-body text-sm font-medium">{user.email}</td>
                     <td className="p-3 text-center">
-                      <span className={`inline-flex items-center gap-1 text-[11px] font-body font-bold px-2.5 py-1 rounded-full ${
-                        isAdmin ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
-                      }`}>
-                        {isAdmin ? <ShieldCheck className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
-                        {role.charAt(0).toUpperCase() + role.slice(1)}
-                      </span>
+                      <select
+                        value={role}
+                        onChange={e => changeRole.mutate({ userId: user.id, newRole: e.target.value })}
+                        className={`text-[11px] font-body font-bold px-2.5 py-1 rounded-full border-0 cursor-pointer ${roleBadgeStyles[role] || roleBadgeStyles.user}`}
+                      >
+                        <option value="user">User</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="admin">Admin</option>
+                      </select>
                     </td>
                     <td className="p-3 font-body text-sm text-muted-foreground">
                       {new Date(user.created_at).toLocaleDateString()}
@@ -87,19 +112,12 @@ const AdminUsers = () => {
                     </td>
                     <td className="p-3 text-center">
                       <button
-                        onClick={() => toggleAdmin.mutate({ userId: user.id, isAdmin })}
-                        disabled={toggleAdmin.isPending}
-                        className={`text-xs font-body px-3 py-1.5 rounded transition-colors ${
-                          isAdmin
-                            ? 'bg-destructive/10 text-destructive hover:bg-destructive/20'
-                            : 'bg-primary/10 text-primary hover:bg-primary/20'
-                        }`}
+                        onClick={() => { if (confirm(`Remove all roles for ${user.email}?`)) removeUser.mutate(user.id); }}
+                        disabled={removeUser.isPending}
+                        className="p-1.5 hover:bg-destructive/10 rounded transition-colors"
+                        title="Remove user roles"
                       >
-                        {isAdmin ? (
-                          <span className="flex items-center gap-1"><ShieldX className="h-3 w-3" /> Remove Admin</span>
-                        ) : (
-                          <span className="flex items-center gap-1"><ShieldCheck className="h-3 w-3" /> Make Admin</span>
-                        )}
+                        <Trash2 className="h-4 w-4 text-destructive" />
                       </button>
                     </td>
                   </tr>
