@@ -3,6 +3,29 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useState } from 'react';
 
+import kanjivaramImg from '@/assets/categories/kanjivaram.jpg';
+import banarasiImg from '@/assets/categories/banarasi.jpg';
+import softSilkImg from '@/assets/categories/soft-silk.jpg';
+import cottonImg from '@/assets/categories/cotton.jpg';
+import linenImg from '@/assets/categories/linen.jpg';
+import georgetteImg from '@/assets/categories/georgette.jpg';
+import chiffonImg from '@/assets/categories/chiffon.jpg';
+import weddingImg from '@/assets/categories/wedding.jpg';
+
+const categoryImages: Record<string, string> = {
+  'kanjivaram-sarees': kanjivaramImg,
+  'banarasi-sarees': banarasiImg,
+  'soft-silk-sarees': softSilkImg,
+  'bengali-cotton-sarees': cottonImg,
+  'jaipur-cotton-sarees': cottonImg,
+  'south-cotton-sarees': cottonImg,
+  'linen-sarees': linenImg,
+  'georgette-sarees': georgetteImg,
+  'chiffon-sarees': chiffonImg,
+  'wedding-sarees': weddingImg,
+  'bridal-collection': weddingImg,
+};
+
 const categoryColors: Record<string, string> = {
   'kanjivaram-sarees': 'from-rose-900/80 to-rose-700/40',
   'banarasi-sarees': 'from-purple-900/80 to-purple-700/40',
@@ -30,7 +53,6 @@ export function CategoriesSection() {
         .order('sort_order', { ascending: true });
       if (error) throw error;
 
-      // Get product counts per category
       const { data: products } = await supabase
         .from('products')
         .select('category_id')
@@ -63,6 +85,8 @@ export function CategoriesSection() {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {displayed.map((cat) => {
+            const localImg = categoryImages[cat.slug];
+            const imgSrc = cat.image_url || localImg;
             const gradient = categoryColors[cat.slug] || 'from-foreground/70 to-foreground/30';
             return (
               <Link
@@ -70,12 +94,14 @@ export function CategoriesSection() {
                 to={`/collections?filter=${cat.slug}`}
                 className="group relative aspect-[3/4] overflow-hidden rounded-lg"
               >
-                {cat.image_url ? (
+                {imgSrc ? (
                   <img
-                    src={cat.image_url}
+                    src={imgSrc}
                     alt={cat.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     loading="lazy"
+                    width={640}
+                    height={800}
                   />
                 ) : (
                   <div className={`w-full h-full bg-gradient-to-br ${gradient}`} />
