@@ -172,9 +172,9 @@ export function Navbar() {
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
-          {/* Logo */}
+      {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src={logo} alt="Kavi Women's World" className="h-14 md:h-18 w-auto" />
+            <img src={logo} alt="Kavi Women's World" className="h-10 sm:h-14 md:h-18 w-auto" />
           </Link>
 
           {/* Desktop nav with dropdowns */}
@@ -197,24 +197,24 @@ export function Navbar() {
           </nav>
 
           {/* Right actions */}
-          <div className="flex items-center gap-2 md:gap-3">
-            <button className="p-2 hover:text-primary transition-colors" aria-label="Search" onClick={() => setSearchOpen(true)}>
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
+            <button className="p-2.5 hover:text-primary transition-colors" aria-label="Search" onClick={() => setSearchOpen(true)}>
               <Search className="h-5 w-5" />
             </button>
-            <Link to="/wishlist" className="p-2 hover:text-primary transition-colors" aria-label="Wishlist">
+            <Link to="/wishlist" className="p-2.5 hover:text-primary transition-colors hidden sm:block" aria-label="Wishlist">
               <Heart className="h-5 w-5" />
             </Link>
-            <Link to={user ? '/orders' : '/login'} className="p-2 hover:text-primary transition-colors hidden md:block" aria-label="My Orders">
+            <Link to={user ? '/orders' : '/login'} className="p-2.5 hover:text-primary transition-colors hidden md:block" aria-label="My Orders">
               <User className="h-5 w-5" />
             </Link>
             <button
-              className="p-2 hover:text-primary transition-colors relative"
+              className="p-2.5 hover:text-primary transition-colors relative"
               onClick={() => setIsCartOpen(true)}
               aria-label="Cart"
             >
               <ShoppingBag className="h-5 w-5" />
               {totalItems > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                <span className="absolute top-0.5 right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
@@ -225,12 +225,12 @@ export function Navbar() {
 
       {/* Mobile nav */}
       {mobileOpen && (
-        <nav className="md:hidden border-b border-border bg-background px-4 py-4 space-y-1 max-h-[70vh] overflow-y-auto">
+        <nav className="md:hidden border-b border-border bg-background px-4 py-3 space-y-0.5 max-h-[75vh] overflow-y-auto overscroll-contain">
           {dropdownMenus.map(menu => (
             <div key={menu.label}>
               <button
                 onClick={() => setMobileExpanded(mobileExpanded === menu.label ? null : menu.label)}
-                className="flex items-center justify-between w-full py-2.5 text-sm tracking-[0.12em] font-body text-foreground/80"
+                className="flex items-center justify-between w-full py-3 text-sm tracking-[0.12em] font-body text-foreground/80 min-h-[44px]"
               >
                 {menu.label}
                 <ChevronDown className={`h-4 w-4 transition-transform ${mobileExpanded === menu.label ? 'rotate-180' : ''}`} />
@@ -242,7 +242,7 @@ export function Navbar() {
                       key={item.slug}
                       to={`/collections?filter=${item.slug}`}
                       onClick={() => { setMobileOpen(false); setMobileExpanded(null); }}
-                      className="block py-2 text-xs tracking-[0.08em] font-body text-muted-foreground hover:text-foreground transition-colors"
+                      className="block py-2.5 text-sm tracking-[0.08em] font-body text-muted-foreground hover:text-foreground transition-colors min-h-[44px] flex items-center"
                     >
                       {item.label}
                     </Link>
@@ -252,20 +252,34 @@ export function Navbar() {
             </div>
           ))}
 
-          <div className="border-t border-border pt-2 mt-2 space-y-1">
+          <div className="border-t border-border pt-2 mt-2 space-y-0.5">
             <Link
               to="/collections"
               onClick={() => setMobileOpen(false)}
-              className="block py-2.5 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground"
+              className="block py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px]"
             >
               ALL COLLECTIONS
+            </Link>
+            <Link
+              to="/wishlist"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-2 py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px] sm:hidden"
+            >
+              <Heart className="h-4 w-4" /> WISHLIST
+            </Link>
+            <Link
+              to={user ? '/orders' : '/login'}
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-2 py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px] md:hidden"
+            >
+              <User className="h-4 w-4" /> {user ? 'MY ORDERS' : 'LOGIN'}
             </Link>
             {topLinks.map(link => (
               <Link
                 key={link.path}
                 to={link.path}
                 onClick={() => setMobileOpen(false)}
-                className="block py-2.5 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground"
+                className="block py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px]"
               >
                 {link.label.toUpperCase()}
               </Link>

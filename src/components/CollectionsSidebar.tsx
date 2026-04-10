@@ -233,42 +233,83 @@ const SidebarContent = ({
 
 export const CollectionsSidebar = (props: CollectionsSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <aside
-      className={cn(
-        'shrink-0 border-r border-border transition-all duration-300 relative sticky top-4 self-start max-h-[calc(100vh-6rem)] overflow-y-auto',
-        collapsed ? 'w-10' : 'w-56 md:w-60 pr-4'
-      )}
-    >
-      {/* Collapse / Expand toggle */}
+    <>
+      {/* Mobile filter button */}
       <button
-        onClick={() => setCollapsed(c => !c)}
-        className="absolute -right-3 top-2 z-10 h-6 w-6 rounded-full border border-border bg-background flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-sm"
-        title={collapsed ? 'Expand filters' : 'Collapse filters'}
+        onClick={() => setMobileOpen(true)}
+        className="lg:hidden fixed bottom-20 left-4 z-40 bg-primary text-primary-foreground rounded-full shadow-lg px-4 py-3 flex items-center gap-2 text-sm font-body"
       >
-        {collapsed ? <PanelLeftOpen className="h-3.5 w-3.5" /> : <PanelLeftClose className="h-3.5 w-3.5" />}
+        <SlidersHorizontal className="h-4 w-4" />
+        Filters
+        {props.hasActiveFilters && (
+          <span className="h-2 w-2 rounded-full bg-primary-foreground" />
+        )}
       </button>
 
-      {collapsed ? (
-        <div className="flex flex-col items-center pt-10 gap-3">
-          <button
-            onClick={() => setCollapsed(false)}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-            title="Show filters"
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-          </button>
-          {props.hasActiveFilters && (
-            <span className="h-2 w-2 rounded-full bg-primary" />
-          )}
-        </div>
-      ) : (
+      {/* Mobile filter drawer */}
+      {mobileOpen && (
         <>
-          <h2 className="font-display text-lg font-bold mb-4">Filters</h2>
-          <SidebarContent {...props} />
+          <div className="fixed inset-0 bg-foreground/50 z-50 lg:hidden" onClick={() => setMobileOpen(false)} />
+          <div className="fixed left-0 top-0 bottom-0 w-[85vw] max-w-sm bg-background z-50 shadow-2xl lg:hidden flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <h2 className="font-display text-lg font-bold">Filters</h2>
+              <button onClick={() => setMobileOpen(false)} className="p-2 hover:text-primary transition-colors">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+              <SidebarContent {...props} />
+            </div>
+            <div className="p-4 border-t border-border">
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="w-full bg-primary text-primary-foreground py-3 text-sm font-body tracking-wider rounded-sm"
+              >
+                Show {props.hasActiveFilters ? 'Filtered' : 'All'} Results
+              </button>
+            </div>
+          </div>
         </>
       )}
-    </aside>
+
+      {/* Desktop sidebar */}
+      <aside
+        className={cn(
+          'shrink-0 border-r border-border transition-all duration-300 relative sticky top-4 self-start max-h-[calc(100vh-6rem)] overflow-y-auto hidden lg:block',
+          collapsed ? 'w-10' : 'w-56 md:w-60 pr-4'
+        )}
+      >
+        <button
+          onClick={() => setCollapsed(c => !c)}
+          className="absolute -right-3 top-2 z-10 h-6 w-6 rounded-full border border-border bg-background flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-sm"
+          title={collapsed ? 'Expand filters' : 'Collapse filters'}
+        >
+          {collapsed ? <PanelLeftOpen className="h-3.5 w-3.5" /> : <PanelLeftClose className="h-3.5 w-3.5" />}
+        </button>
+
+        {collapsed ? (
+          <div className="flex flex-col items-center pt-10 gap-3">
+            <button
+              onClick={() => setCollapsed(false)}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              title="Show filters"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+            </button>
+            {props.hasActiveFilters && (
+              <span className="h-2 w-2 rounded-full bg-primary" />
+            )}
+          </div>
+        ) : (
+          <>
+            <h2 className="font-display text-lg font-bold mb-4">Filters</h2>
+            <SidebarContent {...props} />
+          </>
+        )}
+      </aside>
+    </>
   );
 };

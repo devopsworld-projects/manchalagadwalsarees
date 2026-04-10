@@ -15,9 +15,9 @@ export function AnnouncementBar() {
 
   return (
     <div className="bg-primary text-primary-foreground relative overflow-hidden">
-      <div className="flex animate-marquee whitespace-nowrap py-2">
+      <div className="flex animate-marquee whitespace-nowrap py-2.5">
         {[...announcements, ...announcements].map((text, i) => (
-          <span key={i} className="mx-8 text-sm font-body tracking-wide">{text}</span>
+          <span key={i} className="mx-6 text-xs sm:text-sm font-body tracking-wide">{text}</span>
         ))}
       </div>
       <button

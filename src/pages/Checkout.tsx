@@ -157,7 +157,7 @@ export default function Checkout() {
 
         <h1 className="font-display text-3xl font-bold mb-8">Checkout</h1>
 
-        <div className="grid lg:grid-cols-5 gap-8">
+        <div className="grid lg:grid-cols-5 gap-6 md:gap-8">
           {/* Shipping form */}
           <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-5">
             <h2 className="font-display text-lg font-semibold">Shipping Details</h2>
@@ -183,18 +183,18 @@ export default function Checkout() {
               <Textarea value={form.address} onChange={e => update('address', e.target.value)} required rows={2} className="font-body" />
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="text-xs font-body text-muted-foreground mb-1 block">City *</label>
-                <Input value={form.city} onChange={e => update('city', e.target.value)} required className="font-body" />
+                <Input value={form.city} onChange={e => update('city', e.target.value)} required className="font-body h-11" />
               </div>
               <div>
                 <label className="text-xs font-body text-muted-foreground mb-1 block">State *</label>
-                <Input value={form.state} onChange={e => update('state', e.target.value)} required className="font-body" />
+                <Input value={form.state} onChange={e => update('state', e.target.value)} required className="font-body h-11" />
               </div>
               <div>
                 <label className="text-xs font-body text-muted-foreground mb-1 block">PIN Code *</label>
-                <Input value={form.pincode} onChange={e => update('pincode', e.target.value)} required pattern="[0-9]{6}" className="font-body" />
+                <Input value={form.pincode} onChange={e => update('pincode', e.target.value)} required pattern="[0-9]{6}" inputMode="numeric" className="font-body h-11" />
               </div>
             </div>
 
