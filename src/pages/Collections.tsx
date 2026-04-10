@@ -10,6 +10,7 @@ import { PageMeta } from '@/components/PageMeta';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CollectionsSidebar } from '@/components/CollectionsSidebar';
+import { ProductCardSkeleton } from '@/components/ProductCardSkeleton';
 import { ArrowUp } from 'lucide-react';
 
 const filterTabs = [
@@ -170,9 +171,11 @@ const Collections = () => {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-              {paginatedProducts.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+              {isLoading
+                ? Array.from({ length: 6 }).map((_, i) => <ProductCardSkeleton key={i} />)
+                : paginatedProducts.map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
             </div>
 
             {hasMore && (
