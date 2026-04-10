@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { Skeleton } from '@/components/ui/skeleton';
 import { PageMeta } from '@/components/PageMeta';
 import { useCart } from '@/context/CartContext';
 import {
