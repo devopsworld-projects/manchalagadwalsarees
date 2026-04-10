@@ -23,6 +23,8 @@ const Collections = () => {
   const activeFilter = searchParams.get('filter') || 'all';
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
   const [page, setPage] = useState(1);
 
   const { data: categories = [] } = useQuery({
