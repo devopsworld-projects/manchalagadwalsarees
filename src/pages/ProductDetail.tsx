@@ -254,18 +254,18 @@ const ProductDetail = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <span className="font-display text-3xl font-bold">₹{product.price.toLocaleString()}</span>
-              {product.original_price && (
-                <span className="font-body text-base text-muted-foreground line-through">₹{product.original_price.toLocaleString()}</span>
+              <span className="font-display text-3xl font-bold">₹{Number(displayPrice).toLocaleString()}</span>
+              {displayOriginalPrice && (
+                <span className="font-body text-base text-muted-foreground line-through">₹{Number(displayOriginalPrice).toLocaleString()}</span>
               )}
               <span className={`text-xs font-body font-semibold px-3 py-1 rounded-full border ${isInStock ? 'text-emerald-700 border-emerald-300 bg-emerald-50' : 'text-red-700 border-red-300 bg-red-50'}`}>
-                {isInStock ? 'In Stock' : 'Out of Stock'}
+                {hasVariants && !allAttributesSelected ? 'Select Options' : isInStock ? 'In Stock' : 'Out of Stock'}
               </span>
             </div>
 
-            {product.original_price && (
+            {displayOriginalPrice && (
               <span className="inline-block bg-primary/10 text-primary text-xs font-body font-bold px-3 py-1 rounded">
-                {Math.round((1 - product.price / product.original_price) * 100)}% OFF
+                {Math.round((1 - Number(displayPrice) / Number(displayOriginalPrice)) * 100)}% OFF
               </span>
             )}
 
