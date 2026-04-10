@@ -1,6 +1,7 @@
-import { Heart } from 'lucide-react';
+import { Heart, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { useCart, CartProduct } from '@/context/CartContext';
 
 export interface ProductData {
   id: string;
@@ -24,7 +25,24 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const [liked, setLiked] = useState(false);
+  const { addToCart } = useCart();
   const image = product.images?.[0] || '/placeholder.svg';
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const cartProduct: CartProduct = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.original_price ?? undefined,
+      image,
+      category: '',
+      colors: product.colors ?? [],
+      description: product.description ?? '',
+    };
+    addToCart(cartProduct);
+  };
 
   return (
     <div className="group relative">
@@ -49,6 +67,16 @@ export function ProductCard({ product }: ProductCardProps) {
             aria-label="Add to wishlist"
           >
             <Heart className={`h-4 w-4 ${liked ? 'fill-primary text-primary' : 'text-foreground/60'}`} />
+          </button>
+
+          {/* Quick Add to Cart */}
+          <button
+            onClick={handleAddToCart}
+            className="absolute bottom-0 left-0 right-0 bg-primary text-primary-foreground text-xs font-body tracking-wider uppercase py-3 flex items-center justify-center gap-2 translate-y-full group-hover:translate-y-0 transition-transform duration-300 hover:bg-primary/90"
+            aria-label="Quick add to cart"
+          >
+            <ShoppingBag className="h-3.5 w-3.5" />
+            Quick Add
           </button>
         </div>
         <div className="mt-3 space-y-1">

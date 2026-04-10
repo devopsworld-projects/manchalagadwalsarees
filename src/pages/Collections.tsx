@@ -17,6 +17,7 @@ const filterTabs = [
 ];
 
 type SortOption = 'newest' | 'price-low' | 'price-high' | 'name-az';
+const PAGE_SIZE = 12;
 
 const Collections = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -24,6 +25,7 @@ const Collections = () => {
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
   const [showFilters, setShowFilters] = useState(false);
+  const [page, setPage] = useState(1);
 
   const { data: categories = [] } = useQuery({
     queryKey: ['storefront-categories-list'],
@@ -85,8 +87,18 @@ const Collections = () => {
     return result;
   }, [products, sortBy, priceRange]);
 
+  const totalPages = Math.ceil(filteredAndSorted.length / PAGE_SIZE);
+  const paginatedProducts = filteredAndSorted.slice(0, page * PAGE_SIZE);
+  const hasMore = page * PAGE_SIZE < filteredAndSorted.length;
+
   const activeLabel = allTabs.find(t => t.slug === activeFilter)?.name || 'Collections';
   const hasActiveFilters = priceRange[0] > 0 || priceRange[1] < 50000;
+
+  // Reset page when filter/sort changes
+  const handleFilterChange = (slug: string) => {
+    setPage(1);
+    setSearchParams(slug === 'all' ? {} : { filter: slug });
+  };
 
   return (
     <div className="min-h-screen">
@@ -105,7 +117,7 @@ const Collections = () => {
           {allTabs.map(tab => (
             <button
               key={tab.slug}
-              onClick={() => setSearchParams(tab.slug === 'all' ? {} : { filter: tab.slug })}
+              onClick={() => handleFilterChange(tab.slug)}
               className={`px-4 py-2 text-xs tracking-[0.1em] font-body transition-colors rounded-sm ${
                 activeFilter === tab.slug
                   ? 'bg-primary text-primary-foreground'
@@ -130,7 +142,7 @@ const Collections = () => {
             )}
           </button>
 
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+          <Select value={sortBy} onValueChange={(v) => { setSortBy(v as SortOption); setPage(1); }}>
             <SelectTrigger className="w-[180px] h-9 text-xs font-body">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
@@ -150,7 +162,7 @@ const Collections = () => {
               <h3 className="font-display text-sm font-semibold">Price Range</h3>
               {hasActiveFilters && (
                 <button
-                  onClick={() => setPriceRange([0, 50000])}
+                  onClick={() => { setPriceRange([0, 50000]); setPage(1); }}
                   className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
                 >
                   <X className="h-3 w-3" /> Clear
@@ -159,7 +171,7 @@ const Collections = () => {
             </div>
             <Slider
               value={priceRange}
-              onValueChange={(v) => setPriceRange(v as [number, number])}
+              onValueChange={(v) => { setPriceRange(v as [number, number]); setPage(1); }}
               min={0}
               max={50000}
               step={500}
@@ -173,10 +185,22 @@ const Collections = () => {
         )}
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {filteredAndSorted.map(product => (
+          {paginatedProducts.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
+
+        {/* Load More */}
+        {hasMore && (
+          <div className="flex justify-center mt-10">
+            <button
+              onClick={() => setPage(p => p + 1)}
+              className="px-8 py-3 border border-primary text-primary text-xs tracking-[0.15em] font-body uppercase hover:bg-primary hover:text-primary-foreground transition-colors rounded-sm"
+            >
+              Load More ({filteredAndSorted.length - paginatedProducts.length} remaining)
+            </button>
+          </div>
+        )}
 
         {!isLoading && filteredAndSorted.length === 0 && (
           <p className="text-center text-muted-foreground font-body py-20">
