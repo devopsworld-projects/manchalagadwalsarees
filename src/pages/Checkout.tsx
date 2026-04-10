@@ -9,8 +9,10 @@ import { Footer } from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ShoppingBag, ArrowLeft, CheckCircle } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, CheckCircle, CreditCard, Truck } from 'lucide-react';
 import { RazorpayPayment } from '@/components/RazorpayPayment';
 
 export default function Checkout() {
@@ -20,6 +22,7 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState<string | null>(null);
   const [showPayment, setShowPayment] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay');
 
   const [form, setForm] = useState({
     name: '',
@@ -37,16 +40,22 @@ export default function Checkout() {
 
   const fullAddress = `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`;
 
-  const handleProceedToPay = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
-    setShowPayment(true);
+    if (paymentMethod === 'razorpay') {
+      setShowPayment(true);
+    } else {
+      await placeOrder('COD');
+    }
   };
 
-  const handlePaymentSuccess = async (paymentId: string) => {
-    setShowPayment(false);
+  const placeOrder = async (paymentRef: string) => {
     setLoading(true);
     try {
+      const status = paymentRef === 'COD' ? 'pending' : 'confirmed';
+      const notesText = form.notes ? `${form.notes} | Payment: ${paymentRef}` : `Payment: ${paymentRef}`;
+
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
@@ -54,10 +63,10 @@ export default function Checkout() {
           customer_email: form.email,
           customer_phone: form.phone || null,
           shipping_address: fullAddress,
-          notes: form.notes ? `${form.notes} | Payment: ${paymentId}` : `Payment: ${paymentId}`,
+          notes: notesText,
           total: totalPrice,
           user_id: user?.id || null,
-          status: 'confirmed',
+          status,
         })
         .select('id')
         .single();
@@ -80,12 +89,17 @@ export default function Checkout() {
 
       clearCart();
       setOrderPlaced(order.id);
-      toast.success('Payment successful! Order placed.');
+      toast.success(paymentRef === 'COD' ? 'Order placed! Pay on delivery.' : 'Payment successful! Order placed.');
     } catch (err: any) {
       toast.error(err.message || 'Failed to place order');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePaymentSuccess = async (paymentId: string) => {
+    setShowPayment(false);
+    await placeOrder(paymentId);
   };
 
   // Order confirmation
@@ -148,7 +162,7 @@ export default function Checkout() {
 
         <div className="grid lg:grid-cols-5 gap-8">
           {/* Shipping form */}
-          <form onSubmit={handleProceedToPay} className="lg:col-span-3 space-y-5">
+          <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-5">
             <h2 className="font-display text-lg font-semibold">Shipping Details</h2>
 
             <div className="grid sm:grid-cols-2 gap-4">
@@ -192,12 +206,35 @@ export default function Checkout() {
               <Textarea value={form.notes} onChange={e => update('notes', e.target.value)} rows={2} placeholder="Special instructions..." className="font-body" />
             </div>
 
+            {/* Payment Method */}
+            <div>
+              <h2 className="font-display text-lg font-semibold mb-3">Payment Method</h2>
+              <RadioGroup value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as 'razorpay' | 'cod')} className="gap-3">
+                <Label htmlFor="razorpay" className="flex items-center gap-3 border border-border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
+                  <RadioGroupItem value="razorpay" id="razorpay" />
+                  <CreditCard className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex-1">
+                    <p className="font-body text-sm font-medium">Pay Online (Razorpay)</p>
+                    <p className="font-body text-xs text-muted-foreground">UPI, Cards, Netbanking, Wallets</p>
+                  </div>
+                </Label>
+                <Label htmlFor="cod" className="flex items-center gap-3 border border-border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
+                  <RadioGroupItem value="cod" id="cod" />
+                  <Truck className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex-1">
+                    <p className="font-body text-sm font-medium">Cash on Delivery</p>
+                    <p className="font-body text-xs text-muted-foreground">Pay when your order arrives</p>
+                  </div>
+                </Label>
+              </RadioGroup>
+            </div>
+
             <Button type="submit" disabled={loading} className="w-full h-12 font-body tracking-wider uppercase text-xs">
-              {loading ? 'Placing Order...' : `Pay ₹${totalPrice.toLocaleString()}`}
+              {loading ? 'Placing Order...' : paymentMethod === 'cod' ? `Place Order — ₹${totalPrice.toLocaleString()}` : `Pay ₹${totalPrice.toLocaleString()}`}
             </Button>
 
             <p className="text-xs text-muted-foreground text-center font-body">
-              Powered by Razorpay (Sandbox Mode)
+              {paymentMethod === 'razorpay' ? 'Powered by Razorpay (Sandbox Mode)' : 'Pay cash when your order is delivered'}
             </p>
           </form>
 
