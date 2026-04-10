@@ -130,6 +130,8 @@ export function Navbar() {
   const { totalItems, setIsCartOpen } = useCart();
   const { user } = useAuth();
   const location = useLocation();
+  const { data: settings } = useStoreSettings();
+  const logoSrc = settings?.logo_url || logo;
 
   return (
     <header className="sticky top-0 z-50">
