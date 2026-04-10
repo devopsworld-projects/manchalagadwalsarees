@@ -23,6 +23,8 @@ const Collections = () => {
   const activeFilter = searchParams.get('filter') || 'all';
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
   const [page, setPage] = useState(1);
 
   const { data: categories = [] } = useQuery({
@@ -66,19 +68,32 @@ const Collections = () => {
 
   const filteredAndSorted = useMemo(() => {
     let result = products.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
+    
+    if (selectedColors.length > 0) {
+      result = result.filter(p =>
+        p.colors?.some((c: string) => selectedColors.some(sc => c.toLowerCase().includes(sc.toLowerCase()) || sc.toLowerCase().includes(c.toLowerCase())))
+      );
+    }
+
+    if (selectedMaterials.length > 0) {
+      result = result.filter(p =>
+        selectedMaterials.some(m => p.name.toLowerCase().includes(m.toLowerCase()) || (p.description?.toLowerCase().includes(m.toLowerCase())))
+      );
+    }
+
     switch (sortBy) {
       case 'price-low': result = [...result].sort((a, b) => a.price - b.price); break;
       case 'price-high': result = [...result].sort((a, b) => b.price - a.price); break;
       case 'name-az': result = [...result].sort((a, b) => a.name.localeCompare(b.name)); break;
     }
     return result;
-  }, [products, sortBy, priceRange]);
+  }, [products, sortBy, priceRange, selectedColors, selectedMaterials]);
 
   const paginatedProducts = filteredAndSorted.slice(0, page * PAGE_SIZE);
   const hasMore = page * PAGE_SIZE < filteredAndSorted.length;
 
   const activeLabel = allTabs.find(t => t.slug === activeFilter)?.name || 'Collections';
-  const hasActiveFilters = priceRange[0] > 0 || priceRange[1] < 50000;
+  const hasActiveFilters = priceRange[0] > 0 || priceRange[1] < 50000 || selectedColors.length > 0 || selectedMaterials.length > 0;
 
   const handleFilterChange = (slug: string) => {
     setPage(1);
@@ -87,6 +102,8 @@ const Collections = () => {
 
   const handleClearFilters = () => {
     setPriceRange([0, 50000]);
+    setSelectedColors([]);
+    setSelectedMaterials([]);
     setPage(1);
   };
 
@@ -96,6 +113,10 @@ const Collections = () => {
     onFilterChange: handleFilterChange,
     priceRange,
     onPriceRangeChange: (r: [number, number]) => { setPriceRange(r); setPage(1); },
+    selectedColors,
+    onColorsChange: (c: string[]) => { setSelectedColors(c); setPage(1); },
+    selectedMaterials,
+    onMaterialsChange: (m: string[]) => { setSelectedMaterials(m); setPage(1); },
     hasActiveFilters,
     onClearFilters: handleClearFilters,
   };
