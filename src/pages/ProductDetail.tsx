@@ -38,6 +38,8 @@ const ProductDetail = () => {
   const [currentImage, setCurrentImage] = useState(0);
   const [showZoom, setShowZoom] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const shareRef = useRef<HTMLDivElement>(null);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ['storefront-product', id],
