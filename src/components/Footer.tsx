@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-1">
-            <img src={logo} alt="O Maguva" className="h-16 w-auto mb-4 brightness-200" loading="lazy" width={512} height={512} />
+            <img src={logo} alt="Kavi Women's World" className="h-16 w-auto mb-4 brightness-200" loading="lazy" width={512} height={512} />
             <p className="font-body text-sm leading-relaxed text-primary-foreground/60">
               Discover the finest collection of handcrafted sarees that blend traditional artistry with contemporary grace.
             </p>
@@ -53,7 +53,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-gold" />
-                <span>info@omaguva.com</span>
+                <span>info@kaviwomensworld.com</span>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 text-gold mt-0.5" />
@@ -65,7 +65,7 @@ export function Footer() {
 
         <div className="border-t border-primary-foreground/10 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="font-body text-xs text-primary-foreground/40">
-            © 2024 O Maguva. All rights reserved.
+            © 2024 Kavi Women's World. All rights reserved.
           </p>
           <div className="flex gap-6 font-body text-xs text-primary-foreground/40">
             <Link to="#" className="hover:text-primary-foreground/70 transition-colors">Privacy Policy</Link>

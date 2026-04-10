@@ -25,7 +25,7 @@ const AdminLayout = () => {
         <div className="flex-1 flex flex-col">
           <header className="h-14 flex items-center border-b border-border px-4 gap-4 bg-background">
             <SidebarTrigger />
-            <h1 className="font-display text-lg font-semibold">O Maguva Admin</h1>
+            <h1 className="font-display text-lg font-semibold">Kavi Women's World Admin</h1>
           </header>
           <main className="flex-1 p-6 overflow-auto">
             <Outlet />

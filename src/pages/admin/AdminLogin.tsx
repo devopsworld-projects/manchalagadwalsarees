@@ -37,7 +37,7 @@ const AdminLogin = () => {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <img src={logo} alt="O Maguva" className="h-20 w-auto mx-auto mb-4" />
+          <img src={logo} alt="Kavi Women's World" className="h-20 w-auto mx-auto mb-4" />
           <h1 className="font-display text-2xl font-bold">Admin Portal</h1>
           <p className="font-body text-sm text-muted-foreground mt-1">Sign in to manage your store</p>
         </div>
