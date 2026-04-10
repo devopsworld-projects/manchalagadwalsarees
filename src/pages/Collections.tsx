@@ -7,7 +7,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { ProductCard } from '@/components/ProductCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CollectionsSidebarDesktop, CollectionsSidebarMobile } from '@/components/CollectionsSidebar';
+import { CollectionsSidebar } from '@/components/CollectionsSidebar';
 
 const filterTabs = [
   { name: 'All Collections', slug: 'all' },
@@ -133,16 +133,13 @@ const Collections = () => {
           {isLoading ? 'Loading...' : `${filteredAndSorted.length} products`}
         </p>
 
-        <div className="flex gap-8">
-          {/* Desktop sidebar */}
-          <CollectionsSidebarDesktop {...sidebarProps} />
+        <div className="flex gap-4 md:gap-8">
+          <CollectionsSidebar {...sidebarProps} />
 
           {/* Main content */}
           <div className="flex-1 min-w-0">
-            {/* Top bar: mobile filter trigger + sort */}
-            <div className="flex items-center justify-between gap-4 mb-6 border-b border-border pb-4">
-              <CollectionsSidebarMobile {...sidebarProps} />
-              <div className="hidden lg:block" /> {/* spacer on desktop */}
+            {/* Top bar: sort */}
+            <div className="flex items-center justify-end gap-4 mb-6 border-b border-border pb-4">
 
               <Select value={sortBy} onValueChange={(v) => { setSortBy(v as SortOption); setPage(1); }}>
                 <SelectTrigger className="w-[180px] h-9 text-xs font-body">
