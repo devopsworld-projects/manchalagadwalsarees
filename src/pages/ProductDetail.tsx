@@ -300,9 +300,41 @@ const ProductDetail = () => {
                 >
                   <Heart className={`h-5 w-5 ${isWishlisted(product.id) ? 'fill-current' : ''}`} />
                 </button>
-                <button onClick={handleShare} className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors" aria-label="Share product">
-                  <Share2 className="h-5 w-5" />
-                </button>
+                <div className="relative" ref={shareRef}>
+                  <button
+                    onClick={() => setShowShareMenu(prev => !prev)}
+                    className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors"
+                    aria-label="Share product"
+                  >
+                    <Share2 className="h-5 w-5" />
+                  </button>
+                  {showShareMenu && (
+                    <div className="absolute right-0 top-12 z-50 bg-card border border-border rounded-lg shadow-lg py-2 w-52 animate-in fade-in slide-in-from-top-2 duration-200">
+                      <p className="px-4 py-1.5 font-body text-xs text-muted-foreground font-semibold uppercase tracking-wider">Share via</p>
+                      {shareLinks.map(link => (
+                        <a
+                          key={link.label}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setShowShareMenu(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 font-body text-sm hover:bg-muted transition-colors"
+                        >
+                          <span className="text-base">{link.icon}</span>
+                          {link.label}
+                        </a>
+                      ))}
+                      <div className="border-t border-border my-1" />
+                      <button
+                        onClick={handleCopyLink}
+                        className="flex items-center gap-3 px-4 py-2.5 font-body text-sm hover:bg-muted transition-colors w-full text-left"
+                      >
+                        <Copy className="h-4 w-4" />
+                        Copy Link
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
