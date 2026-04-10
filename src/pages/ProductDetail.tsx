@@ -101,9 +101,36 @@ const ProductDetail = () => {
     );
   }
 
-  const images = product.images && product.images.length > 0 ? product.images : ['/placeholder.svg'];
-  const colors = product.colors || [];
-  const isInStock = (product.stock ?? 0) > 0;
+  const hasVariants = variants && variants.length > 0;
+
+  // Compute attribute options from variants
+  const variantAttrKeys = hasVariants
+    ? Array.from(new Set(variants.flatMap(v => Object.keys((v.attributes as Record<string, string>) || {}))))
+    : [];
+  const attrOptions: Record<string, string[]> = {};
+  variantAttrKeys.forEach(key => {
+    attrOptions[key] = Array.from(new Set(
+      variants!.map(v => ((v.attributes as Record<string, string>) || {})[key]).filter(Boolean)
+    ));
+  });
+
+  // Find selected variant
+  const selectedVariant = hasVariants
+    ? variants.find(v => {
+        const attrs = (v.attributes as Record<string, string>) || {};
+        return variantAttrKeys.every(k => attrs[k] === selectedAttributes[k]);
+      })
+    : null;
+
+  const allAttributesSelected = hasVariants
+    ? variantAttrKeys.every(k => selectedAttributes[k])
+    : true;
+
+  // Use variant price/stock if a variant is selected, otherwise base product
+  const displayPrice = selectedVariant ? selectedVariant.price : product.price;
+  const displayOriginalPrice = selectedVariant ? selectedVariant.original_price : product.original_price;
+  const displayStock = selectedVariant ? selectedVariant.stock : (product.stock ?? 0);
+  const isInStock = hasVariants ? (selectedVariant ? displayStock > 0 : false) : (product.stock ?? 0) > 0;
   const categoryName = (product as any).categories?.name || '';
 
   const prevImage = () => setCurrentImage(i => (i === 0 ? images.length - 1 : i - 1));
@@ -118,14 +145,14 @@ const ProductDetail = () => {
   };
 
   const whatsappMessage = encodeURIComponent(
-    `Hi, I'm interested in ${product.name} (SKU: ${product.sku}) priced at ₹${product.price.toLocaleString()}. Please share more details.`
+    `Hi, I'm interested in ${product.name} (SKU: ${selectedVariant?.sku || product.sku}) priced at ₹${Number(displayPrice).toLocaleString()}. Please share more details.`
   );
 
   const cartProduct = {
-    id: product.sku,
-    name: product.name,
-    price: product.price,
-    originalPrice: product.original_price ?? undefined,
+    id: selectedVariant?.sku || product.sku,
+    name: product.name + (selectedVariant ? ` (${Object.values((selectedVariant.attributes as Record<string, string>) || {}).join(', ')})` : ''),
+    price: Number(displayPrice),
+    originalPrice: displayOriginalPrice ? Number(displayOriginalPrice) : undefined,
     image: images[0],
     category: categoryName,
     colors: colors,
@@ -141,7 +168,7 @@ const ProductDetail = () => {
     image: images[0],
     offers: {
       '@type': 'Offer',
-      price: product.price,
+      price: displayPrice,
       priceCurrency: 'INR',
       availability: isInStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       url: `https://kaviwomensworld.lovable.app/product/${product.sku}`,
