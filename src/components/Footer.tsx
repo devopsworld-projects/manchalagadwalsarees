@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Instagram, Facebook, Youtube, ChevronUp } from 'lucide-react';
+import { useStoreSettings } from '@/hooks/useStoreSettings';
 import logo from '@/assets/logo.png';
 
 export function Footer() {
