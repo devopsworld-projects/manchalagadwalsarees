@@ -3,7 +3,7 @@ import heroImage from '@/assets/hero-woman.jpg';
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-[70vh] md:min-h-[85vh] flex items-center overflow-hidden">
+    <section className="relative min-h-[60vh] sm:min-h-[70vh] md:min-h-[85vh] flex items-center overflow-hidden">
       {/* Background image */}
       <div className="absolute inset-0">
         <img
@@ -22,7 +22,7 @@ export function HeroSection() {
           <p className="font-display text-lg md:text-xl mb-2 text-gold-light tracking-wide">
             Elegance in Every Drape
           </p>
-          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
+          <h1 className="font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
             ✨ Kavi
             <br />
             <span className="text-gold-light">Women's World</span> ✨
@@ -31,16 +31,16 @@ export function HeroSection() {
             Discover the finest collection of handcrafted sarees that blend
             traditional artistry with contemporary grace.
           </p>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-3">
             <Link
               to="/collections"
-              className="bg-primary hover:bg-burgundy-light text-primary-foreground px-8 py-3 text-sm tracking-[0.15em] font-body transition-all hover:shadow-lg"
+              className="bg-primary hover:bg-burgundy-light text-primary-foreground px-6 sm:px-8 py-3 text-xs sm:text-sm tracking-[0.15em] font-body transition-all hover:shadow-lg"
             >
               Explore Collections
             </Link>
             <Link
               to="/about"
-              className="border border-primary-foreground/40 text-primary-foreground px-8 py-3 text-sm tracking-[0.15em] font-body hover:bg-primary-foreground/10 transition-all"
+              className="border border-primary-foreground/40 text-primary-foreground px-6 sm:px-8 py-3 text-xs sm:text-sm tracking-[0.15em] font-body hover:bg-primary-foreground/10 transition-all"
             >
               Our Story
             </Link>

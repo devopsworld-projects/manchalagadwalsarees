@@ -64,7 +64,7 @@ export function NewCollections() {
             className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4 snap-x"
           >
             {newProducts.map(product => (
-              <div key={product.id} className="min-w-[220px] md:min-w-[260px] snap-start">
+              <div key={product.id} className="min-w-[48vw] sm:min-w-[220px] md:min-w-[260px] snap-start">
                 <ProductCard product={product} />
               </div>
             ))}

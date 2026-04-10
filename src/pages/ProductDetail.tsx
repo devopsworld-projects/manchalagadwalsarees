@@ -9,7 +9,7 @@ import { PageMeta } from '@/components/PageMeta';
 import { useCart } from '@/context/CartContext';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
-  ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, MessageCircle,
+  ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, MessageCircle, X,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -219,10 +219,10 @@ const ProductDetail = () => {
 
             {images.length > 1 && (
               <>
-                <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Previous image">
+                <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2.5 rounded-full shadow md:opacity-0 md:group-hover:opacity-100 transition-opacity" aria-label="Previous image">
                   <ChevronLeft className="h-5 w-5" />
                 </button>
-                <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Next image">
+                <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2.5 rounded-full shadow md:opacity-0 md:group-hover:opacity-100 transition-opacity" aria-label="Next image">
                   <ChevronRight className="h-5 w-5" />
                 </button>
               </>
@@ -367,6 +367,9 @@ const ProductDetail = () => {
 
       {showZoom && (
         <div className="fixed inset-0 z-50 bg-foreground/90 flex items-center justify-center p-4" onClick={() => setShowZoom(false)}>
+          <button className="absolute top-4 right-4 p-3 bg-background/20 rounded-full text-primary-foreground" onClick={() => setShowZoom(false)} aria-label="Close zoom">
+            <X className="h-6 w-6" />
+          </button>
           <img src={images[currentImage]} alt={product.name} className="max-w-full max-h-full object-contain" />
         </div>
       )}
