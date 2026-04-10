@@ -58,7 +58,7 @@ export function CartDrawer() {
               ))}
             </div>
 
-            <div className="p-4 border-t border-border space-y-3">
+            <div className="p-4 pb-20 md:pb-4 border-t border-border space-y-3">
               <div className="flex justify-between font-body">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span className="font-bold text-lg">₹{totalPrice.toLocaleString()}</span>
