@@ -8,7 +8,7 @@ export function HeroSection() {
       <div className="absolute inset-0">
         <img
           src={heroImage}
-          alt="O Maguva - Women's World"
+          alt="Kavi Women's World"
           className="w-full h-full object-cover"
           width={1920}
           height={1080}
@@ -20,12 +20,12 @@ export function HeroSection() {
       <div className="relative container z-10">
         <div className="max-w-lg text-primary-foreground">
           <p className="font-display text-lg md:text-xl mb-2 text-gold-light tracking-wide">
-            ఓ మగువ.. ఆడవాళ్లకు మాత్రమే
+            Elegance in Every Drape
           </p>
           <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
-            ✨ O Maguva..
+            ✨ Kavi
             <br />
-            <span className="text-gold-light">Womens World</span> ✨
+            <span className="text-gold-light">Women's World</span> ✨
           </h1>
           <p className="font-body text-sm md:text-base text-primary-foreground/80 mb-8 max-w-md leading-relaxed">
             Discover the finest collection of handcrafted sarees that blend
