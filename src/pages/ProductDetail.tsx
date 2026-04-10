@@ -9,7 +9,9 @@ import { PageMeta } from '@/components/PageMeta';
 import { ProductReviews } from '@/components/ProductReviews';
 import { RecentlyViewed, addToRecentlyViewed } from '@/components/RecentlyViewed';
 import { RelatedProducts } from '@/components/RelatedProducts';
+import { useWishlist } from '@/hooks/useWishlist';
 import { useCart } from '@/context/CartContext';
+import { toast } from 'sonner';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
   ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, MessageCircle, X,
@@ -152,10 +154,20 @@ const ProductDetail = () => {
   const nextImage = () => setCurrentImage(i => (i === images.length - 1 ? 0 : i + 1));
 
   const handleShare = async () => {
-    if (navigator.share) {
-      await navigator.share({ title: product.name, url: window.location.href });
-    } else {
-      await navigator.clipboard.writeText(window.location.href);
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: product.name, url: window.location.href });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Link copied to clipboard!');
+      }
+    } catch {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Link copied to clipboard!');
+      } catch {
+        toast.error('Unable to share');
+      }
     }
   };
 
