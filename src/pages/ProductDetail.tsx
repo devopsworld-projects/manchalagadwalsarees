@@ -243,14 +243,21 @@ const ProductDetail = () => {
             <div className="space-y-3 pt-2">
               <button
                 onClick={() => {
+                  if (!isInStock) return;
                   if (colors.length > 0 && selectedColor === null) return;
                   addToCart(cartProduct);
                 }}
-                disabled={colors.length > 0 && selectedColor === null}
-                className={`w-full py-3.5 text-sm tracking-[0.15em] font-body flex items-center justify-center gap-2 transition-colors ${colors.length > 0 && selectedColor === null ? 'bg-muted text-muted-foreground cursor-not-allowed' : 'bg-primary text-primary-foreground hover:bg-burgundy-light'}`}
+                disabled={!isInStock || (colors.length > 0 && selectedColor === null)}
+                className={`w-full py-3.5 text-sm tracking-[0.15em] font-body flex items-center justify-center gap-2 transition-colors ${
+                  !isInStock
+                    ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                    : colors.length > 0 && selectedColor === null
+                    ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                    : 'bg-primary text-primary-foreground hover:bg-burgundy-light'
+                }`}
               >
                 <ShoppingBag className="h-4 w-4" />
-                {colors.length > 0 && selectedColor === null ? 'Please Select Options Above' : 'ADD TO CART'}
+                {!isInStock ? 'OUT OF STOCK' : colors.length > 0 && selectedColor === null ? 'Please Select Options Above' : 'ADD TO CART'}
               </button>
 
               <a

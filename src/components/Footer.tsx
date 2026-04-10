@@ -76,12 +76,12 @@ export function Footer() {
 
         <div className="border-t border-primary-foreground/10 mt-10 pt-6 flex flex-col items-center gap-3 text-center">
           <div className="flex flex-wrap justify-center gap-x-5 gap-y-1 font-body text-xs text-primary-foreground/40">
-            <Link to="#" className="hover:text-primary-foreground/70 transition-colors">Privacy Policy</Link>
-            <Link to="#" className="hover:text-primary-foreground/70 transition-colors">Terms & Conditions</Link>
-            <Link to="#" className="hover:text-primary-foreground/70 transition-colors">Shipping Policy</Link>
+            <Link to="/privacy-policy" className="hover:text-primary-foreground/70 transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-primary-foreground/70 transition-colors">Terms & Conditions</Link>
+            <Link to="/shipping-policy" className="hover:text-primary-foreground/70 transition-colors">Shipping Policy</Link>
           </div>
           <p className="font-body text-xs text-primary-foreground/40">
-            © 2024 Kavi Women's World. All rights reserved.
+            © {new Date().getFullYear()} Kavi Women's World. All rights reserved.
           </p>
         </div>
       </div>

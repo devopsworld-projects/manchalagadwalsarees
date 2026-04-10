@@ -29,6 +29,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const { isWishlisted, toggleWishlist, isLoggedIn } = useWishlist();
   const image = product.images?.[0] || '/placeholder.svg';
   const liked = isWishlisted(product.id);
+  const outOfStock = product.stock !== null && product.stock !== undefined && product.stock <= 0;
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -43,6 +44,10 @@ export function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (outOfStock) {
+      toast.error('This product is currently out of stock');
+      return;
+    }
     const cartProduct: CartProduct = {
       id: product.id,
       name: product.name,
@@ -68,9 +73,14 @@ export function ProductCard({ product }: ProductCardProps) {
             width={800}
             height={1024}
           />
-          {product.is_new && (
+          {product.is_new && !outOfStock && (
             <span className="absolute top-3 left-3 bg-primary text-primary-foreground text-[10px] font-bold tracking-wider px-2.5 py-1 uppercase">
               New
+            </span>
+          )}
+          {outOfStock && (
+            <span className="absolute top-3 left-3 bg-destructive text-destructive-foreground text-[10px] font-bold tracking-wider px-2.5 py-1 uppercase">
+              Sold Out
             </span>
           )}
           <button
@@ -82,14 +92,16 @@ export function ProductCard({ product }: ProductCardProps) {
           </button>
 
           {/* Quick Add — visible on hover (desktop) */}
-          <button
-            onClick={handleAddToCart}
-            className="absolute bottom-0 left-0 right-0 bg-primary text-primary-foreground text-xs font-body tracking-wider uppercase py-3 items-center justify-center gap-2 translate-y-full group-hover:translate-y-0 transition-transform duration-300 hover:bg-primary/90 hidden md:flex"
-            aria-label="Quick add to cart"
-          >
-            <ShoppingBag className="h-3.5 w-3.5" />
-            Quick Add
-          </button>
+          {!outOfStock && (
+            <button
+              onClick={handleAddToCart}
+              className="absolute bottom-0 left-0 right-0 bg-primary text-primary-foreground text-xs font-body tracking-wider uppercase py-3 items-center justify-center gap-2 translate-y-full group-hover:translate-y-0 transition-transform duration-300 hover:bg-primary/90 hidden md:flex"
+              aria-label="Quick add to cart"
+            >
+              <ShoppingBag className="h-3.5 w-3.5" />
+              Quick Add
+            </button>
+          )}
         </div>
         <div className="mt-3 space-y-1">
           <h3 className="font-display text-sm md:text-base font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
@@ -119,13 +131,15 @@ export function ProductCard({ product }: ProductCardProps) {
               )}
             </div>
             {/* Mobile add-to-cart button */}
-            <button
-              onClick={handleAddToCart}
-              className="md:hidden p-2 bg-primary text-primary-foreground rounded-full shrink-0"
-              aria-label="Add to cart"
-            >
-              <ShoppingBag className="h-3.5 w-3.5" />
-            </button>
+            {!outOfStock && (
+              <button
+                onClick={handleAddToCart}
+                className="md:hidden p-2 bg-primary text-primary-foreground rounded-full shrink-0"
+                aria-label="Add to cart"
+              >
+                <ShoppingBag className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
         </div>
       </Link>
