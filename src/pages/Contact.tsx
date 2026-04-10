@@ -1,6 +1,7 @@
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { PageMeta } from '@/components/PageMeta';
 import { Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -17,6 +18,11 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen">
+      <PageMeta
+        title="Contact Us"
+        description="Get in touch with Kavi Women's World. Call, email, or WhatsApp us for inquiries about sarees and orders."
+        canonicalPath="/contact"
+      />
       <AnnouncementBar />
       <Navbar />
       <main className="container py-12 md:py-16">
