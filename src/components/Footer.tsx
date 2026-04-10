@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail, MapPin, Instagram, Facebook, Youtube } from 'lucide-react';
 import logo from '@/assets/logo.png';
 
 export function Footer() {
@@ -13,6 +13,17 @@ export function Footer() {
             <p className="font-body text-sm leading-relaxed text-primary-foreground/60">
               Discover the finest collection of handcrafted sarees that blend traditional artistry with contemporary grace.
             </p>
+            <div className="flex gap-3 mt-4">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+                <Instagram className="h-4 w-4" />
+              </a>
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+                <Facebook className="h-4 w-4" />
+              </a>
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+                <Youtube className="h-4 w-4" />
+              </a>
+            </div>
           </div>
 
           {/* Quick Links */}
