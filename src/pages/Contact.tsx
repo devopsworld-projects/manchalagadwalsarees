@@ -29,7 +29,7 @@ const Contact = () => {
             <h2 className="font-display text-2xl font-semibold">Get in Touch</h2>
             <div className="space-y-4">
               {[
-                { icon: Phone, label: 'Phone', value: '+91 76800 41607' },
+                { icon: Phone, label: 'Phone', value: '+91 94946 44998' },
                 { icon: Mail, label: 'Email', value: 'info@kaviwomensworld.com' },
                 { icon: MapPin, label: 'Address', value: 'Hyderabad, Telangana, India' },
               ].map(item => (
