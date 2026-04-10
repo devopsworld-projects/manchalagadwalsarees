@@ -40,10 +40,61 @@ export default function Checkout() {
 
   const fullAddress = `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`;
 
-  const handleProceedToPay = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
-    setShowPayment(true);
+    if (paymentMethod === 'razorpay') {
+      setShowPayment(true);
+    } else {
+      await placeOrder('COD');
+    }
+  };
+
+  const placeOrder = async (paymentRef: string) => {
+    setLoading(true);
+    try {
+      const status = paymentRef === 'COD' ? 'pending' : 'confirmed';
+      const notesText = form.notes ? `${form.notes} | Payment: ${paymentRef}` : `Payment: ${paymentRef}`;
+
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          customer_name: form.name,
+          customer_email: form.email,
+          customer_phone: form.phone || null,
+          shipping_address: fullAddress,
+          notes: notesText,
+          total: totalPrice,
+          user_id: user?.id || null,
+          status,
+        })
+        .select('id')
+        .single();
+
+      if (orderError) throw orderError;
+
+      const orderItems = items.map(item => ({
+        order_id: order.id,
+        product_id: item.product.id,
+        product_name: item.product.name,
+        price: item.product.price,
+        quantity: item.quantity,
+      }));
+
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+
+      if (itemsError) throw itemsError;
+
+      clearCart();
+      setOrderPlaced(order.id);
+      toast.success(paymentRef === 'COD' ? 'Order placed! Pay on delivery.' : 'Payment successful! Order placed.');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to place order');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePaymentSuccess = async (paymentId: string) => {
