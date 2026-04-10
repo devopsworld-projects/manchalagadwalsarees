@@ -51,9 +51,9 @@ export function Footer() {
                 <Phone className="h-4 w-4 text-gold" />
                 <span>+91 94946 44998</span>
               </li>
-              <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-gold" />
-                <span>info@kaviwomensworld.com</span>
+              <li className="flex items-start gap-2">
+                <Mail className="h-4 w-4 text-gold shrink-0 mt-0.5" />
+                <span className="break-all">info@kaviwomensworld.com</span>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 text-gold mt-0.5" />
