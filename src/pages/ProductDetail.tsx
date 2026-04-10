@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { PageMeta } from '@/components/PageMeta';
 import { ProductReviews } from '@/components/ProductReviews';
 import { RecentlyViewed, addToRecentlyViewed } from '@/components/RecentlyViewed';
+import { RelatedProducts } from '@/components/RelatedProducts';
 import { useCart } from '@/context/CartContext';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
