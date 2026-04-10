@@ -15,8 +15,9 @@ import { toast } from 'sonner';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
   ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, MessageCircle, X,
+  Copy, Facebook, Twitter,
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const colorNameMap: Record<string, string> = {
   '#c41e3a': 'RED', '#d4af37': 'GOLD', '#8b0000': 'MAROON',
