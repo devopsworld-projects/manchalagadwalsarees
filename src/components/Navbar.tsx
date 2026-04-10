@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, ShoppingBag, Menu, X, ChevronDown, Phone } from 'lucide-react';
+import { Search, ShoppingBag, Menu, X, ChevronDown, Phone, Heart, User } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { SearchOverlay } from '@/components/SearchOverlay';
 import logo from '@/assets/logo.png';
 
