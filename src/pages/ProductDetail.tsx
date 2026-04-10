@@ -9,7 +9,9 @@ import { PageMeta } from '@/components/PageMeta';
 import { ProductReviews } from '@/components/ProductReviews';
 import { RecentlyViewed, addToRecentlyViewed } from '@/components/RecentlyViewed';
 import { RelatedProducts } from '@/components/RelatedProducts';
+import { useWishlist } from '@/hooks/useWishlist';
 import { useCart } from '@/context/CartContext';
+import { toast } from 'sonner';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
   ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, MessageCircle, X,
@@ -30,6 +32,7 @@ const getColorName = (hex: string) =>
 const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
+  const { isWishlisted, toggleWishlist, isLoggedIn } = useWishlist();
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [showZoom, setShowZoom] = useState(false);
@@ -152,10 +155,20 @@ const ProductDetail = () => {
   const nextImage = () => setCurrentImage(i => (i === images.length - 1 ? 0 : i + 1));
 
   const handleShare = async () => {
-    if (navigator.share) {
-      await navigator.share({ title: product.name, url: window.location.href });
-    } else {
-      await navigator.clipboard.writeText(window.location.href);
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: product.name, url: window.location.href });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Link copied to clipboard!');
+      }
+    } catch {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Link copied to clipboard!');
+      } catch {
+        toast.error('Unable to share');
+      }
     }
   };
 
@@ -260,8 +273,15 @@ const ProductDetail = () => {
                 <p className="font-body text-xs text-muted-foreground mt-0.5">SKU: {product.sku}</p>
               </div>
               <div className="flex gap-2">
-                <button className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors" aria-label="Add to wishlist">
-                  <Heart className="h-5 w-5" />
+                <button
+                  onClick={() => {
+                    if (!isLoggedIn) { toast.error('Please login to use wishlist'); return; }
+                    if (product) toggleWishlist(product.id);
+                  }}
+                  className={`p-2 border rounded-full transition-colors ${isWishlisted(product.id) ? 'border-primary text-primary bg-primary/10' : 'border-border hover:border-primary hover:text-primary'}`}
+                  aria-label="Add to wishlist"
+                >
+                  <Heart className={`h-5 w-5 ${isWishlisted(product.id) ? 'fill-current' : ''}`} />
                 </button>
                 <button onClick={handleShare} className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors" aria-label="Share product">
                   <Share2 className="h-5 w-5" />
