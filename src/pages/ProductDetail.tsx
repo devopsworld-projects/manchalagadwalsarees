@@ -199,6 +199,8 @@ const ProductDetail = () => {
         ogType="product"
         jsonLd={productJsonLd}
       />
+      <AnnouncementBar />
+      <Navbar />
       <main className="container py-6 md:py-10">
         <Link
           to="/collections"
