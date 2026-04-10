@@ -37,13 +37,16 @@ export default function Checkout() {
 
   const fullAddress = `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`;
 
-  const handlePlaceOrder = async (e: React.FormEvent) => {
+  const handleProceedToPay = (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
+    setShowPayment(true);
+  };
 
+  const handlePaymentSuccess = async (paymentId: string) => {
+    setShowPayment(false);
     setLoading(true);
     try {
-      // Create order
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
@@ -51,16 +54,16 @@ export default function Checkout() {
           customer_email: form.email,
           customer_phone: form.phone || null,
           shipping_address: fullAddress,
-          notes: form.notes || null,
+          notes: form.notes ? `${form.notes} | Payment: ${paymentId}` : `Payment: ${paymentId}`,
           total: totalPrice,
           user_id: user?.id || null,
+          status: 'confirmed',
         })
         .select('id')
         .single();
 
       if (orderError) throw orderError;
 
-      // Create order items
       const orderItems = items.map(item => ({
         order_id: order.id,
         product_id: item.product.id,
@@ -77,7 +80,7 @@ export default function Checkout() {
 
       clearCart();
       setOrderPlaced(order.id);
-      toast.success('Order placed successfully!');
+      toast.success('Payment successful! Order placed.');
     } catch (err: any) {
       toast.error(err.message || 'Failed to place order');
     } finally {
