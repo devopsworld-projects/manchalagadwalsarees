@@ -4,6 +4,9 @@ import { HeroSection } from '@/components/HeroSection';
 import { NewCollections } from '@/components/NewCollections';
 import { BestSellers } from '@/components/BestSellers';
 import { CategoriesSection } from '@/components/CategoriesSection';
+import { BannerSlider } from '@/components/BannerSlider';
+import { TestimonialsSection } from '@/components/TestimonialsSection';
+import { NewsletterSection } from '@/components/NewsletterSection';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 
@@ -32,7 +35,10 @@ const Index = () => {
         <HeroSection />
         <NewCollections />
         <CategoriesSection />
+        <BannerSlider />
         <BestSellers />
+        <TestimonialsSection />
+        <NewsletterSection />
       </main>
       <Footer />
     </div>

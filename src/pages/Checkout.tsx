@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
@@ -12,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ShoppingBag, ArrowLeft, CreditCard, Truck } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, CreditCard, Truck, Tag, X } from 'lucide-react';
 import { RazorpayPayment } from '@/components/RazorpayPayment';
 
 export default function Checkout() {
@@ -22,6 +23,59 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay');
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+
+  // Fetch shipping & tax
+  const { data: shippingRates = [] } = useQuery({
+    queryKey: ['shipping-rates'],
+    queryFn: async () => {
+      const { data } = await supabase.from('shipping_rates').select('*').eq('is_active', true);
+      return data || [];
+    },
+  });
+  const { data: taxRules = [] } = useQuery({
+    queryKey: ['tax-rules'],
+    queryFn: async () => {
+      const { data } = await supabase.from('tax_rules').select('*').eq('is_active', true);
+      return data || [];
+    },
+  });
+
+  // Calculate shipping
+  const shipping = (() => {
+    const activeRate = shippingRates[0] as any;
+    if (!activeRate) return 0;
+    if (activeRate.type === 'free_above' && totalPrice >= (activeRate.free_above_amount || 0)) return 0;
+    return Number(activeRate.rate || 0);
+  })();
+
+  // Calculate tax
+  const taxRate = taxRules.length > 0 ? Number((taxRules[0] as any).rate || 0) : 0;
+  const taxAmount = Math.round(totalPrice * taxRate / 100);
+
+  // Calculate discount
+  const discount = appliedCoupon
+    ? appliedCoupon.discount_type === 'percentage'
+      ? Math.round(totalPrice * appliedCoupon.discount_value / 100)
+      : Math.min(appliedCoupon.discount_value, totalPrice)
+    : 0;
+
+  const grandTotal = totalPrice + shipping + taxAmount - discount;
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    const { data, error } = await supabase.from('coupons').select('*').eq('code', couponCode.toUpperCase().trim()).eq('is_active', true).maybeSingle();
+    setCouponLoading(false);
+    if (error || !data) { toast.error('Invalid coupon code'); return; }
+    if (data.expires_at && new Date(data.expires_at) < new Date()) { toast.error('Coupon has expired'); return; }
+    if (data.max_uses && data.usage_count >= data.max_uses) { toast.error('Coupon usage limit reached'); return; }
+    if (totalPrice < (data.min_order_amount || 0)) { toast.error(`Minimum order ₹${data.min_order_amount}`); return; }
+    setAppliedCoupon(data);
+    toast.success(`Coupon applied! ${data.discount_type === 'percentage' ? `${data.discount_value}% off` : `₹${data.discount_value} off`}`);
+  };
 
   // Redirect to collections if cart is empty
   useEffect(() => {
@@ -227,7 +281,7 @@ export default function Checkout() {
             </div>
 
             <Button type="submit" disabled={loading} className="w-full h-12 font-body tracking-wider uppercase text-xs">
-              {loading ? 'Placing Order...' : paymentMethod === 'cod' ? `Place Order — ₹${totalPrice.toLocaleString()}` : `Pay ₹${totalPrice.toLocaleString()}`}
+              {loading ? 'Placing Order...' : paymentMethod === 'cod' ? `Place Order — ₹${grandTotal.toLocaleString()}` : `Pay ₹${grandTotal.toLocaleString()}`}
             </Button>
 
             <p className="text-xs text-muted-foreground text-center font-body">
@@ -237,7 +291,7 @@ export default function Checkout() {
 
           {showPayment && (
             <RazorpayPayment
-              amount={totalPrice}
+              amount={grandTotal}
               customerName={form.name}
               customerEmail={form.email}
               customerPhone={form.phone}
@@ -264,18 +318,34 @@ export default function Checkout() {
                   </div>
                 ))}
               </div>
-              <div className="border-t border-border pt-3 space-y-2">
+              {/* Coupon */}
+              <div className="border-t border-border pt-3">
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between bg-green-50 rounded p-2 mb-2">
+                    <div className="flex items-center gap-2"><Tag className="h-3.5 w-3.5 text-green-600" /><span className="font-body text-sm font-medium text-green-700">{appliedCoupon.code}</span></div>
+                    <button onClick={() => setAppliedCoupon(null)}><X className="h-4 w-4 text-muted-foreground" /></button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2 mb-2">
+                    <Input value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder="Coupon code" className="flex-1 h-9 text-sm" />
+                    <Button variant="outline" size="sm" onClick={applyCoupon} disabled={couponLoading}>{couponLoading ? '...' : 'Apply'}</Button>
+                  </div>
+                )}
+              </div>
+              <div className="space-y-2">
                 <div className="flex justify-between font-body text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span>₹{totalPrice.toLocaleString()}</span>
                 </div>
+                {discount > 0 && <div className="flex justify-between font-body text-sm text-green-600"><span>Discount</span><span>-₹{discount.toLocaleString()}</span></div>}
                 <div className="flex justify-between font-body text-sm">
                   <span className="text-muted-foreground">Shipping</span>
-                  <span className="text-green-600">Free</span>
+                  <span className={shipping === 0 ? 'text-green-600' : ''}>{shipping === 0 ? 'Free' : `₹${shipping}`}</span>
                 </div>
+                {taxAmount > 0 && <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Tax ({taxRate}%)</span><span>₹{taxAmount.toLocaleString()}</span></div>}
                 <div className="flex justify-between font-body font-bold text-lg pt-2 border-t border-border">
                   <span>Total</span>
-                  <span>₹{totalPrice.toLocaleString()}</span>
+                  <span>₹{grandTotal.toLocaleString()}</span>
                 </div>
               </div>
             </div>

@@ -19,6 +19,9 @@ import ResetPassword from "./pages/ResetPassword.tsx";
 import Checkout from "./pages/Checkout.tsx";
 import Wishlist from "./pages/Wishlist.tsx";
 import Orders from "./pages/Orders.tsx";
+import FAQ from "./pages/FAQ.tsx";
+import Blog from "./pages/Blog.tsx";
+import BlogPost from "./pages/BlogPost.tsx";
 import AdminLogin from "./pages/admin/AdminLogin.tsx";
 import AdminLayout from "./pages/admin/AdminLayout.tsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
@@ -29,6 +32,18 @@ import AdminUsers from "./pages/admin/AdminUsers.tsx";
 import AdminSettings from "./pages/admin/AdminSettings.tsx";
 import AdminContacts from "./pages/admin/AdminContacts.tsx";
 import AdminMenu from "./pages/admin/AdminMenu.tsx";
+import AdminCoupons from "./pages/admin/AdminCoupons.tsx";
+import AdminShipping from "./pages/admin/AdminShipping.tsx";
+import AdminTax from "./pages/admin/AdminTax.tsx";
+import AdminBanners from "./pages/admin/AdminBanners.tsx";
+import AdminReviews from "./pages/admin/AdminReviews.tsx";
+import AdminFAQ from "./pages/admin/AdminFAQ.tsx";
+import AdminBlog from "./pages/admin/AdminBlog.tsx";
+import AdminTestimonials from "./pages/admin/AdminTestimonials.tsx";
+import AdminNewsletter from "./pages/admin/AdminNewsletter.tsx";
+import AdminReturns from "./pages/admin/AdminReturns.tsx";
+import AdminAuditLog from "./pages/admin/AdminAuditLog.tsx";
+import AdminPageSEO from "./pages/admin/AdminPageSEO.tsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 import Terms from "./pages/Terms.tsx";
 import ShippingPolicy from "./pages/ShippingPolicy.tsx";
@@ -60,6 +75,9 @@ const App = () => (
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/orders" element={<Orders />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<Terms />} />
@@ -74,7 +92,18 @@ const App = () => (
                 <Route path="menu" element={<AdminMenu />} />
                 <Route path="users" element={<AdminUsers />} />
                 <Route path="settings" element={<AdminSettings />} />
-                <Route path="settings" element={<AdminSettings />} />
+                <Route path="coupons" element={<AdminCoupons />} />
+                <Route path="shipping" element={<AdminShipping />} />
+                <Route path="tax" element={<AdminTax />} />
+                <Route path="banners" element={<AdminBanners />} />
+                <Route path="reviews" element={<AdminReviews />} />
+                <Route path="faq" element={<AdminFAQ />} />
+                <Route path="blog" element={<AdminBlog />} />
+                <Route path="testimonials" element={<AdminTestimonials />} />
+                <Route path="newsletter" element={<AdminNewsletter />} />
+                <Route path="returns" element={<AdminReturns />} />
+                <Route path="audit-log" element={<AdminAuditLog />} />
+                <Route path="page-seo" element={<AdminPageSEO />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

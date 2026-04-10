@@ -6,12 +6,14 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PageMeta } from '@/components/PageMeta';
+import { ProductReviews } from '@/components/ProductReviews';
+import { RecentlyViewed, addToRecentlyViewed } from '@/components/RecentlyViewed';
 import { useCart } from '@/context/CartContext';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
   ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, MessageCircle, X,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const colorNameMap: Record<string, string> = {
   '#c41e3a': 'RED', '#d4af37': 'GOLD', '#8b0000': 'MAROON',
@@ -60,6 +62,16 @@ const ProductDetail = () => {
     },
     enabled: !!product?.id,
   });
+
+  // Track recently viewed — must be before any early returns
+  useEffect(() => {
+    if (product) {
+      addToRecentlyViewed({
+        id: product.id, name: product.name, sku: product.sku,
+        image: product.images?.[0] || '/placeholder.svg', price: Number(product.price),
+      });
+    }
+  }, [product]);
 
   if (isLoading) {
     return (
@@ -362,6 +374,10 @@ const ProductDetail = () => {
               ))}
             </div>
           </div>
+        </div>
+        <div className="container">
+          <ProductReviews productId={product.id} />
+          <RecentlyViewed currentSku={product.sku} />
         </div>
       </main>
 
