@@ -99,6 +99,18 @@
   }
 }
 
+/* Safe area bottom padding for mobile bottom nav */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Add bottom spacing on mobile so content isn't hidden behind bottom nav */
+@media (max-width: 767px) {
+  footer {
+    padding-bottom: 3.5rem;
+  }
+}
+
 @layer utilities {
   .font-display {
     font-family: 'Cormorant Garamond', serif;
