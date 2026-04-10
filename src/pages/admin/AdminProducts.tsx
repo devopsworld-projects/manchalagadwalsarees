@@ -365,6 +365,7 @@ const AdminProducts = () => {
                   </div>
                 )}
               </div>
+              <ProductVariantsEditor variants={variants} onChange={setVariants} />
               <div className="flex gap-6">
                 <label className="flex items-center gap-2 font-body text-sm">
                   <input type="checkbox" checked={form.is_new} onChange={e => setForm(f => ({ ...f, is_new: e.target.checked }))} /> New Arrival
