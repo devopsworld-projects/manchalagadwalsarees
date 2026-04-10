@@ -26,6 +26,9 @@ import AdminCategories from "./pages/admin/AdminCategories.tsx";
 import AdminOrders from "./pages/admin/AdminOrders.tsx";
 import AdminUsers from "./pages/admin/AdminUsers.tsx";
 import AdminSettings from "./pages/admin/AdminSettings.tsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
+import Terms from "./pages/Terms.tsx";
+import ShippingPolicy from "./pages/ShippingPolicy.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -53,6 +56,9 @@ const App = () => (
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/shipping-policy" element={<ShippingPolicy />} />
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
                 <Route path="products" element={<AdminProducts />} />
