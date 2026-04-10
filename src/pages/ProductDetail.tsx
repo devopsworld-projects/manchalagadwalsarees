@@ -103,6 +103,16 @@ const ProductDetail = () => {
     );
   }
 
+  // Track recently viewed
+  useEffect(() => {
+    if (product) {
+      addToRecentlyViewed({
+        id: product.id, name: product.name, sku: product.sku,
+        image: product.images?.[0] || '/placeholder.svg', price: Number(product.price),
+      });
+    }
+  }, [product]);
+
   const images = product.images && product.images.length > 0 ? product.images : ['/placeholder.svg'];
   const colors = product.colors || [];
   const hasVariants = variants && variants.length > 0;
