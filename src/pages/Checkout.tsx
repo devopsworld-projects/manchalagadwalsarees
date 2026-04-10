@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { ShoppingBag, ArrowLeft, CheckCircle } from 'lucide-react';
+import { RazorpayPayment } from '@/components/RazorpayPayment';
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function Checkout() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState<string | null>(null);
+  const [showPayment, setShowPayment] = useState(false);
 
   const [form, setForm] = useState({
     name: '',
@@ -35,13 +37,16 @@ export default function Checkout() {
 
   const fullAddress = `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`;
 
-  const handlePlaceOrder = async (e: React.FormEvent) => {
+  const handleProceedToPay = (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
+    setShowPayment(true);
+  };
 
+  const handlePaymentSuccess = async (paymentId: string) => {
+    setShowPayment(false);
     setLoading(true);
     try {
-      // Create order
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
@@ -49,16 +54,16 @@ export default function Checkout() {
           customer_email: form.email,
           customer_phone: form.phone || null,
           shipping_address: fullAddress,
-          notes: form.notes || null,
+          notes: form.notes ? `${form.notes} | Payment: ${paymentId}` : `Payment: ${paymentId}`,
           total: totalPrice,
           user_id: user?.id || null,
+          status: 'confirmed',
         })
         .select('id')
         .single();
 
       if (orderError) throw orderError;
 
-      // Create order items
       const orderItems = items.map(item => ({
         order_id: order.id,
         product_id: item.product.id,
@@ -75,7 +80,7 @@ export default function Checkout() {
 
       clearCart();
       setOrderPlaced(order.id);
-      toast.success('Order placed successfully!');
+      toast.success('Payment successful! Order placed.');
     } catch (err: any) {
       toast.error(err.message || 'Failed to place order');
     } finally {
@@ -143,7 +148,7 @@ export default function Checkout() {
 
         <div className="grid lg:grid-cols-5 gap-8">
           {/* Shipping form */}
-          <form onSubmit={handlePlaceOrder} className="lg:col-span-3 space-y-5">
+          <form onSubmit={handleProceedToPay} className="lg:col-span-3 space-y-5">
             <h2 className="font-display text-lg font-semibold">Shipping Details</h2>
 
             <div className="grid sm:grid-cols-2 gap-4">
@@ -188,13 +193,24 @@ export default function Checkout() {
             </div>
 
             <Button type="submit" disabled={loading} className="w-full h-12 font-body tracking-wider uppercase text-xs">
-              {loading ? 'Placing Order...' : `Place Order — ₹${totalPrice.toLocaleString()}`}
+              {loading ? 'Placing Order...' : `Pay ₹${totalPrice.toLocaleString()}`}
             </Button>
 
             <p className="text-xs text-muted-foreground text-center font-body">
-              Payment will be collected on delivery (COD)
+              Powered by Razorpay (Sandbox Mode)
             </p>
           </form>
+
+          {showPayment && (
+            <RazorpayPayment
+              amount={totalPrice}
+              customerName={form.name}
+              customerEmail={form.email}
+              customerPhone={form.phone}
+              onSuccess={handlePaymentSuccess}
+              onCancel={() => setShowPayment(false)}
+            />
+          )}
 
           {/* Order summary */}
           <div className="lg:col-span-2">
