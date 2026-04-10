@@ -1,7 +1,8 @@
 import { Heart, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
 import { useCart, CartProduct } from '@/context/CartContext';
+import { useWishlist } from '@/hooks/useWishlist';
+import { toast } from 'sonner';
 
 export interface ProductData {
   id: string;
@@ -24,9 +25,20 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const [liked, setLiked] = useState(false);
   const { addToCart } = useCart();
+  const { isWishlisted, toggleWishlist, isLoggedIn } = useWishlist();
   const image = product.images?.[0] || '/placeholder.svg';
+  const liked = isWishlisted(product.id);
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isLoggedIn) {
+      toast.info('Please sign in to save items to your wishlist');
+      return;
+    }
+    toggleWishlist(product.id);
+  };
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -62,17 +74,17 @@ export function ProductCard({ product }: ProductCardProps) {
             </span>
           )}
           <button
-            onClick={(e) => { e.preventDefault(); setLiked(!liked); }}
+            onClick={handleToggleWishlist}
             className="absolute top-3 right-3 p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-background transition-colors"
             aria-label="Add to wishlist"
           >
             <Heart className={`h-4 w-4 ${liked ? 'fill-primary text-primary' : 'text-foreground/60'}`} />
           </button>
 
-          {/* Quick Add to Cart */}
+          {/* Quick Add — visible on hover (desktop) */}
           <button
             onClick={handleAddToCart}
-            className="absolute bottom-0 left-0 right-0 bg-primary text-primary-foreground text-xs font-body tracking-wider uppercase py-3 flex items-center justify-center gap-2 translate-y-full group-hover:translate-y-0 transition-transform duration-300 hover:bg-primary/90"
+            className="absolute bottom-0 left-0 right-0 bg-primary text-primary-foreground text-xs font-body tracking-wider uppercase py-3 items-center justify-center gap-2 translate-y-full group-hover:translate-y-0 transition-transform duration-300 hover:bg-primary/90 hidden md:flex"
             aria-label="Quick add to cart"
           >
             <ShoppingBag className="h-3.5 w-3.5" />
@@ -80,7 +92,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </button>
         </div>
         <div className="mt-3 space-y-1">
-          <h3 className="font-display text-base md:text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+          <h3 className="font-display text-sm md:text-base font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
             {product.name}
           </h3>
           {product.colors && product.colors.length > 0 && (
@@ -97,13 +109,23 @@ export function ProductCard({ product }: ProductCardProps) {
               )}
             </div>
           )}
-          <div className="flex items-center gap-2">
-            <span className="font-body font-bold text-foreground">₹{product.price.toLocaleString()}</span>
-            {product.original_price && (
-              <span className="font-body text-sm text-muted-foreground line-through">
-                ₹{product.original_price.toLocaleString()}
-              </span>
-            )}
+          <div className="flex items-center justify-between gap-1">
+            <div className="flex items-center gap-2">
+              <span className="font-body font-bold text-foreground text-sm">₹{product.price.toLocaleString()}</span>
+              {product.original_price && (
+                <span className="font-body text-xs text-muted-foreground line-through">
+                  ₹{product.original_price.toLocaleString()}
+                </span>
+              )}
+            </div>
+            {/* Mobile add-to-cart button */}
+            <button
+              onClick={handleAddToCart}
+              className="md:hidden p-2 bg-primary text-primary-foreground rounded-full shrink-0"
+              aria-label="Add to cart"
+            >
+              <ShoppingBag className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
       </Link>
