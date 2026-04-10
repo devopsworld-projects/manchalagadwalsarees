@@ -103,10 +103,32 @@ const ProductDetail = () => {
     description: product.description || '',
   };
 
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: product.description || '',
+    sku: product.sku,
+    image: images[0],
+    offers: {
+      '@type': 'Offer',
+      price: product.price,
+      priceCurrency: 'INR',
+      availability: isInStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      url: `https://kaviwomensworld.lovable.app/product/${product.sku}`,
+    },
+  };
+
   return (
     <div className="min-h-screen">
-      <AnnouncementBar />
-      <Navbar />
+      <PageMeta
+        title={product.name}
+        description={product.description || `Buy ${product.name} at ₹${product.price.toLocaleString()} — Free shipping across India.`}
+        canonicalPath={`/product/${product.sku}`}
+        ogImage={images[0]}
+        ogType="product"
+        jsonLd={productJsonLd}
+      />
       <main className="container py-6 md:py-10">
         <Link
           to="/collections"
