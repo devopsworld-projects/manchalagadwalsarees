@@ -1,18 +1,21 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Pencil, Trash2, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Upload, FileSpreadsheet, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Tables, TablesInsert } from '@/integrations/supabase/types';
+import * as XLSX from 'xlsx';
 
 type Product = Tables<'products'>;
-type Category = Tables<'categories'>;
 
 const AdminProducts = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [showBulkImport, setShowBulkImport] = useState(false);
+  const [bulkImporting, setBulkImporting] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
   const [form, setForm] = useState({
     sku: '', name: '', description: '', price: '', original_price: '',
     category_id: '', colors: '', is_new: false, is_best_seller: false,
@@ -92,41 +95,163 @@ const AdminProducts = () => {
       original_price: form.original_price ? Number(form.original_price) : null,
       category_id: form.category_id || null,
       colors: form.colors ? form.colors.split(',').map(c => c.trim()) : [],
-      images: form.images ? form.images.split(',').map(i => i.trim()) : [],
+      images: form.images ? form.images.split(',').map(i => i.trim()).filter(Boolean) : [],
       is_new: form.is_new, is_best_seller: form.is_best_seller,
       is_active: form.is_active, stock: Number(form.stock),
     });
   };
 
-  // Image upload handler
+  // Multi-image upload handler
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploadingImages(true);
+    const current = form.images ? form.images.split(',').map(i => i.trim()).filter(Boolean) : [];
+    let uploaded = 0;
+    let failed = 0;
+
+    for (const file of Array.from(files)) {
+      const ext = file.name.split('.').pop();
+      const path = `products/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error } = await supabase.storage.from('product-images').upload(path, file);
+      if (error) {
+        failed++;
+        continue;
+      }
+      const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(path);
+      current.push(urlData.publicUrl);
+      uploaded++;
+    }
+
+    setForm(f => ({ ...f, images: current.join(', ') }));
+    setUploadingImages(false);
+    toast({
+      title: `${uploaded} image${uploaded !== 1 ? 's' : ''} uploaded${failed > 0 ? `, ${failed} failed` : ''}`,
+      variant: failed > 0 ? 'destructive' : 'default',
+    });
+    e.target.value = '';
+  };
+
+  // Remove a single image
+  const removeImage = (index: number) => {
+    const imgs = form.images.split(',').map(i => i.trim()).filter(Boolean);
+    imgs.splice(index, 1);
+    setForm(f => ({ ...f, images: imgs.join(', ') }));
+  };
+
+  // Bulk Excel import
+  const handleBulkImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const ext = file.name.split('.').pop();
-    const path = `products/${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from('product-images').upload(path, file);
-    if (error) {
-      toast({ title: 'Upload failed', description: error.message, variant: 'destructive' });
-      return;
+    setBulkImporting(true);
+
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows: any[] = XLSX.utils.sheet_to_json(sheet);
+
+      if (rows.length === 0) {
+        toast({ title: 'Empty spreadsheet', description: 'No rows found.', variant: 'destructive' });
+        setBulkImporting(false);
+        return;
+      }
+
+      // Build a category name→id map
+      const catMap: Record<string, string> = {};
+      categories?.forEach(c => { catMap[c.name.toLowerCase()] = c.id; });
+
+      const products: TablesInsert<'products'>[] = rows.map((row: any) => ({
+        sku: String(row['SKU'] || row['sku'] || ''),
+        name: String(row['Name'] || row['name'] || row['Product Name'] || ''),
+        description: row['Description'] || row['description'] || null,
+        price: Number(row['Price'] || row['price'] || 0),
+        original_price: row['Original Price'] || row['original_price'] ? Number(row['Original Price'] || row['original_price']) : null,
+        stock: Number(row['Stock'] || row['stock'] || 0),
+        category_id: catMap[(String(row['Category'] || row['category'] || '')).toLowerCase()] || null,
+        colors: row['Colors'] || row['colors'] ? String(row['Colors'] || row['colors']).split(',').map(c => c.trim()) : [],
+        images: row['Images'] || row['images'] ? String(row['Images'] || row['images']).split(',').map(i => i.trim()) : [],
+        is_new: String(row['New'] || row['is_new'] || '').toLowerCase() === 'true' || row['New'] === true,
+        is_best_seller: String(row['Best Seller'] || row['is_best_seller'] || '').toLowerCase() === 'true' || row['Best Seller'] === true,
+        is_active: row['Active'] === false || String(row['Active'] || row['is_active'] || '').toLowerCase() === 'false' ? false : true,
+      }));
+
+      const valid = products.filter(p => p.sku && p.name && p.price > 0);
+      if (valid.length === 0) {
+        toast({ title: 'No valid products', description: 'Ensure columns: SKU, Name, Price are filled.', variant: 'destructive' });
+        setBulkImporting(false);
+        return;
+      }
+
+      const { error } = await supabase.from('products').insert(valid);
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      toast({ title: `${valid.length} products imported!`, description: valid.length < rows.length ? `${rows.length - valid.length} rows skipped (missing SKU/Name/Price).` : undefined });
+      setShowBulkImport(false);
+    } catch (err: any) {
+      toast({ title: 'Import failed', description: err.message, variant: 'destructive' });
+    } finally {
+      setBulkImporting(false);
+      e.target.value = '';
     }
-    const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(path);
-    const current = form.images ? form.images.split(',').map(i => i.trim()).filter(Boolean) : [];
-    current.push(urlData.publicUrl);
-    setForm(f => ({ ...f, images: current.join(', ') }));
-    toast({ title: 'Image uploaded' });
+  };
+
+  const downloadTemplate = () => {
+    const ws = XLSX.utils.aoa_to_sheet([
+      ['SKU', 'Name', 'Description', 'Price', 'Original Price', 'Stock', 'Category', 'Colors', 'Images', 'New', 'Best Seller', 'Active'],
+      ['KWW-001', 'Silk Saree', 'Beautiful handwoven silk saree', 2999, 3999, 10, 'Sarees', '#c41e3a, #d4af37', '', 'true', 'false', 'true'],
+    ]);
+    ws['!cols'] = [{ wch: 12 }, { wch: 20 }, { wch: 35 }, { wch: 10 }, { wch: 14 }, { wch: 8 }, { wch: 15 }, { wch: 20 }, { wch: 30 }, { wch: 8 }, { wch: 12 }, { wch: 8 }];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Products');
+    XLSX.writeFile(wb, 'product_import_template.xlsx');
   };
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <h2 className="font-display text-2xl font-bold">Products</h2>
-        <button
-          onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-sm font-body tracking-wider hover:bg-burgundy-light transition-colors"
-        >
-          <Plus className="h-4 w-4" /> ADD PRODUCT
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowBulkImport(true)}
+            className="flex items-center gap-2 border border-border px-4 py-2 text-sm font-body tracking-wider hover:bg-muted transition-colors"
+          >
+            <FileSpreadsheet className="h-4 w-4" /> BULK IMPORT
+          </button>
+          <button
+            onClick={() => { resetForm(); setShowForm(true); }}
+            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-sm font-body tracking-wider hover:bg-burgundy-light transition-colors"
+          >
+            <Plus className="h-4 w-4" /> ADD PRODUCT
+          </button>
+        </div>
       </div>
+
+      {/* Bulk import modal */}
+      {showBulkImport && (
+        <div className="fixed inset-0 bg-foreground/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-background rounded-lg w-full max-w-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-display text-xl font-semibold">Bulk Import Products</h3>
+              <button onClick={() => setShowBulkImport(false)}><X className="h-5 w-5" /></button>
+            </div>
+            <p className="font-body text-sm text-muted-foreground mb-4">
+              Upload an Excel (.xlsx) file with product data. Required columns: <strong>SKU</strong>, <strong>Name</strong>, <strong>Price</strong>.
+              Optional: Description, Original Price, Stock, Category, Colors, Images, New, Best Seller, Active.
+            </p>
+            <div className="space-y-4">
+              <button onClick={downloadTemplate} className="w-full flex items-center justify-center gap-2 border border-dashed border-border py-3 text-sm font-body text-muted-foreground hover:border-primary hover:text-primary transition-colors">
+                <FileSpreadsheet className="h-4 w-4" /> Download Template
+              </button>
+              <label className={`w-full flex items-center justify-center gap-2 border border-primary py-3 text-sm font-body cursor-pointer transition-colors ${bulkImporting ? 'opacity-50 cursor-not-allowed bg-muted' : 'bg-primary text-primary-foreground hover:bg-burgundy-light'}`}>
+                {bulkImporting ? <><Loader2 className="h-4 w-4 animate-spin" /> Importing...</> : <><Upload className="h-4 w-4" /> Upload Excel File</>}
+                <input type="file" accept=".xlsx,.xls,.csv" onChange={handleBulkImport} disabled={bulkImporting} className="hidden" />
+              </label>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Form modal */}
       {showForm && (
@@ -188,11 +313,20 @@ const AdminProducts = () => {
               </div>
               <div>
                 <label className="font-body text-sm font-semibold block mb-1">Images</label>
-                <input type="file" accept="image/*" onChange={handleImageUpload} className="text-sm font-body mb-2" />
+                <label className={`flex items-center justify-center gap-2 border border-dashed border-border py-3 text-sm font-body cursor-pointer hover:border-primary hover:text-primary transition-colors ${uploadingImages ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                  {uploadingImages ? <><Loader2 className="h-4 w-4 animate-spin" /> Uploading...</> : <><Upload className="h-4 w-4" /> Select images (multiple)</>}
+                  <input type="file" accept="image/*" multiple onChange={handleImageUpload} disabled={uploadingImages} className="hidden" />
+                </label>
                 {form.images && (
-                  <div className="flex gap-2 flex-wrap mt-2">
+                  <div className="flex gap-2 flex-wrap mt-3">
                     {form.images.split(',').map((url, i) => url.trim() && (
-                      <img key={i} src={url.trim()} alt="" className="w-16 h-16 object-cover rounded border border-border" />
+                      <div key={i} className="relative group">
+                        <img src={url.trim()} alt="" className="w-16 h-16 object-cover rounded border border-border" />
+                        <button type="button" onClick={() => removeImage(i)}
+                          className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground rounded-full h-5 w-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
                     ))}
                   </div>
                 )}
