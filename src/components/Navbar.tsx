@@ -174,7 +174,7 @@ export function Navbar() {
 
       {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src={logo} alt="Kavi Women's World" className="h-10 sm:h-14 md:h-18 w-auto" />
+            <img src={logo} alt="Kavi Women's World" className="h-14 sm:h-16 md:h-24 w-auto" />
           </Link>
 
           {/* Desktop nav with dropdowns */}
