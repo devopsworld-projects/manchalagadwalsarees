@@ -40,9 +40,22 @@ export default function Checkout() {
 
   const fullAddress = `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`;
 
+  const validateForm = (): string | null => {
+    if (form.name.trim().length < 2) return 'Please enter a valid name';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return 'Please enter a valid email';
+    if (form.phone && !/^[+]?\d[\d\s-]{7,14}$/.test(form.phone.trim())) return 'Please enter a valid phone number';
+    if (form.address.trim().length < 5) return 'Please enter a complete address';
+    if (form.city.trim().length < 2) return 'Please enter a valid city';
+    if (form.state.trim().length < 2) return 'Please enter a valid state';
+    if (!/^\d{6}$/.test(form.pincode)) return 'Please enter a valid 6-digit PIN code';
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
+    const error = validateForm();
+    if (error) { toast.error(error); return; }
     if (paymentMethod === 'razorpay') {
       setShowPayment(true);
     } else {

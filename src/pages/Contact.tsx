@@ -2,18 +2,40 @@ import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
-import { Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
+import { Phone, Mail, MapPin, MessageCircle, Loader2 } from 'lucide-react';
 import { useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 
 const Contact = () => {
-  const { toast } = useToast();
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: 'Message sent!', description: "We'll get back to you soon." });
-    setForm({ name: '', email: '', message: '' });
+    if (form.name.trim().length < 2) { toast.error('Please enter a valid name'); return; }
+    if (form.message.trim().length < 10) { toast.error('Message must be at least 10 characters'); return; }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.from('contact_submissions').insert({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim() || null,
+        message: form.message.trim(),
+      });
+      if (error) throw error;
+      setSubmitted(true);
+      toast.success("Message sent! We'll get back to you soon.");
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to send message');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -60,41 +82,67 @@ const Contact = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="font-body text-sm font-semibold block mb-1">Name</label>
-              <input
-                type="text"
-                required
-                value={form.name}
-                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                className="w-full border border-border bg-background px-4 py-2.5 font-body text-sm focus:outline-none focus:ring-1 focus:ring-primary rounded-sm"
-              />
+          {submitted ? (
+            <div className="flex flex-col items-center justify-center text-center space-y-4 py-12">
+              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <Mail className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="font-display text-xl font-semibold">Thank You!</h3>
+              <p className="font-body text-muted-foreground">Your message has been received. We'll get back to you within 24 hours.</p>
+              <Button variant="outline" onClick={() => { setSubmitted(false); setForm({ name: '', email: '', phone: '', message: '' }); }} className="font-body text-xs tracking-wider uppercase">
+                Send Another Message
+              </Button>
             </div>
-            <div>
-              <label className="font-body text-sm font-semibold block mb-1">Email</label>
-              <input
-                type="email"
-                required
-                value={form.email}
-                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                className="w-full border border-border bg-background px-4 py-2.5 font-body text-sm focus:outline-none focus:ring-1 focus:ring-primary rounded-sm"
-              />
-            </div>
-            <div>
-              <label className="font-body text-sm font-semibold block mb-1">Message</label>
-              <textarea
-                required
-                rows={5}
-                value={form.message}
-                onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
-                className="w-full border border-border bg-background px-4 py-2.5 font-body text-sm focus:outline-none focus:ring-1 focus:ring-primary rounded-sm resize-none"
-              />
-            </div>
-            <button type="submit" className="w-full bg-primary text-primary-foreground py-3 text-sm tracking-[0.15em] font-body hover:bg-burgundy-light transition-colors">
-              SEND MESSAGE
-            </button>
-          </form>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="font-body text-sm font-semibold block mb-1">Name *</label>
+                <Input
+                  required
+                  maxLength={100}
+                  value={form.name}
+                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                  className="font-body"
+                />
+              </div>
+              <div>
+                <label className="font-body text-sm font-semibold block mb-1">Email *</label>
+                <Input
+                  type="email"
+                  required
+                  maxLength={255}
+                  value={form.email}
+                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                  className="font-body"
+                />
+              </div>
+              <div>
+                <label className="font-body text-sm font-semibold block mb-1">Phone</label>
+                <Input
+                  type="tel"
+                  value={form.phone}
+                  onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                  placeholder="+91 XXXXX XXXXX"
+                  className="font-body"
+                />
+              </div>
+              <div>
+                <label className="font-body text-sm font-semibold block mb-1">Message *</label>
+                <Textarea
+                  required
+                  rows={5}
+                  maxLength={1000}
+                  value={form.message}
+                  onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
+                  className="font-body resize-none"
+                />
+                <p className="text-xs text-muted-foreground font-body mt-1 text-right">{form.message.length}/1000</p>
+              </div>
+              <Button type="submit" disabled={loading} className="w-full h-12 font-body tracking-[0.15em] uppercase text-xs">
+                {loading ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Sending...</> : 'Send Message'}
+              </Button>
+            </form>
+          )}
         </div>
       </main>
       <Footer />
