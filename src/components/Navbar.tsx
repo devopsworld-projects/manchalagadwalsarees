@@ -33,7 +33,7 @@ export function Navbar() {
 
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="Kavi Women's World" className="h-12 md:h-14 w-auto" />
+          <img src={logo} alt="Kavi Women's World" className="h-16 md:h-20 w-auto" />
         </Link>
 
         {/* Desktop nav */}
