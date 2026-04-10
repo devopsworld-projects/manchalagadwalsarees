@@ -4,6 +4,7 @@ import { Search, ShoppingBag, Menu, X, ChevronDown, Phone, Heart, User } from 'l
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { SearchOverlay } from '@/components/SearchOverlay';
+import { useStoreSettings } from '@/hooks/useStoreSettings';
 import logo from '@/assets/logo.png';
 
 const silkItems = [
