@@ -5,10 +5,27 @@ import { NewCollections } from '@/components/NewCollections';
 import { BestSellers } from '@/components/BestSellers';
 import { CategoriesSection } from '@/components/CategoriesSection';
 import { Footer } from '@/components/Footer';
+import { PageMeta } from '@/components/PageMeta';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Store',
+  name: "Kavi Women's World",
+  description: 'Premium handcrafted sarees — Kanjivaram, Banarasi, Silk & Cotton collections with free shipping across India.',
+  url: 'https://kaviwomensworld.lovable.app',
+  telephone: '+919494644998',
+  priceRange: '₹₹',
+};
 
 const Index = () => {
   return (
     <div className="min-h-screen">
+      <PageMeta
+        title="Kavi Women's World"
+        description="Discover the finest collection of handcrafted sarees. Traditional Kanjivaram, Banarasi & Premium silk sarees with free shipping across India."
+        canonicalPath="/"
+        jsonLd={jsonLd}
+      />
       <AnnouncementBar />
       <Navbar />
       <main>
