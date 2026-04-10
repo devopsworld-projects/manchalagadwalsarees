@@ -26,7 +26,7 @@ export function Footer() {
           className="w-full flex items-center justify-between px-6 py-4 text-primary-foreground/70"
         >
           <div className="flex items-center gap-3">
-            <img src={logo} alt="Kavi Women's World" className="h-8 w-auto brightness-200" loading="lazy" width={512} height={512} />
+            <img src={logoSrc} alt="Kavi Women's World" className="h-8 w-auto brightness-200" loading="lazy" width={512} height={512} />
             <span className="font-body text-xs text-primary-foreground/50">© {new Date().getFullYear()}</span>
           </div>
           <ChevronUp className={`h-5 w-5 transition-transform duration-300 ${expanded ? '' : 'rotate-180'}`} />
@@ -37,7 +37,7 @@ export function Footer() {
             {/* Brand */}
             <div>
               <p className="font-body text-sm leading-relaxed text-primary-foreground/60">
-                Discover the finest collection of handcrafted sarees that blend traditional artistry with contemporary grace.
+                {description}
               </p>
               <div className="flex gap-3 mt-3">
                 <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
