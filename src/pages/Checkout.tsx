@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
@@ -12,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ShoppingBag, ArrowLeft, CreditCard, Truck } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, CreditCard, Truck, Tag, X } from 'lucide-react';
 import { RazorpayPayment } from '@/components/RazorpayPayment';
 
 export default function Checkout() {
@@ -22,6 +23,59 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay');
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+
+  // Fetch shipping & tax
+  const { data: shippingRates = [] } = useQuery({
+    queryKey: ['shipping-rates'],
+    queryFn: async () => {
+      const { data } = await supabase.from('shipping_rates').select('*').eq('is_active', true);
+      return data || [];
+    },
+  });
+  const { data: taxRules = [] } = useQuery({
+    queryKey: ['tax-rules'],
+    queryFn: async () => {
+      const { data } = await supabase.from('tax_rules').select('*').eq('is_active', true);
+      return data || [];
+    },
+  });
+
+  // Calculate shipping
+  const shipping = (() => {
+    const activeRate = shippingRates[0] as any;
+    if (!activeRate) return 0;
+    if (activeRate.type === 'free_above' && totalPrice >= (activeRate.free_above_amount || 0)) return 0;
+    return Number(activeRate.rate || 0);
+  })();
+
+  // Calculate tax
+  const taxRate = taxRules.length > 0 ? Number((taxRules[0] as any).rate || 0) : 0;
+  const taxAmount = Math.round(totalPrice * taxRate / 100);
+
+  // Calculate discount
+  const discount = appliedCoupon
+    ? appliedCoupon.discount_type === 'percentage'
+      ? Math.round(totalPrice * appliedCoupon.discount_value / 100)
+      : Math.min(appliedCoupon.discount_value, totalPrice)
+    : 0;
+
+  const grandTotal = totalPrice + shipping + taxAmount - discount;
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    const { data, error } = await supabase.from('coupons').select('*').eq('code', couponCode.toUpperCase().trim()).eq('is_active', true).maybeSingle();
+    setCouponLoading(false);
+    if (error || !data) { toast.error('Invalid coupon code'); return; }
+    if (data.expires_at && new Date(data.expires_at) < new Date()) { toast.error('Coupon has expired'); return; }
+    if (data.max_uses && data.usage_count >= data.max_uses) { toast.error('Coupon usage limit reached'); return; }
+    if (totalPrice < (data.min_order_amount || 0)) { toast.error(`Minimum order ₹${data.min_order_amount}`); return; }
+    setAppliedCoupon(data);
+    toast.success(`Coupon applied! ${data.discount_type === 'percentage' ? `${data.discount_value}% off` : `₹${data.discount_value} off`}`);
+  };
 
   // Redirect to collections if cart is empty
   useEffect(() => {
