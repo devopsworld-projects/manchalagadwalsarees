@@ -127,6 +127,7 @@ export function Navbar() {
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
+  const { user } = useAuth();
   const location = useLocation();
 
   return (
