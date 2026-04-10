@@ -197,10 +197,16 @@ export function Navbar() {
           </nav>
 
           {/* Right actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <button className="p-2 hover:text-primary transition-colors" aria-label="Search" onClick={() => setSearchOpen(true)}>
               <Search className="h-5 w-5" />
             </button>
+            <Link to="/wishlist" className="p-2 hover:text-primary transition-colors" aria-label="Wishlist">
+              <Heart className="h-5 w-5" />
+            </Link>
+            <Link to={user ? '/wishlist' : '/login'} className="p-2 hover:text-primary transition-colors hidden md:block" aria-label="Account">
+              <User className="h-5 w-5" />
+            </Link>
             <button
               className="p-2 hover:text-primary transition-colors relative"
               onClick={() => setIsCartOpen(true)}
