@@ -6,6 +6,16 @@ import logo from '@/assets/logo.png';
 
 export function Footer() {
   const [expanded, setExpanded] = useState(false);
+  const { data: settings } = useStoreSettings();
+
+  const logoSrc = settings?.logo_url || logo;
+  const description = settings?.footer_description || 'Discover the finest collection of handcrafted sarees that blend traditional artistry with contemporary grace.';
+  const phone = settings?.store_phone || '+91 94946 44998';
+  const email = settings?.store_email || 'info@kaviwomensworld.com';
+  const address = settings?.store_address || 'Hyderabad, Telangana, India';
+  const igUrl = settings?.social_instagram || 'https://instagram.com';
+  const fbUrl = settings?.social_facebook || 'https://facebook.com';
+  const ytUrl = settings?.social_youtube || 'https://youtube.com';
 
   return (
     <footer className="bg-foreground text-primary-foreground/80">
