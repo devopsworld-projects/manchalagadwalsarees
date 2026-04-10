@@ -99,47 +99,7 @@ export default function Checkout() {
 
   const handlePaymentSuccess = async (paymentId: string) => {
     setShowPayment(false);
-    setLoading(true);
-    try {
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          customer_name: form.name,
-          customer_email: form.email,
-          customer_phone: form.phone || null,
-          shipping_address: fullAddress,
-          notes: form.notes ? `${form.notes} | Payment: ${paymentId}` : `Payment: ${paymentId}`,
-          total: totalPrice,
-          user_id: user?.id || null,
-          status: 'confirmed',
-        })
-        .select('id')
-        .single();
-
-      if (orderError) throw orderError;
-
-      const orderItems = items.map(item => ({
-        order_id: order.id,
-        product_id: item.product.id,
-        product_name: item.product.name,
-        price: item.product.price,
-        quantity: item.quantity,
-      }));
-
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (itemsError) throw itemsError;
-
-      clearCart();
-      setOrderPlaced(order.id);
-      toast.success('Payment successful! Order placed.');
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to place order');
-    } finally {
-      setLoading(false);
-    }
+    await placeOrder(paymentId);
   };
 
   // Order confirmation
