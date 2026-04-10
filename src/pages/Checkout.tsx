@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { ShoppingBag, ArrowLeft, CheckCircle } from 'lucide-react';
+import { RazorpayPayment } from '@/components/RazorpayPayment';
 
 export default function Checkout() {
   const navigate = useNavigate();
