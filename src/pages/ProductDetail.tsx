@@ -32,6 +32,7 @@ const getColorName = (hex: string) =>
 const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
+  const { isWishlisted, toggleWishlist, isLoggedIn } = useWishlist();
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [showZoom, setShowZoom] = useState(false);
