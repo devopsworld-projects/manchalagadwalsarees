@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, ShoppingBag, Menu, X, ChevronDown, Phone } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { SearchOverlay } from '@/components/SearchOverlay';
 import logo from '@/assets/logo.png';
 
 const silkItems = [
@@ -123,6 +124,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
   const location = useLocation();
 
@@ -194,7 +196,7 @@ export function Navbar() {
 
           {/* Right actions */}
           <div className="flex items-center gap-3">
-            <button className="p-2 hover:text-primary transition-colors" aria-label="Search">
+            <button className="p-2 hover:text-primary transition-colors" aria-label="Search" onClick={() => setSearchOpen(true)}>
               <Search className="h-5 w-5" />
             </button>
             <button
@@ -263,6 +265,7 @@ export function Navbar() {
           </div>
         </nav>
       )}
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   );
 }
