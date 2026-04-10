@@ -1,11 +1,26 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRef } from 'react';
-import { products } from '@/data/products';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { ProductCard } from './ProductCard';
 
 export function NewCollections() {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const newProducts = products.filter(p => p.isNew);
+
+  const { data: newProducts = [] } = useQuery({
+    queryKey: ['storefront-new-products'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .eq('is_new', true)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -13,6 +28,8 @@ export function NewCollections() {
       scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
     }
   };
+
+  if (newProducts.length === 0) return null;
 
   return (
     <section className="py-16 md:py-24">
