@@ -20,6 +20,7 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState<string | null>(null);
   const [showPayment, setShowPayment] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay');
 
   const [form, setForm] = useState({
     name: '',
