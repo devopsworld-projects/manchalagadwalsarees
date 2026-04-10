@@ -1,7 +1,7 @@
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import heroImage from '@/assets/hero-woman.jpg';
+import aboutHero from '@/assets/about-hero.jpg';
 
 const About = () => {
   return (
@@ -11,7 +11,7 @@ const About = () => {
       <main>
         {/* Hero */}
         <section className="relative h-[40vh] flex items-center justify-center overflow-hidden">
-          <img src={heroImage} alt="About Kavi Women's World" className="absolute inset-0 w-full h-full object-cover" />
+          <img src={aboutHero} alt="About Kavi Women's World" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-foreground/60" />
           <div className="relative text-center text-primary-foreground">
             <h1 className="font-display text-4xl md:text-5xl font-bold">Our Story</h1>
