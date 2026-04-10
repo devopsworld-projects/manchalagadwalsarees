@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ShoppingBag, ArrowLeft, CheckCircle, CreditCard, Truck } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, CreditCard, Truck } from 'lucide-react';
 import { RazorpayPayment } from '@/components/RazorpayPayment';
 
 export default function Checkout() {
@@ -20,7 +20,6 @@ export default function Checkout() {
   const { items, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [orderPlaced, setOrderPlaced] = useState<string | null>(null);
   const [showPayment, setShowPayment] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay');
 
@@ -101,7 +100,8 @@ export default function Checkout() {
       if (itemsError) throw itemsError;
 
       clearCart();
-      setOrderPlaced(order.id);
+      const method = paymentRef === 'COD' ? 'cod' : 'online';
+      navigate(`/order-confirmation?id=${order.id}&method=${method}`);
       toast.success(paymentRef === 'COD' ? 'Order placed! Pay on delivery.' : 'Payment successful! Order placed.');
     } catch (err: any) {
       toast.error(err.message || 'Failed to place order');
@@ -115,30 +115,7 @@ export default function Checkout() {
     await placeOrder(paymentId);
   };
 
-  // Order confirmation
-  if (orderPlaced) {
-    return (
-      <div className="min-h-screen">
-        <AnnouncementBar />
-        <Navbar />
-        <main className="container max-w-lg py-20 text-center">
-          <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
-          <h1 className="font-display text-3xl font-bold mb-2">Order Confirmed!</h1>
-          <p className="text-muted-foreground font-body mb-1">Thank you for your order.</p>
-          <p className="text-sm text-muted-foreground font-body mb-6">
-            Order ID: <span className="font-mono text-foreground">{orderPlaced.slice(0, 8)}</span>
-          </p>
-          <p className="text-sm text-muted-foreground font-body mb-8">
-            We'll send a confirmation to <strong>{form.email}</strong> shortly.
-          </p>
-          <Button onClick={() => navigate('/collections')} className="font-body tracking-wider uppercase text-xs">
-            Continue Shopping
-          </Button>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
+  // Redirect handled by navigate in placeOrder
 
   // Empty cart
   if (items.length === 0) {
