@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useCart } from '@/context/CartContext';
@@ -22,6 +22,13 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay');
+
+  // Redirect to collections if cart is empty
+  useEffect(() => {
+    if (items.length === 0) {
+      navigate('/collections', { replace: true });
+    }
+  }, [items.length, navigate]);
 
   const [form, setForm] = useState({
     name: '',

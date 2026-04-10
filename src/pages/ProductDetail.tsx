@@ -204,6 +204,7 @@ const ProductDetail = () => {
                 src={images[currentImage]}
                 alt={product.name}
                 className="w-full h-full object-cover"
+                loading="lazy"
                 width={800}
                 height={1067}
               />
