@@ -334,8 +334,9 @@ const AdminProducts = () => {
               <button onClick={() => setShowBulkImport(false)}><X className="h-5 w-5" /></button>
             </div>
             <p className="font-body text-sm text-muted-foreground mb-4">
-              Upload an Excel (.xlsx) file with product data. Required columns: <strong>SKU</strong>, <strong>Name</strong>, <strong>Price</strong>.
+              Upload an Excel (.xlsx) file with product data. <strong>Sheet 1 (Products)</strong> — Required: SKU, Name, Price.
               Optional: Description, Original Price, Stock, Category, Colors, Images, New, Best Seller, Active.
+              <strong>Sheet 2 (Variants)</strong> — Optional. Columns: Product SKU, Variant SKU, Price, Stock, plus any custom attribute columns (e.g. Size, Fabric).
             </p>
             <div className="space-y-4">
               <button onClick={downloadTemplate} className="w-full flex items-center justify-center gap-2 border border-dashed border-border py-3 text-sm font-body text-muted-foreground hover:border-primary hover:text-primary transition-colors">
