@@ -101,6 +101,8 @@ const ProductDetail = () => {
     );
   }
 
+  const images = product.images && product.images.length > 0 ? product.images : ['/placeholder.svg'];
+  const colors = product.colors || [];
   const hasVariants = variants && variants.length > 0;
 
   // Compute attribute options from variants
