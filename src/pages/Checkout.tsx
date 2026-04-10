@@ -148,7 +148,7 @@ export default function Checkout() {
 
         <div className="grid lg:grid-cols-5 gap-8">
           {/* Shipping form */}
-          <form onSubmit={handlePlaceOrder} className="lg:col-span-3 space-y-5">
+          <form onSubmit={handleProceedToPay} className="lg:col-span-3 space-y-5">
             <h2 className="font-display text-lg font-semibold">Shipping Details</h2>
 
             <div className="grid sm:grid-cols-2 gap-4">
@@ -193,13 +193,24 @@ export default function Checkout() {
             </div>
 
             <Button type="submit" disabled={loading} className="w-full h-12 font-body tracking-wider uppercase text-xs">
-              {loading ? 'Placing Order...' : `Place Order — ₹${totalPrice.toLocaleString()}`}
+              {loading ? 'Placing Order...' : `Pay ₹${totalPrice.toLocaleString()}`}
             </Button>
 
             <p className="text-xs text-muted-foreground text-center font-body">
-              Payment will be collected on delivery (COD)
+              Powered by Razorpay (Sandbox Mode)
             </p>
           </form>
+
+          {showPayment && (
+            <RazorpayPayment
+              amount={totalPrice}
+              customerName={form.name}
+              customerEmail={form.email}
+              customerPhone={form.phone}
+              onSuccess={handlePaymentSuccess}
+              onCancel={() => setShowPayment(false)}
+            />
+          )}
 
           {/* Order summary */}
           <div className="lg:col-span-2">
