@@ -1,15 +1,32 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Pencil, Trash2, GripVertical, ChevronRight, ArrowUp, ArrowDown } from 'lucide-react';
+import { Plus, Pencil, Trash2, GripVertical, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 
 type MenuItem = {
@@ -33,12 +50,70 @@ const defaultForm = {
   menu_group: 'main',
 };
 
+function SortableRow({
+  item,
+  isChild,
+  onEdit,
+  onDelete,
+  onAddChild,
+}: {
+  item: MenuItem;
+  isChild?: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
+  onAddChild?: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center gap-2 px-4 py-3 border-b border-border ${isChild ? 'bg-muted/30 pl-10' : 'bg-background'}`}
+    >
+      <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing touch-none">
+        <GripVertical className="h-4 w-4 text-muted-foreground" />
+      </button>
+      {isChild && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+      <span className={`flex-1 ${isChild ? 'text-sm' : 'font-medium'}`}>{item.label}</span>
+      <span className="text-xs text-muted-foreground hidden sm:block w-28 truncate">{item.slug || item.url || '—'}</span>
+      <Badge variant={item.is_active ? 'default' : 'secondary'} className="text-[10px]">
+        {item.is_active ? 'Active' : 'Hidden'}
+      </Badge>
+      <div className="flex items-center gap-0.5">
+        {!isChild && onAddChild && (
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onAddChild} title="Add sub-item">
+            <Plus className="h-3.5 w-3.5" />
+          </Button>
+        )}
+        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onEdit}>
+          <Pencil className="h-3.5 w-3.5" />
+        </Button>
+        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}>
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminMenu() {
   const queryClient = useQueryClient();
+  const [activeGroup, setActiveGroup] = useState('main');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(defaultForm);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ['admin-menu-items'],
@@ -52,8 +127,14 @@ export default function AdminMenu() {
     },
   });
 
-  const topItems = items.filter(i => !i.parent_id);
-  const getChildren = (parentId: string) => items.filter(i => i.parent_id === parentId);
+  const groupItems = items.filter(i => i.menu_group === activeGroup);
+  const topItems = groupItems.filter(i => !i.parent_id);
+  const getChildren = (parentId: string) => groupItems.filter(i => i.parent_id === parentId);
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ['admin-menu-items'] });
+    queryClient.invalidateQueries({ queryKey: ['menu-items'] });
+  };
 
   const saveMutation = useMutation({
     mutationFn: async (data: typeof form & { id?: string }) => {
@@ -75,8 +156,7 @@ export default function AdminMenu() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-menu-items'] });
-      queryClient.invalidateQueries({ queryKey: ['menu-items'] });
+      invalidate();
       toast.success(editingId ? 'Menu item updated' : 'Menu item created');
       closeDialog();
     },
@@ -89,8 +169,7 @@ export default function AdminMenu() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-menu-items'] });
-      queryClient.invalidateQueries({ queryKey: ['menu-items'] });
+      invalidate();
       toast.success('Menu item deleted');
       setDeleteId(null);
     },
@@ -98,14 +177,13 @@ export default function AdminMenu() {
   });
 
   const reorderMutation = useMutation({
-    mutationFn: async ({ id, newOrder }: { id: string; newOrder: number }) => {
-      const { error } = await supabase.from('menu_items').update({ sort_order: newOrder }).eq('id', id);
-      if (error) throw error;
+    mutationFn: async (updates: { id: string; sort_order: number }[]) => {
+      for (const u of updates) {
+        const { error } = await supabase.from('menu_items').update({ sort_order: u.sort_order }).eq('id', u.id);
+        if (error) throw error;
+      }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-menu-items'] });
-      queryClient.invalidateQueries({ queryKey: ['menu-items'] });
-    },
+    onSuccess: () => invalidate(),
   });
 
   const closeDialog = () => {
@@ -136,18 +214,20 @@ export default function AdminMenu() {
       ...defaultForm,
       parent_id: parentId || '',
       sort_order: maxOrder + 1,
+      menu_group: activeGroup,
     });
     setDialogOpen(true);
   };
 
-  const moveItem = (item: MenuItem, direction: 'up' | 'down') => {
-    const siblings = item.parent_id ? getChildren(item.parent_id) : topItems;
-    const idx = siblings.findIndex(s => s.id === item.id);
-    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
-    if (swapIdx < 0 || swapIdx >= siblings.length) return;
-    const other = siblings[swapIdx];
-    reorderMutation.mutate({ id: item.id, newOrder: other.sort_order });
-    reorderMutation.mutate({ id: other.id, newOrder: item.sort_order });
+  const handleDragEnd = (event: DragEndEvent, list: MenuItem[], parentId?: string) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = list.findIndex(i => i.id === active.id);
+    const newIndex = list.findIndex(i => i.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+    const reordered = arrayMove(list, oldIndex, newIndex);
+    const updates = reordered.map((item, idx) => ({ id: item.id, sort_order: idx + 1 }));
+    reorderMutation.mutate(updates);
   };
 
   const handleSave = () => {
@@ -155,86 +235,75 @@ export default function AdminMenu() {
     saveMutation.mutate({ ...form, id: editingId || undefined });
   };
 
-  const renderRow = (item: MenuItem, isChild = false) => (
-    <TableRow key={item.id} className={isChild ? 'bg-muted/30' : ''}>
-      <TableCell>
-        <div className="flex items-center gap-2">
-          {isChild && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
-          <span className={isChild ? 'text-sm' : 'font-medium'}>{item.label}</span>
-        </div>
-      </TableCell>
-      <TableCell className="text-sm text-muted-foreground">{item.slug || '—'}</TableCell>
-      <TableCell className="text-sm text-muted-foreground">{item.url || '—'}</TableCell>
-      <TableCell>
-        <Badge variant={item.is_active ? 'default' : 'secondary'}>
-          {item.is_active ? 'Active' : 'Hidden'}
-        </Badge>
-      </TableCell>
-      <TableCell className="text-sm">{item.sort_order}</TableCell>
-      <TableCell>
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => moveItem(item, 'up')}>
-            <ArrowUp className="h-3.5 w-3.5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => moveItem(item, 'down')}>
-            <ArrowDown className="h-3.5 w-3.5" />
-          </Button>
-          {!isChild && (
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openCreate(item.id)}>
-              <Plus className="h-3.5 w-3.5" />
-            </Button>
-          )}
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(item)}>
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => setDeleteId(item.id)}>
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-      </TableCell>
-    </TableRow>
-  );
+  // Build a flat sortable list for top-level items
+  const topIds = topItems.map(i => i.id);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Menu Management</h1>
-          <p className="text-muted-foreground">Manage your website navigation menus</p>
+          <p className="text-muted-foreground">Drag to reorder. Manage main nav and footer menus.</p>
         </div>
         <Button onClick={() => openCreate()}>
-          <Plus className="h-4 w-4 mr-2" /> Add Menu Item
+          <Plus className="h-4 w-4 mr-2" /> Add Item
         </Button>
       </div>
 
-      <div className="border rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Label</TableHead>
-              <TableHead>Slug</TableHead>
-              <TableHead>URL</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Order</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+      <Tabs value={activeGroup} onValueChange={setActiveGroup}>
+        <TabsList>
+          <TabsTrigger value="main">Main Navigation</TabsTrigger>
+          <TabsTrigger value="footer">Footer Links</TabsTrigger>
+        </TabsList>
+
+        {['main', 'footer'].map(group => (
+          <TabsContent key={group} value={group}>
             {isLoading ? (
-              <TableRow><TableCell colSpan={6} className="text-center py-8">Loading...</TableCell></TableRow>
+              <div className="text-center py-12 text-muted-foreground">Loading...</div>
             ) : topItems.length === 0 ? (
-              <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No menu items yet</TableCell></TableRow>
+              <div className="text-center py-12 text-muted-foreground border rounded-lg">
+                No menu items yet. Click "Add Item" to create one.
+              </div>
             ) : (
-              topItems.map(item => (
-                <>
-                  {renderRow(item)}
-                  {getChildren(item.id).map(child => renderRow(child, true))}
-                </>
-              ))
+              <div className="border rounded-lg overflow-hidden">
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e, topItems)}>
+                  <SortableContext items={topIds} strategy={verticalListSortingStrategy}>
+                    {topItems.map(item => {
+                      const children = getChildren(item.id);
+                      const childIds = children.map(c => c.id);
+                      return (
+                        <Fragment key={item.id}>
+                          <SortableRow
+                            item={item}
+                            onEdit={() => openEdit(item)}
+                            onDelete={() => setDeleteId(item.id)}
+                            onAddChild={() => openCreate(item.id)}
+                          />
+                          {children.length > 0 && (
+                            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e, children, item.id)}>
+                              <SortableContext items={childIds} strategy={verticalListSortingStrategy}>
+                                {children.map(child => (
+                                  <SortableRow
+                                    key={child.id}
+                                    item={child}
+                                    isChild
+                                    onEdit={() => openEdit(child)}
+                                    onDelete={() => setDeleteId(child.id)}
+                                  />
+                                ))}
+                              </SortableContext>
+                            </DndContext>
+                          )}
+                        </Fragment>
+                      );
+                    })}
+                  </SortableContext>
+                </DndContext>
+              </div>
             )}
-          </TableBody>
-        </Table>
-      </div>
+          </TabsContent>
+        ))}
+      </Tabs>
 
       {/* Add/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={v => { if (!v) closeDialog(); }}>
@@ -250,19 +319,19 @@ export default function AdminMenu() {
             <div>
               <Label>Slug (for collection filter)</Label>
               <Input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} placeholder="e.g. silk-sarees" />
-              <p className="text-xs text-muted-foreground mt-1">Used in /collections?filter=slug</p>
+              <p className="text-xs text-muted-foreground mt-1">Links to /collections?filter=slug</p>
             </div>
             <div>
               <Label>Custom URL (overrides slug)</Label>
-              <Input value={form.url} onChange={e => setForm(f => ({ ...f, url: e.target.value }))} placeholder="e.g. /collections or https://..." />
+              <Input value={form.url} onChange={e => setForm(f => ({ ...f, url: e.target.value }))} placeholder="e.g. /about or https://..." />
             </div>
             <div>
               <Label>Parent Item</Label>
-              <Select value={form.parent_id} onValueChange={v => setForm(f => ({ ...f, parent_id: v === 'none' ? '' : v }))}>
+              <Select value={form.parent_id || 'none'} onValueChange={v => setForm(f => ({ ...f, parent_id: v === 'none' ? '' : v }))}>
                 <SelectTrigger><SelectValue placeholder="None (top-level)" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">None (top-level)</SelectItem>
-                  {topItems.map(ti => (
+                  {items.filter(i => !i.parent_id && i.menu_group === form.menu_group).map(ti => (
                     <SelectItem key={ti.id} value={ti.id}>{ti.label}</SelectItem>
                   ))}
                 </SelectContent>
