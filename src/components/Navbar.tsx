@@ -251,14 +251,14 @@ export function Navbar() {
             >
               <User className="h-4 w-4" /> {user ? 'MY ORDERS' : 'LOGIN'}
             </Link>
-            {topLinks.map(link => (
+            {topBarItems.map(item => (
               <Link
-                key={link.path}
-                to={link.path}
+                key={item.id}
+                to={getItemUrl(item)}
                 onClick={() => setMobileOpen(false)}
                 className="block py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px]"
               >
-                {link.label.toUpperCase()}
+                {item.label.toUpperCase()}
               </Link>
             ))}
           </div>
