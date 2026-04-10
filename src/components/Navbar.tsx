@@ -102,6 +102,7 @@ export function Navbar() {
   const location = useLocation();
   const { data: settings } = useStoreSettings();
   const { data: menuItems = [] } = useMenuItems();
+  const { data: mobileMenuItems = [] } = useMenuItems('mobile');
   const logoSrc = settings?.logo_url || logo;
 
   return (
@@ -194,7 +195,7 @@ export function Navbar() {
       {/* Mobile nav */}
       {mobileOpen && (
         <nav className="md:hidden border-b border-border bg-background px-4 py-3 space-y-0.5 max-h-[75vh] overflow-y-auto overscroll-contain">
-          {menuItems.map(item => {
+          {[...menuItems, ...mobileMenuItems].map(item => {
             const children = item.children || [];
             const hasChildren = children.length > 0;
 
