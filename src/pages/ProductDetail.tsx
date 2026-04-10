@@ -293,21 +293,40 @@ const ProductDetail = () => {
               </div>
             )}
 
-            <div>
-              <h3 className="font-body text-sm font-semibold mb-2">Size <span className="text-primary">*</span></h3>
-              <div className="inline-block border border-primary rounded px-5 py-2 text-sm font-body font-medium text-foreground">Free Size</div>
-            </div>
+            {/* Variant attribute selectors */}
+            {hasVariants && variantAttrKeys.map(key => (
+              <div key={key}>
+                <h3 className="font-body text-sm font-semibold mb-2">{key} <span className="text-primary">*</span></h3>
+                <div className="flex flex-wrap gap-2">
+                  {attrOptions[key]?.map(val => (
+                    <button key={val} onClick={() => setSelectedAttributes(prev => ({ ...prev, [key]: val }))}
+                      className={`px-4 py-1.5 rounded text-xs font-body font-medium border transition-all ${selectedAttributes[key] === val ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:border-foreground/40'}`}>
+                      {val}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {/* Free Size fallback (only when no variants) */}
+            {!hasVariants && (
+              <div>
+                <h3 className="font-body text-sm font-semibold mb-2">Size <span className="text-primary">*</span></h3>
+                <div className="inline-block border border-primary rounded px-5 py-2 text-sm font-body font-medium text-foreground">Free Size</div>
+              </div>
+            )}
 
             <div className="space-y-3 pt-2">
               <button
                 onClick={() => {
                   if (!isInStock) return;
                   if (colors.length > 0 && selectedColor === null) return;
+                  if (hasVariants && !allAttributesSelected) return;
                   addToCart(cartProduct);
                 }}
-                disabled={!isInStock || (colors.length > 0 && selectedColor === null)}
+                disabled={!isInStock || (colors.length > 0 && selectedColor === null) || (hasVariants && !allAttributesSelected)}
                 className={`w-full py-3.5 text-sm tracking-[0.15em] font-body flex items-center justify-center gap-2 transition-colors ${
-                  !isInStock
+                  !isInStock || (hasVariants && !allAttributesSelected)
                     ? 'bg-muted text-muted-foreground cursor-not-allowed'
                     : colors.length > 0 && selectedColor === null
                     ? 'bg-muted text-muted-foreground cursor-not-allowed'
@@ -315,7 +334,7 @@ const ProductDetail = () => {
                 }`}
               >
                 <ShoppingBag className="h-4 w-4" />
-                {!isInStock ? 'OUT OF STOCK' : colors.length > 0 && selectedColor === null ? 'Please Select Options Above' : 'ADD TO CART'}
+                {hasVariants && !allAttributesSelected ? 'Please Select Options Above' : !isInStock ? 'OUT OF STOCK' : colors.length > 0 && selectedColor === null ? 'Please Select Options Above' : 'ADD TO CART'}
               </button>
 
               <a
