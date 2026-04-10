@@ -5,70 +5,29 @@ import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { SearchOverlay } from '@/components/SearchOverlay';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
+import { useMenuItems, type MenuItem } from '@/hooks/useMenuItems';
 import logo from '@/assets/logo.png';
-
-const silkItems = [
-  { label: 'Kanjivaram Sarees', slug: 'kanjivaram-sarees' },
-  { label: 'Banarasi Sarees', slug: 'banarasi-sarees' },
-  { label: 'Soft Silk Sarees', slug: 'soft-silk-sarees' },
-  { label: 'Mysore Silk Sarees', slug: 'mysore-silk-sarees' },
-  { label: 'Raw Silk Sarees', slug: 'raw-silk-sarees' },
-  { label: 'Maheshwari Silk', slug: 'maheshwari-silk-sarees' },
-  { label: 'Kalamkari Sarees', slug: 'kalamkari-sarees' },
-  { label: 'Madhubani Print Sarees', slug: 'madhubani-sarees' },
-];
-
-const cottonItems = [
-  { label: 'Bengali Cotton Sarees', slug: 'bengali-cotton-sarees' },
-  { label: 'Jaipur Cotton Sarees', slug: 'jaipur-cotton-sarees' },
-  { label: 'South Cotton Sarees', slug: 'south-cotton-sarees' },
-  { label: 'Block Print Sarees', slug: 'block-print-sarees' },
-  { label: 'Bagru Print Sarees', slug: 'bagru-print-sarees' },
-  { label: 'Ajrakh Print Sarees', slug: 'ajrakh-print-sarees' },
-  { label: 'Ikkat Sarees', slug: 'ikkat-sarees' },
-  { label: 'Chanderi Cotton Silk', slug: 'chanderi-cotton-silk' },
-];
-
-const regionalItems = [
-  { label: 'Sambalpuri Sarees', slug: 'sambalpuri-sarees' },
-  { label: 'Karnataka Sarees', slug: 'karnataka-sarees' },
-  { label: 'Tamil Nadu Sarees', slug: 'tamilnadu-sarees' },
-  { label: 'Maheshwari Sarees', slug: 'maheshwari-silk-sarees' },
-];
-
-const specialtyItems = [
-  { label: 'Linen Sarees', slug: 'linen-sarees' },
-  { label: 'Georgette Sarees', slug: 'georgette-sarees' },
-  { label: 'Chiffon Sarees', slug: 'chiffon-sarees' },
-  { label: 'Wedding Collection', slug: 'wedding-sarees' },
-  { label: 'Office Wear', slug: 'office-wear-sarees' },
-];
-
-type DropdownMenu = {
-  label: string;
-  items: { label: string; slug: string }[];
-  viewAllSlug?: string;
-};
-
-const dropdownMenus: DropdownMenu[] = [
-  { label: 'SILK', items: silkItems, viewAllSlug: 'pure-silk' },
-  { label: 'COTTON', items: cottonItems, viewAllSlug: 'cotton' },
-  { label: 'REGIONAL', items: regionalItems },
-  { label: 'SPECIALTY', items: specialtyItems },
-];
 
 const topLinks = [
   { label: 'About Us', path: '/about' },
   { label: 'Contact Us', path: '/contact' },
 ];
 
-function DropdownNavItem({ menu, isOpen, onToggle, onClose }: {
-  menu: DropdownMenu;
+function getItemUrl(item: MenuItem) {
+  if (item.url) return item.url;
+  if (item.slug) return `/collections?filter=${item.slug}`;
+  return '/collections';
+}
+
+function DropdownNavItem({ item, isOpen, onToggle, onClose }: {
+  item: MenuItem;
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const children = item.children || [];
+  const hasChildren = children.length > 0;
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -78,6 +37,17 @@ function DropdownNavItem({ menu, isOpen, onToggle, onClose }: {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, onClose]);
 
+  if (!hasChildren) {
+    return (
+      <Link
+        to={getItemUrl(item)}
+        className="text-xs tracking-[0.2em] font-body font-normal text-foreground/80 hover:text-foreground transition-colors py-2"
+      >
+        {item.label}
+      </Link>
+    );
+  }
+
   return (
     <div ref={ref} className="relative group">
       <button
@@ -85,7 +55,7 @@ function DropdownNavItem({ menu, isOpen, onToggle, onClose }: {
         onMouseEnter={onToggle}
         className="flex items-center gap-1 text-xs tracking-[0.2em] font-body font-normal text-foreground/80 hover:text-foreground transition-colors py-2"
       >
-        {menu.label}
+        {item.label}
         <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
@@ -94,25 +64,25 @@ function DropdownNavItem({ menu, isOpen, onToggle, onClose }: {
           className="absolute top-full left-0 bg-background border border-border shadow-lg rounded-sm min-w-[220px] py-3 z-50"
           onMouseLeave={onClose}
         >
-          {menu.items.map(item => (
+          {children.map(child => (
             <Link
-              key={item.slug}
-              to={`/collections?filter=${item.slug}`}
+              key={child.id}
+              to={getItemUrl(child)}
               onClick={onClose}
               className="block px-5 py-2 text-xs tracking-[0.08em] font-body text-foreground/70 hover:text-foreground hover:bg-muted transition-colors"
             >
-              {item.label}
+              {child.label}
             </Link>
           ))}
-          {menu.viewAllSlug && (
+          {item.slug && (
             <>
               <div className="border-t border-border mx-4 my-2" />
               <Link
-                to={`/collections?filter=${menu.viewAllSlug}`}
+                to={`/collections?filter=${item.slug}`}
                 onClick={onClose}
                 className="block px-5 py-2 text-xs tracking-[0.12em] font-body font-bold text-primary hover:text-primary/80 transition-colors"
               >
-                VIEW ALL {menu.label} →
+                VIEW ALL {item.label} →
               </Link>
             </>
           )}
@@ -131,6 +101,7 @@ export function Navbar() {
   const { user } = useAuth();
   const location = useLocation();
   const { data: settings } = useStoreSettings();
+  const { data: menuItems = [] } = useMenuItems();
   const logoSrc = settings?.logo_url || logo;
 
   return (
@@ -175,28 +146,22 @@ export function Navbar() {
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
-      {/* Logo */}
+          {/* Logo */}
           <Link to="/" className="flex items-center">
             <img src={logoSrc} alt="Kavi Women's World" className="h-20 sm:h-22 md:h-24 w-auto" />
           </Link>
 
           {/* Desktop nav with dropdowns */}
           <nav className="hidden md:flex items-center gap-7">
-            {dropdownMenus.map(menu => (
+            {menuItems.map(item => (
               <DropdownNavItem
-                key={menu.label}
-                menu={menu}
-                isOpen={openDropdown === menu.label}
-                onToggle={() => setOpenDropdown(openDropdown === menu.label ? null : menu.label)}
+                key={item.id}
+                item={item}
+                isOpen={openDropdown === item.id}
+                onToggle={() => setOpenDropdown(openDropdown === item.id ? null : item.id)}
                 onClose={() => setOpenDropdown(null)}
               />
             ))}
-            <Link
-              to="/collections"
-              className="text-xs tracking-[0.2em] font-body font-normal text-foreground/80 hover:text-foreground transition-colors py-2"
-            >
-              ALL COLLECTIONS
-            </Link>
           </nav>
 
           {/* Right actions */}
@@ -229,40 +194,51 @@ export function Navbar() {
       {/* Mobile nav */}
       {mobileOpen && (
         <nav className="md:hidden border-b border-border bg-background px-4 py-3 space-y-0.5 max-h-[75vh] overflow-y-auto overscroll-contain">
-          {dropdownMenus.map(menu => (
-            <div key={menu.label}>
-              <button
-                onClick={() => setMobileExpanded(mobileExpanded === menu.label ? null : menu.label)}
-                className="flex items-center justify-between w-full py-3 text-sm tracking-[0.12em] font-body text-foreground/80 min-h-[44px]"
-              >
-                {menu.label}
-                <ChevronDown className={`h-4 w-4 transition-transform ${mobileExpanded === menu.label ? 'rotate-180' : ''}`} />
-              </button>
-              {mobileExpanded === menu.label && (
-                <div className="pl-4 pb-2 space-y-0.5">
-                  {menu.items.map(item => (
-                    <Link
-                      key={item.slug}
-                      to={`/collections?filter=${item.slug}`}
-                      onClick={() => { setMobileOpen(false); setMobileExpanded(null); }}
-                      className="block py-2.5 text-sm tracking-[0.08em] font-body text-muted-foreground hover:text-foreground transition-colors min-h-[44px] flex items-center"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+          {menuItems.map(item => {
+            const children = item.children || [];
+            const hasChildren = children.length > 0;
+
+            if (!hasChildren) {
+              return (
+                <Link
+                  key={item.id}
+                  to={getItemUrl(item)}
+                  onClick={() => setMobileOpen(false)}
+                  className="block py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px]"
+                >
+                  {item.label}
+                </Link>
+              );
+            }
+
+            return (
+              <div key={item.id}>
+                <button
+                  onClick={() => setMobileExpanded(mobileExpanded === item.id ? null : item.id)}
+                  className="flex items-center justify-between w-full py-3 text-sm tracking-[0.12em] font-body text-foreground/80 min-h-[44px]"
+                >
+                  {item.label}
+                  <ChevronDown className={`h-4 w-4 transition-transform ${mobileExpanded === item.id ? 'rotate-180' : ''}`} />
+                </button>
+                {mobileExpanded === item.id && (
+                  <div className="pl-4 pb-2 space-y-0.5">
+                    {children.map(child => (
+                      <Link
+                        key={child.id}
+                        to={getItemUrl(child)}
+                        onClick={() => { setMobileOpen(false); setMobileExpanded(null); }}
+                        className="block py-2.5 text-sm tracking-[0.08em] font-body text-muted-foreground hover:text-foreground transition-colors min-h-[44px] flex items-center"
+                      >
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
 
           <div className="border-t border-border pt-2 mt-2 space-y-0.5">
-            <Link
-              to="/collections"
-              onClick={() => setMobileOpen(false)}
-              className="block py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px]"
-            >
-              ALL COLLECTIONS
-            </Link>
             <Link
               to="/wishlist"
               onClick={() => setMobileOpen(false)}
