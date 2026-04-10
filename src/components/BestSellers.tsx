@@ -1,9 +1,25 @@
-import { products } from '@/data/products';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { ProductCard } from './ProductCard';
 import { Link } from 'react-router-dom';
 
 export function BestSellers() {
-  const bestSellers = products.filter(p => p.isBestSeller);
+  const { data: bestSellers = [] } = useQuery({
+    queryKey: ['storefront-best-sellers'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .eq('is_best_seller', true)
+        .order('created_at', { ascending: false })
+        .limit(8);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  if (bestSellers.length === 0) return null;
 
   return (
     <section className="py-16 md:py-24 bg-secondary/50">

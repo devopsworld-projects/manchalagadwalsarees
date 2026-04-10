@@ -1,28 +1,44 @@
 import { Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Product } from '@/data/products';
 import { useState } from 'react';
 
+export interface ProductData {
+  id: string;
+  sku: string;
+  name: string;
+  price: number;
+  original_price?: number | null;
+  images?: string[] | null;
+  colors?: string[] | null;
+  is_new?: boolean | null;
+  is_best_seller?: boolean | null;
+  is_active?: boolean | null;
+  description?: string | null;
+  category_id?: string | null;
+  stock?: number | null;
+}
+
 interface ProductCardProps {
-  product: Product;
+  product: ProductData;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
   const [liked, setLiked] = useState(false);
+  const image = product.images?.[0] || '/placeholder.svg';
 
   return (
     <div className="group relative">
-      <Link to={`/product/${product.id}`} className="block">
+      <Link to={`/product/${product.sku}`} className="block">
         <div className="relative aspect-[3/4] overflow-hidden bg-muted rounded-sm">
           <img
-            src={product.image}
+            src={image}
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
             width={800}
             height={1024}
           />
-          {product.isNew && (
+          {product.is_new && (
             <span className="absolute top-3 left-3 bg-primary text-primary-foreground text-[10px] font-bold tracking-wider px-2.5 py-1 uppercase">
               New
             </span>
@@ -39,23 +55,25 @@ export function ProductCard({ product }: ProductCardProps) {
           <h3 className="font-display text-base md:text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
             {product.name}
           </h3>
-          <div className="flex items-center gap-1.5">
-            {product.colors.slice(0, 3).map((color, i) => (
-              <span
-                key={i}
-                className="h-3 w-3 rounded-full border border-border"
-                style={{ backgroundColor: color }}
-              />
-            ))}
-            {product.colors.length > 3 && (
-              <span className="text-xs text-muted-foreground">+{product.colors.length - 3}</span>
-            )}
-          </div>
+          {product.colors && product.colors.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              {product.colors.slice(0, 3).map((color, i) => (
+                <span
+                  key={i}
+                  className="h-3 w-3 rounded-full border border-border"
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+              {product.colors.length > 3 && (
+                <span className="text-xs text-muted-foreground">+{product.colors.length - 3}</span>
+              )}
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <span className="font-body font-bold text-foreground">₹{product.price.toLocaleString()}</span>
-            {product.originalPrice && (
+            {product.original_price && (
               <span className="font-body text-sm text-muted-foreground line-through">
-                ₹{product.originalPrice.toLocaleString()}
+                ₹{product.original_price.toLocaleString()}
               </span>
             )}
           </div>

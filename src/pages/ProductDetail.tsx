@@ -1,40 +1,22 @@
 import { useParams, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import { products } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import {
-  ShoppingBag,
-  Heart,
-  Share2,
-  Truck,
-  Shield,
-  RotateCcw,
-  ChevronLeft,
-  ChevronRight,
-  ZoomIn,
-  ArrowLeft,
-  MessageCircle,
+  ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
+  ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, MessageCircle,
 } from 'lucide-react';
 import { useState } from 'react';
 
 const colorNameMap: Record<string, string> = {
-  '#c41e3a': 'RED',
-  '#d4af37': 'GOLD',
-  '#8b0000': 'MAROON',
-  '#0047ab': 'BLUE',
-  '#1a237e': 'NAVY',
-  '#2e8b57': 'GREEN',
-  '#006400': 'FOREST',
-  '#ff00ff': 'MAGENTA',
-  '#ffc0cb': 'PINK',
-  '#c71585': 'ROSE',
-  '#ff8c00': 'ORANGE',
-  '#ff4500': 'VERMILION',
-  '#fffdd0': 'CREAM',
-  '#f5f5dc': 'BEIGE',
-  '#800000': 'MAROON',
+  '#c41e3a': 'RED', '#d4af37': 'GOLD', '#8b0000': 'MAROON',
+  '#0047ab': 'BLUE', '#1a237e': 'NAVY', '#2e8b57': 'GREEN',
+  '#006400': 'FOREST', '#ff00ff': 'MAGENTA', '#ffc0cb': 'PINK',
+  '#c71585': 'ROSE', '#ff8c00': 'ORANGE', '#ff4500': 'VERMILION',
+  '#fffdd0': 'CREAM', '#f5f5dc': 'BEIGE', '#800000': 'MAROON',
 };
 
 const getColorName = (hex: string) =>
@@ -42,14 +24,38 @@ const getColorName = (hex: string) =>
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const product = products.find(p => p.id === id);
   const { addToCart } = useCart();
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [showZoom, setShowZoom] = useState(false);
 
-  // For demo, use the same image repeated; in production these come from product.images[]
-  const images = product ? [product.image, product.image, product.image] : [];
+  const { data: product, isLoading } = useQuery({
+    queryKey: ['storefront-product', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*, categories(name)')
+        .eq('sku', id!)
+        .eq('is_active', true)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen">
+        <AnnouncementBar />
+        <Navbar />
+        <div className="container py-20 text-center">
+          <div className="animate-pulse font-body text-muted-foreground">Loading product...</div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -65,6 +71,11 @@ const ProductDetail = () => {
     );
   }
 
+  const images = product.images && product.images.length > 0 ? product.images : ['/placeholder.svg'];
+  const colors = product.colors || [];
+  const isInStock = (product.stock ?? 0) > 0;
+  const categoryName = (product as any).categories?.name || '';
+
   const prevImage = () => setCurrentImage(i => (i === 0 ? images.length - 1 : i - 1));
   const nextImage = () => setCurrentImage(i => (i === images.length - 1 ? 0 : i + 1));
 
@@ -77,17 +88,25 @@ const ProductDetail = () => {
   };
 
   const whatsappMessage = encodeURIComponent(
-    `Hi, I'm interested in ${product.name} (SKU: ${product.id}) priced at ₹${product.price.toLocaleString()}. Please share more details.`
+    `Hi, I'm interested in ${product.name} (SKU: ${product.sku}) priced at ₹${product.price.toLocaleString()}. Please share more details.`
   );
 
-  const isInStock = true; // from DB in production
+  const cartProduct = {
+    id: product.sku,
+    name: product.name,
+    price: product.price,
+    originalPrice: product.original_price ?? undefined,
+    image: images[0],
+    category: categoryName,
+    colors: colors,
+    description: product.description || '',
+  };
 
   return (
     <div className="min-h-screen">
       <AnnouncementBar />
       <Navbar />
       <main className="container py-6 md:py-10">
-        {/* Back link */}
         <Link
           to="/collections"
           className="inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-primary transition-colors mb-6"
@@ -107,7 +126,6 @@ const ProductDetail = () => {
                 width={800}
                 height={1067}
               />
-              {/* Zoom button */}
               <button
                 onClick={() => setShowZoom(true)}
                 className="absolute top-4 right-4 bg-background/80 backdrop-blur p-2 rounded-full shadow-sm hover:bg-background transition-colors"
@@ -117,38 +135,21 @@ const ProductDetail = () => {
               </button>
             </div>
 
-            {/* Navigation arrows */}
             {images.length > 1 && (
               <>
-                <button
-                  onClick={prevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity"
-                  aria-label="Previous image"
-                >
+                <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Previous image">
                   <ChevronLeft className="h-5 w-5" />
                 </button>
-                <button
-                  onClick={nextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity"
-                  aria-label="Next image"
-                >
+                <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Next image">
                   <ChevronRight className="h-5 w-5" />
                 </button>
               </>
             )}
 
-            {/* Thumbnail dots */}
             {images.length > 1 && (
               <div className="flex justify-center gap-2 mt-3">
                 {images.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentImage(i)}
-                    className={`h-2 w-2 rounded-full transition-colors ${
-                      i === currentImage ? 'bg-primary' : 'bg-border'
-                    }`}
-                    aria-label={`Image ${i + 1}`}
-                  />
+                  <button key={i} onClick={() => setCurrentImage(i)} className={`h-2 w-2 rounded-full transition-colors ${i === currentImage ? 'bg-primary' : 'bg-border'}`} aria-label={`Image ${i + 1}`} />
                 ))}
               </div>
             )}
@@ -156,123 +157,79 @@ const ProductDetail = () => {
 
           {/* Product details */}
           <div className="space-y-5">
-            {/* Title row with wishlist & share */}
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight">
-                  {product.id}
-                </h1>
-                <p className="font-body text-xs text-muted-foreground mt-0.5">
-                  SKU: {product.id}
-                </p>
+                <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight">{product.name}</h1>
+                <p className="font-body text-xs text-muted-foreground mt-0.5">SKU: {product.sku}</p>
               </div>
               <div className="flex gap-2">
-                <button
-                  className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors"
-                  aria-label="Add to wishlist"
-                >
+                <button className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors" aria-label="Add to wishlist">
                   <Heart className="h-5 w-5" />
                 </button>
-                <button
-                  onClick={handleShare}
-                  className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors"
-                  aria-label="Share product"
-                >
+                <button onClick={handleShare} className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors" aria-label="Share product">
                   <Share2 className="h-5 w-5" />
                 </button>
               </div>
             </div>
 
-            {/* Price + Stock */}
             <div className="flex items-center gap-4">
-              <span className="font-display text-3xl font-bold">
-                ₹{product.price.toLocaleString()}
-              </span>
-              {product.originalPrice && (
-                <span className="font-body text-base text-muted-foreground line-through">
-                  ₹{product.originalPrice.toLocaleString()}
-                </span>
+              <span className="font-display text-3xl font-bold">₹{product.price.toLocaleString()}</span>
+              {product.original_price && (
+                <span className="font-body text-base text-muted-foreground line-through">₹{product.original_price.toLocaleString()}</span>
               )}
-              <span
-                className={`text-xs font-body font-semibold px-3 py-1 rounded-full border ${
-                  isInStock
-                    ? 'text-emerald-700 border-emerald-300 bg-emerald-50'
-                    : 'text-red-700 border-red-300 bg-red-50'
-                }`}
-              >
+              <span className={`text-xs font-body font-semibold px-3 py-1 rounded-full border ${isInStock ? 'text-emerald-700 border-emerald-300 bg-emerald-50' : 'text-red-700 border-red-300 bg-red-50'}`}>
                 {isInStock ? 'In Stock' : 'Out of Stock'}
               </span>
             </div>
 
-            {product.originalPrice && (
+            {product.original_price && (
               <span className="inline-block bg-primary/10 text-primary text-xs font-body font-bold px-3 py-1 rounded">
-                {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
+                {Math.round((1 - product.price / product.original_price) * 100)}% OFF
               </span>
             )}
 
-            {/* Description */}
             <div>
               <h3 className="font-display text-base font-semibold mb-1">Description</h3>
-              <p className="font-body text-sm text-muted-foreground leading-relaxed">
-                {product.description}
-              </p>
+              <p className="font-body text-sm text-muted-foreground leading-relaxed">{product.description}</p>
             </div>
 
-            {/* Color chips */}
+            {colors.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-body text-sm font-semibold">Color:</span>
+                  <span className="font-body text-sm text-muted-foreground">
+                    {selectedColor !== null ? getColorName(colors[selectedColor]) : 'Select a color'}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {colors.map((color, i) => (
+                    <button key={i} onClick={() => setSelectedColor(i)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-body font-medium border transition-all ${selectedColor === i ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:border-foreground/40'}`}>
+                      {getColorName(color)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="font-body text-sm font-semibold">Color:</span>
-                <span className="font-body text-sm text-muted-foreground">
-                  {selectedColor !== null ? getColorName(product.colors[selectedColor]) : 'Select a color'}
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {product.colors.map((color, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedColor(i)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-body font-medium border transition-all ${
-                      selectedColor === i
-                        ? 'border-primary bg-primary/10 text-primary'
-                        : 'border-border text-muted-foreground hover:border-foreground/40'
-                    }`}
-                  >
-                    {getColorName(color)}
-                  </button>
-                ))}
-              </div>
+              <h3 className="font-body text-sm font-semibold mb-2">Size <span className="text-primary">*</span></h3>
+              <div className="inline-block border border-primary rounded px-5 py-2 text-sm font-body font-medium text-foreground">Free Size</div>
             </div>
 
-            {/* Size */}
-            <div>
-              <h3 className="font-body text-sm font-semibold mb-2">
-                Size <span className="text-primary">*</span>
-              </h3>
-              <div className="inline-block border border-primary rounded px-5 py-2 text-sm font-body font-medium text-foreground">
-                Free Size
-              </div>
-            </div>
-
-            {/* Action buttons */}
             <div className="space-y-3 pt-2">
-              {/* Add to Cart */}
               <button
                 onClick={() => {
-                  if (selectedColor === null) return;
-                  addToCart(product);
+                  if (colors.length > 0 && selectedColor === null) return;
+                  addToCart(cartProduct);
                 }}
-                disabled={selectedColor === null}
-                className={`w-full py-3.5 text-sm tracking-[0.15em] font-body flex items-center justify-center gap-2 transition-colors ${
-                  selectedColor === null
-                    ? 'bg-muted text-muted-foreground cursor-not-allowed'
-                    : 'bg-primary text-primary-foreground hover:bg-burgundy-light'
-                }`}
+                disabled={colors.length > 0 && selectedColor === null}
+                className={`w-full py-3.5 text-sm tracking-[0.15em] font-body flex items-center justify-center gap-2 transition-colors ${colors.length > 0 && selectedColor === null ? 'bg-muted text-muted-foreground cursor-not-allowed' : 'bg-primary text-primary-foreground hover:bg-burgundy-light'}`}
               >
                 <ShoppingBag className="h-4 w-4" />
-                {selectedColor === null ? 'Please Select Options Above' : 'ADD TO CART'}
+                {colors.length > 0 && selectedColor === null ? 'Please Select Options Above' : 'ADD TO CART'}
               </button>
 
-              {/* WhatsApp / Buy Now */}
               <a
                 href={`https://wa.me/919494644998?text=${whatsappMessage}`}
                 target="_blank"
@@ -284,7 +241,6 @@ const ProductDetail = () => {
               </a>
             </div>
 
-            {/* Trust badges */}
             <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
               {[
                 { icon: Truck, label: 'Free Shipping' },
@@ -301,17 +257,9 @@ const ProductDetail = () => {
         </div>
       </main>
 
-      {/* Zoom modal */}
       {showZoom && (
-        <div
-          className="fixed inset-0 z-50 bg-foreground/90 flex items-center justify-center p-4"
-          onClick={() => setShowZoom(false)}
-        >
-          <img
-            src={images[currentImage]}
-            alt={product.name}
-            className="max-w-full max-h-full object-contain"
-          />
+        <div className="fixed inset-0 z-50 bg-foreground/90 flex items-center justify-center p-4" onClick={() => setShowZoom(false)}>
+          <img src={images[currentImage]} alt={product.name} className="max-w-full max-h-full object-contain" />
         </div>
       )}
 

@@ -1,15 +1,23 @@
 import { Link } from 'react-router-dom';
-import sareeRed from '@/assets/saree-red.jpg';
-import sareeBlue from '@/assets/saree-blue.jpg';
-import sareeMaroon from '@/assets/saree-maroon.jpg';
-
-const cats = [
-  { name: 'Pattu Sarees', image: sareeRed, slug: 'pattu-sarees' },
-  { name: 'Banarasi', image: sareeBlue, slug: 'banarasi' },
-  { name: 'Premium Collection', image: sareeMaroon, slug: 'premium' },
-];
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export function CategoriesSection() {
+  const { data: categories = [] } = useQuery({
+    queryKey: ['storefront-categories'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('sort_order', { ascending: true })
+        .limit(6);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  if (categories.length === 0) return null;
+
   return (
     <section className="py-16 md:py-24">
       <div className="container">
@@ -23,14 +31,14 @@ export function CategoriesSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {cats.map(cat => (
+          {categories.map(cat => (
             <Link
-              key={cat.slug}
+              key={cat.id}
               to={`/collections?filter=${cat.slug}`}
               className="group relative aspect-[4/5] overflow-hidden rounded-sm"
             >
               <img
-                src={cat.image}
+                src={cat.image_url || '/placeholder.svg'}
                 alt={cat.name}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 loading="lazy"
