@@ -66,18 +66,7 @@ export function RelatedProducts({ productId, currentSku }: RelatedProductsProps)
       <h2 className="font-display text-2xl font-bold mb-6 text-center">You May Also Like</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
         {relatedProducts.map((product: any) => (
-          <ProductCard
-            key={product.id}
-            id={product.sku}
-            name={product.name}
-            price={product.price}
-            originalPrice={product.original_price}
-            image={product.images?.[0] || '/placeholder.svg'}
-            category={(product as any).categories?.name || ''}
-            colors={product.colors || []}
-            isNew={product.is_new}
-            isBestSeller={product.is_best_seller}
-          />
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
     </section>
