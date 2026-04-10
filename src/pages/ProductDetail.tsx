@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { PageMeta } from '@/components/PageMeta';
 import { ProductReviews } from '@/components/ProductReviews';
 import { RecentlyViewed, addToRecentlyViewed } from '@/components/RecentlyViewed';
+import { RelatedProducts } from '@/components/RelatedProducts';
 import { useCart } from '@/context/CartContext';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
@@ -199,6 +200,8 @@ const ProductDetail = () => {
         ogType="product"
         jsonLd={productJsonLd}
       />
+      <AnnouncementBar />
+      <Navbar />
       <main className="container py-6 md:py-10">
         <Link
           to="/collections"
@@ -375,10 +378,9 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
-        <div className="container">
-          <ProductReviews productId={product.id} />
-          <RecentlyViewed currentSku={product.sku} />
-        </div>
+        <ProductReviews productId={product.id} />
+        <RelatedProducts productId={product.id} currentSku={product.sku} />
+        <RecentlyViewed currentSku={product.sku} />
       </main>
 
       {showZoom && (
