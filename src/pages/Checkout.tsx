@@ -19,6 +19,7 @@ export default function Checkout() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState<string | null>(null);
+  const [showPayment, setShowPayment] = useState(false);
 
   const [form, setForm] = useState({
     name: '',
