@@ -6,6 +6,7 @@ import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { ProductCard } from '@/components/ProductCard';
+import { PageMeta } from '@/components/PageMeta';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CollectionsSidebar } from '@/components/CollectionsSidebar';
@@ -132,6 +133,11 @@ const Collections = () => {
 
   return (
     <div className="min-h-screen">
+      <PageMeta
+        title={activeLabel}
+        description={`Shop ${activeLabel} — Premium handcrafted sarees with free shipping across India.`}
+        canonicalPath="/collections"
+      />
       <AnnouncementBar />
       <Navbar />
       <main className="container py-10">

@@ -1,11 +1,17 @@
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { PageMeta } from '@/components/PageMeta';
 import aboutHero from '@/assets/about-hero.jpg';
 
 const About = () => {
   return (
     <div className="min-h-screen">
+      <PageMeta
+        title="About Us"
+        description="Learn about Kavi Women's World — our passion for preserving India's textile heritage through handcrafted sarees."
+        canonicalPath="/about"
+      />
       <AnnouncementBar />
       <Navbar />
       <main>

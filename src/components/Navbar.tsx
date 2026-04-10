@@ -204,7 +204,7 @@ export function Navbar() {
             <Link to="/wishlist" className="p-2 hover:text-primary transition-colors" aria-label="Wishlist">
               <Heart className="h-5 w-5" />
             </Link>
-            <Link to={user ? '/wishlist' : '/login'} className="p-2 hover:text-primary transition-colors hidden md:block" aria-label="Account">
+            <Link to={user ? '/orders' : '/login'} className="p-2 hover:text-primary transition-colors hidden md:block" aria-label="My Orders">
               <User className="h-5 w-5" />
             </Link>
             <button
