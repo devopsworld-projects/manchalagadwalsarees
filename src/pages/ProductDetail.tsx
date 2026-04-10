@@ -30,6 +30,7 @@ const ProductDetail = () => {
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [showZoom, setShowZoom] = useState(false);
+  const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
 
   const { data: product, isLoading } = useQuery({
     queryKey: ['storefront-product', id],
@@ -44,6 +45,20 @@ const ProductDetail = () => {
       return data;
     },
     enabled: !!id,
+  });
+
+  const { data: variants } = useQuery({
+    queryKey: ['storefront-variants', product?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('product_variants')
+        .select('*')
+        .eq('product_id', product!.id)
+        .eq('is_active', true);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!product?.id,
   });
 
   if (isLoading) {
