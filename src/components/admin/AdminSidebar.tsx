@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, FolderOpen, ShoppingCart, Users, Settings, LogOut, Home, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, Package, FolderOpen, ShoppingCart, Users, Settings, LogOut, Home, MessageSquare, Menu } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
