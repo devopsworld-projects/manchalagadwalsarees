@@ -91,6 +91,7 @@ function ProductDetail() {
     return () => document.removeEventListener('mousedown', handler);
   }, [showShareMenu]);
 
+  if (isLoading) {
     return (
       <div className="min-h-screen">
         <AnnouncementBar />
