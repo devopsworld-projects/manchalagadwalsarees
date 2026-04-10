@@ -12,6 +12,10 @@ import Collections from "./pages/Collections.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
 import About from "./pages/About.tsx";
 import Contact from "./pages/Contact.tsx";
+import Login from "./pages/Login.tsx";
+import Signup from "./pages/Signup.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
+import Wishlist from "./pages/Wishlist.tsx";
 import AdminLogin from "./pages/admin/AdminLogin.tsx";
 import AdminLayout from "./pages/admin/AdminLayout.tsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
@@ -40,6 +44,10 @@ const App = () => (
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
