@@ -182,6 +182,8 @@ const AdminProducts = () => {
     try {
       const data = await file.arrayBuffer();
       const workbook = XLSX.read(data);
+
+      // Sheet 1: Products
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       const rows: any[] = XLSX.utils.sheet_to_json(sheet);
 
@@ -195,7 +197,7 @@ const AdminProducts = () => {
       const catMap: Record<string, string> = {};
       categories?.forEach(c => { catMap[c.name.toLowerCase()] = c.id; });
 
-      const products: TablesInsert<'products'>[] = rows.map((row: any) => ({
+      const productRows: TablesInsert<'products'>[] = rows.map((row: any) => ({
         sku: String(row['SKU'] || row['sku'] || ''),
         name: String(row['Name'] || row['name'] || row['Product Name'] || ''),
         description: row['Description'] || row['description'] || null,
@@ -210,18 +212,69 @@ const AdminProducts = () => {
         is_active: row['Active'] === false || String(row['Active'] || row['is_active'] || '').toLowerCase() === 'false' ? false : true,
       }));
 
-      const valid = products.filter(p => p.sku && p.name && p.price > 0);
+      const valid = productRows.filter(p => p.sku && p.name && p.price > 0);
       if (valid.length === 0) {
         toast({ title: 'No valid products', description: 'Ensure columns: SKU, Name, Price are filled.', variant: 'destructive' });
         setBulkImporting(false);
         return;
       }
 
-      const { error } = await supabase.from('products').insert(valid);
+      // Insert products and get back IDs
+      const { data: insertedProducts, error } = await supabase.from('products').insert(valid).select('id, sku');
       if (error) throw error;
 
+      // Sheet 2: Variants (optional)
+      let variantCount = 0;
+      const variantsSheetName = workbook.SheetNames.find(n => n.toLowerCase().includes('variant'));
+      if (variantsSheetName && insertedProducts) {
+        const variantSheet = workbook.Sheets[variantsSheetName];
+        const variantRows: any[] = XLSX.utils.sheet_to_json(variantSheet);
+
+        // Build SKU → product ID map
+        const skuToId: Record<string, string> = {};
+        insertedProducts.forEach(p => { skuToId[p.sku] = p.id; });
+
+        // Identify attribute columns (everything that's not a known column)
+        const knownCols = new Set(['product sku', 'variant sku', 'sku', 'price', 'original price', 'stock', 'active']);
+        const sampleRow = variantRows[0] || {};
+        const attrCols = Object.keys(sampleRow).filter(k => !knownCols.has(k.toLowerCase()));
+
+        const variantsToInsert = variantRows
+          .map((row: any) => {
+            const productSku = String(row['Product SKU'] || row['product sku'] || '');
+            const productId = skuToId[productSku];
+            if (!productId) return null;
+
+            const attributes: Record<string, string> = {};
+            attrCols.forEach(col => {
+              if (row[col]) attributes[col] = String(row[col]);
+            });
+
+            return {
+              product_id: productId,
+              sku: String(row['Variant SKU'] || row['SKU'] || row['sku'] || ''),
+              attributes,
+              price: Number(row['Price'] || row['price'] || 0),
+              original_price: row['Original Price'] || row['original price'] ? Number(row['Original Price'] || row['original price']) : null,
+              stock: Number(row['Stock'] || row['stock'] || 0),
+              is_active: row['Active'] === false || String(row['Active'] || '').toLowerCase() === 'false' ? false : true,
+            };
+          })
+          .filter((v): v is NonNullable<typeof v> => v !== null && !!v.sku && v.price > 0);
+
+        if (variantsToInsert.length > 0) {
+          const { error: vErr } = await supabase.from('product_variants').insert(variantsToInsert);
+          if (vErr) throw vErr;
+          variantCount = variantsToInsert.length;
+        }
+      }
+
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
-      toast({ title: `${valid.length} products imported!`, description: valid.length < rows.length ? `${rows.length - valid.length} rows skipped (missing SKU/Name/Price).` : undefined });
+      const desc = [
+        valid.length < rows.length ? `${rows.length - valid.length} product rows skipped.` : '',
+        variantCount > 0 ? `${variantCount} variants imported.` : '',
+      ].filter(Boolean).join(' ');
+      toast({ title: `${valid.length} products imported!`, description: desc || undefined });
       setShowBulkImport(false);
     } catch (err: any) {
       toast({ title: 'Import failed', description: err.message, variant: 'destructive' });
@@ -232,13 +285,23 @@ const AdminProducts = () => {
   };
 
   const downloadTemplate = () => {
-    const ws = XLSX.utils.aoa_to_sheet([
+    const productsWs = XLSX.utils.aoa_to_sheet([
       ['SKU', 'Name', 'Description', 'Price', 'Original Price', 'Stock', 'Category', 'Colors', 'Images', 'New', 'Best Seller', 'Active'],
       ['KWW-001', 'Silk Saree', 'Beautiful handwoven silk saree', 2999, 3999, 10, 'Sarees', '#c41e3a, #d4af37', '', 'true', 'false', 'true'],
     ]);
-    ws['!cols'] = [{ wch: 12 }, { wch: 20 }, { wch: 35 }, { wch: 10 }, { wch: 14 }, { wch: 8 }, { wch: 15 }, { wch: 20 }, { wch: 30 }, { wch: 8 }, { wch: 12 }, { wch: 8 }];
+    productsWs['!cols'] = [{ wch: 12 }, { wch: 20 }, { wch: 35 }, { wch: 10 }, { wch: 14 }, { wch: 8 }, { wch: 15 }, { wch: 20 }, { wch: 30 }, { wch: 8 }, { wch: 12 }, { wch: 8 }];
+
+    const variantsWs = XLSX.utils.aoa_to_sheet([
+      ['Product SKU', 'Variant SKU', 'Size', 'Fabric', 'Price', 'Original Price', 'Stock', 'Active'],
+      ['KWW-001', 'KWW-001-S-SILK', 'S', 'Silk', 2999, 3999, 5, 'true'],
+      ['KWW-001', 'KWW-001-M-SILK', 'M', 'Silk', 3199, 3999, 3, 'true'],
+      ['KWW-001', 'KWW-001-L-COT', 'L', 'Cotton', 2499, 2999, 8, 'true'],
+    ]);
+    variantsWs['!cols'] = [{ wch: 14 }, { wch: 18 }, { wch: 8 }, { wch: 10 }, { wch: 10 }, { wch: 14 }, { wch: 8 }, { wch: 8 }];
+
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Products');
+    XLSX.utils.book_append_sheet(wb, productsWs, 'Products');
+    XLSX.utils.book_append_sheet(wb, variantsWs, 'Variants');
     XLSX.writeFile(wb, 'product_import_template.xlsx');
   };
 
@@ -271,8 +334,9 @@ const AdminProducts = () => {
               <button onClick={() => setShowBulkImport(false)}><X className="h-5 w-5" /></button>
             </div>
             <p className="font-body text-sm text-muted-foreground mb-4">
-              Upload an Excel (.xlsx) file with product data. Required columns: <strong>SKU</strong>, <strong>Name</strong>, <strong>Price</strong>.
+              Upload an Excel (.xlsx) file with product data. <strong>Sheet 1 (Products)</strong> — Required: SKU, Name, Price.
               Optional: Description, Original Price, Stock, Category, Colors, Images, New, Best Seller, Active.
+              <strong>Sheet 2 (Variants)</strong> — Optional. Columns: Product SKU, Variant SKU, Price, Stock, plus any custom attribute columns (e.g. Size, Fabric).
             </p>
             <div className="space-y-4">
               <button onClick={downloadTemplate} className="w-full flex items-center justify-center gap-2 border border-dashed border-border py-3 text-sm font-body text-muted-foreground hover:border-primary hover:text-primary transition-colors">
