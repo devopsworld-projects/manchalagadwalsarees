@@ -273,8 +273,15 @@ const ProductDetail = () => {
                 <p className="font-body text-xs text-muted-foreground mt-0.5">SKU: {product.sku}</p>
               </div>
               <div className="flex gap-2">
-                <button className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors" aria-label="Add to wishlist">
-                  <Heart className="h-5 w-5" />
+                <button
+                  onClick={() => {
+                    if (!isLoggedIn) { toast.error('Please login to use wishlist'); return; }
+                    if (product) toggleWishlist(product.id);
+                  }}
+                  className={`p-2 border rounded-full transition-colors ${isWishlisted(product.id) ? 'border-primary text-primary bg-primary/10' : 'border-border hover:border-primary hover:text-primary'}`}
+                  aria-label="Add to wishlist"
+                >
+                  <Heart className={`h-5 w-5 ${isWishlisted(product.id) ? 'fill-current' : ''}`} />
                 </button>
                 <button onClick={handleShare} className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors" aria-label="Share product">
                   <Share2 className="h-5 w-5" />
