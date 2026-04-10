@@ -1,7 +1,8 @@
 import { X } from 'lucide-react';
 import { useState } from 'react';
+import { useStoreSettings } from '@/hooks/useStoreSettings';
 
-const announcements = [
+const defaultAnnouncements = [
   '🛒 We accept only online orders!',
   'Free shipping across India on all orders! 🚚',
   'Outside India? Contact us on WhatsApp for international shipping! 🌍',
@@ -10,8 +11,17 @@ const announcements = [
 
 export function AnnouncementBar() {
   const [visible, setVisible] = useState(true);
+  const { data: settings } = useStoreSettings();
 
+  // If admin disabled announcements
+  if (settings?.announcement_enabled === 'false') return null;
   if (!visible) return null;
+
+  // Parse custom announcements from pipe-separated string
+  const customText = settings?.announcement_text;
+  const announcements = customText
+    ? customText.split('|').map(s => s.trim()).filter(Boolean)
+    : defaultAnnouncements;
 
   return (
     <div className="bg-primary text-primary-foreground relative overflow-hidden">

@@ -4,6 +4,7 @@ import { Search, ShoppingBag, Menu, X, ChevronDown, Phone, Heart, User } from 'l
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { SearchOverlay } from '@/components/SearchOverlay';
+import { useStoreSettings } from '@/hooks/useStoreSettings';
 import logo from '@/assets/logo.png';
 
 const silkItems = [
@@ -129,6 +130,8 @@ export function Navbar() {
   const { totalItems, setIsCartOpen } = useCart();
   const { user } = useAuth();
   const location = useLocation();
+  const { data: settings } = useStoreSettings();
+  const logoSrc = settings?.logo_url || logo;
 
   return (
     <header className="sticky top-0 z-50">
@@ -174,7 +177,7 @@ export function Navbar() {
 
       {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src={logo} alt="Kavi Women's World" className="h-14 sm:h-16 md:h-24 w-auto" />
+            <img src={logoSrc} alt="Kavi Women's World" className="h-14 sm:h-16 md:h-24 w-auto" />
           </Link>
 
           {/* Desktop nav with dropdowns */}

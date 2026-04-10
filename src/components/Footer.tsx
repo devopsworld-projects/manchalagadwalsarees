@@ -1,10 +1,21 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Instagram, Facebook, Youtube, ChevronUp } from 'lucide-react';
+import { useStoreSettings } from '@/hooks/useStoreSettings';
 import logo from '@/assets/logo.png';
 
 export function Footer() {
   const [expanded, setExpanded] = useState(false);
+  const { data: settings } = useStoreSettings();
+
+  const logoSrc = settings?.logo_url || logo;
+  const description = settings?.footer_description || 'Discover the finest collection of handcrafted sarees that blend traditional artistry with contemporary grace.';
+  const phone = settings?.store_phone || '+91 94946 44998';
+  const email = settings?.store_email || 'info@kaviwomensworld.com';
+  const address = settings?.store_address || 'Hyderabad, Telangana, India';
+  const igUrl = settings?.social_instagram || 'https://instagram.com';
+  const fbUrl = settings?.social_facebook || 'https://facebook.com';
+  const ytUrl = settings?.social_youtube || 'https://youtube.com';
 
   return (
     <footer className="bg-foreground text-primary-foreground/80">
@@ -15,7 +26,7 @@ export function Footer() {
           className="w-full flex items-center justify-between px-6 py-4 text-primary-foreground/70"
         >
           <div className="flex items-center gap-3">
-            <img src={logo} alt="Kavi Women's World" className="h-8 w-auto brightness-200" loading="lazy" width={512} height={512} />
+            <img src={logoSrc} alt="Kavi Women's World" className="h-8 w-auto brightness-200" loading="lazy" width={512} height={512} />
             <span className="font-body text-xs text-primary-foreground/50">© {new Date().getFullYear()}</span>
           </div>
           <ChevronUp className={`h-5 w-5 transition-transform duration-300 ${expanded ? '' : 'rotate-180'}`} />
@@ -26,16 +37,16 @@ export function Footer() {
             {/* Brand */}
             <div>
               <p className="font-body text-sm leading-relaxed text-primary-foreground/60">
-                Discover the finest collection of handcrafted sarees that blend traditional artistry with contemporary grace.
+                {description}
               </p>
               <div className="flex gap-3 mt-3">
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+                <a href={igUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
                   <Instagram className="h-4 w-4" />
                 </a>
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+                <a href={fbUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
                   <Facebook className="h-4 w-4" />
                 </a>
-                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+                <a href={ytUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
                   <Youtube className="h-4 w-4" />
                 </a>
               </div>
@@ -75,15 +86,15 @@ export function Footer() {
               <ul className="space-y-2.5 font-body text-sm">
                 <li className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-gold" />
-                  <span>+91 94946 44998</span>
+                  <span>{phone}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Mail className="h-4 w-4 text-gold shrink-0 mt-0.5" />
-                  <span className="break-all">info@kaviwomensworld.com</span>
+                  <span className="break-all">{email}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 text-gold mt-0.5" />
-                  <span>Hyderabad, Telangana, India</span>
+                  <span>{address}</span>
                 </li>
               </ul>
             </div>
@@ -103,18 +114,18 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
-            <img src={logo} alt="Kavi Women's World" className="h-20 w-auto mb-4 brightness-200" loading="lazy" width={512} height={512} />
+            <img src={logoSrc} alt="Kavi Women's World" className="h-20 w-auto mb-4 brightness-200" loading="lazy" width={512} height={512} />
             <p className="font-body text-sm leading-relaxed text-primary-foreground/60">
-              Discover the finest collection of handcrafted sarees that blend traditional artistry with contemporary grace.
+              {description}
             </p>
             <div className="flex gap-3 mt-4">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+              <a href={igUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
                 <Instagram className="h-4 w-4" />
               </a>
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+              <a href={fbUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
                 <Facebook className="h-4 w-4" />
               </a>
-              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
+              <a href={ytUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-gold/20 hover:text-gold transition-colors">
                 <Youtube className="h-4 w-4" />
               </a>
             </div>
@@ -154,15 +165,15 @@ export function Footer() {
             <ul className="space-y-3 font-body text-sm">
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-gold" />
-                <span>+91 94946 44998</span>
+                <span>{phone}</span>
               </li>
               <li className="flex items-start gap-2">
                 <Mail className="h-4 w-4 text-gold shrink-0 mt-0.5" />
-                <span className="break-all">info@kaviwomensworld.com</span>
+                <span className="break-all">{email}</span>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 text-gold mt-0.5" />
-                <span>Hyderabad, Telangana, India</span>
+                <span>{address}</span>
               </li>
             </ul>
           </div>
