@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-1">
-            <img src={logo} alt="Kavi Women's World" className="h-16 w-auto mb-4 brightness-200" loading="lazy" width={512} height={512} />
+            <img src={logo} alt="Kavi Women's World" className="h-20 w-auto mb-4 brightness-200" loading="lazy" width={512} height={512} />
             <p className="font-body text-sm leading-relaxed text-primary-foreground/60">
               Discover the finest collection of handcrafted sarees that blend traditional artistry with contemporary grace.
             </p>
