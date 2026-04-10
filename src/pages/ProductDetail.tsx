@@ -308,8 +308,9 @@ function ProductDetail() {
                   >
                     <Share2 className="h-5 w-5" />
                   </button>
+                  {/* Desktop dropdown */}
                   {showShareMenu && (
-                    <div className="absolute right-0 top-12 z-50 bg-card border border-border rounded-lg shadow-lg py-2 w-52 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="hidden md:block absolute right-0 top-12 z-50 bg-card border border-border rounded-lg shadow-lg py-2 w-52 animate-in fade-in slide-in-from-top-2 duration-200">
                       <p className="px-4 py-1.5 font-body text-xs text-muted-foreground font-semibold uppercase tracking-wider">Share via</p>
                       {shareLinks.map(link => (
                         <a
@@ -333,6 +334,47 @@ function ProductDetail() {
                         Copy Link
                       </button>
                     </div>
+                  )}
+
+                  {/* Mobile bottom sheet */}
+                  {showShareMenu && (
+                    <>
+                      <div className="md:hidden fixed inset-0 z-50 bg-foreground/50 backdrop-blur-sm" onClick={() => setShowShareMenu(false)} />
+                      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border rounded-t-2xl shadow-2xl animate-in slide-in-from-bottom duration-300 pb-safe">
+                        <div className="flex justify-center pt-3 pb-1">
+                          <div className="w-10 h-1 rounded-full bg-border" />
+                        </div>
+                        <p className="px-5 py-2 font-body text-sm font-semibold">Share this product</p>
+                        <div className="grid grid-cols-4 gap-2 px-5 py-3">
+                          {shareLinks.map(link => (
+                            <a
+                              key={link.label}
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => setShowShareMenu(false)}
+                              className="flex flex-col items-center gap-1.5 py-3 rounded-xl hover:bg-muted transition-colors"
+                            >
+                              <span className="text-2xl">{link.icon}</span>
+                              <span className="font-body text-[10px] text-muted-foreground">{link.label}</span>
+                            </a>
+                          ))}
+                          <button
+                            onClick={handleCopyLink}
+                            className="flex flex-col items-center gap-1.5 py-3 rounded-xl hover:bg-muted transition-colors"
+                          >
+                            <Copy className="h-6 w-6 text-muted-foreground" />
+                            <span className="font-body text-[10px] text-muted-foreground">Copy Link</span>
+                          </button>
+                        </div>
+                        <button
+                          onClick={() => setShowShareMenu(false)}
+                          className="w-full py-3.5 mb-2 mx-auto font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
