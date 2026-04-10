@@ -375,6 +375,10 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
+        <div className="container">
+          <ProductReviews productId={product.id} />
+          <RecentlyViewed currentSku={product.sku} />
+        </div>
       </main>
 
       {showZoom && (
