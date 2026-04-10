@@ -7,8 +7,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { ProductCard } from '@/components/ProductCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
-import { SlidersHorizontal, X } from 'lucide-react';
+import { CollectionsSidebarDesktop, CollectionsSidebarMobile } from '@/components/CollectionsSidebar';
 
 const filterTabs = [
   { name: 'All Collections', slug: 'all' },
@@ -24,7 +23,6 @@ const Collections = () => {
   const activeFilter = searchParams.get('filter') || 'all';
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
-  const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
 
   const { data: categories = [] } = useQuery({
@@ -51,9 +49,7 @@ const Collections = () => {
         query = query.eq('is_best_seller', true);
       } else if (activeFilter !== 'all') {
         const cat = categories.find(c => c.slug === activeFilter);
-        if (cat) {
-          query = query.eq('category_id', cat.id);
-        }
+        if (cat) query = query.eq('category_id', cat.id);
       }
 
       const { data, error } = await query;
@@ -70,34 +66,38 @@ const Collections = () => {
 
   const filteredAndSorted = useMemo(() => {
     let result = products.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
-
     switch (sortBy) {
-      case 'price-low':
-        result = [...result].sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        result = [...result].sort((a, b) => b.price - a.price);
-        break;
-      case 'name-az':
-        result = [...result].sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      default:
-        break;
+      case 'price-low': result = [...result].sort((a, b) => a.price - b.price); break;
+      case 'price-high': result = [...result].sort((a, b) => b.price - a.price); break;
+      case 'name-az': result = [...result].sort((a, b) => a.name.localeCompare(b.name)); break;
     }
     return result;
   }, [products, sortBy, priceRange]);
 
-  const totalPages = Math.ceil(filteredAndSorted.length / PAGE_SIZE);
   const paginatedProducts = filteredAndSorted.slice(0, page * PAGE_SIZE);
   const hasMore = page * PAGE_SIZE < filteredAndSorted.length;
 
   const activeLabel = allTabs.find(t => t.slug === activeFilter)?.name || 'Collections';
   const hasActiveFilters = priceRange[0] > 0 || priceRange[1] < 50000;
 
-  // Reset page when filter/sort changes
   const handleFilterChange = (slug: string) => {
     setPage(1);
     setSearchParams(slug === 'all' ? {} : { filter: slug });
+  };
+
+  const handleClearFilters = () => {
+    setPriceRange([0, 50000]);
+    setPage(1);
+  };
+
+  const sidebarProps = {
+    allTabs,
+    activeFilter,
+    onFilterChange: handleFilterChange,
+    priceRange,
+    onPriceRangeChange: (r: [number, number]) => { setPriceRange(r); setPage(1); },
+    hasActiveFilters,
+    onClearFilters: handleClearFilters,
   };
 
   return (
@@ -112,101 +112,54 @@ const Collections = () => {
           {isLoading ? 'Loading...' : `${filteredAndSorted.length} products`}
         </p>
 
-        {/* Filter tabs */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
-          {allTabs.map(tab => (
-            <button
-              key={tab.slug}
-              onClick={() => handleFilterChange(tab.slug)}
-              className={`px-4 py-2 text-xs tracking-[0.1em] font-body transition-colors rounded-sm ${
-                activeFilter === tab.slug
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:bg-primary/10'
-              }`}
-            >
-              {tab.name.toUpperCase()}
-            </button>
-          ))}
-        </div>
+        <div className="flex gap-8">
+          {/* Desktop sidebar */}
+          <CollectionsSidebarDesktop {...sidebarProps} />
 
-        {/* Sort + Filter bar */}
-        <div className="flex items-center justify-between gap-4 mb-6 border-b border-border pb-4">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 text-sm font-body text-foreground hover:text-primary transition-colors"
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-            Filters
-            {hasActiveFilters && (
-              <span className="h-2 w-2 rounded-full bg-primary" />
-            )}
-          </button>
+          {/* Main content */}
+          <div className="flex-1 min-w-0">
+            {/* Top bar: mobile filter trigger + sort */}
+            <div className="flex items-center justify-between gap-4 mb-6 border-b border-border pb-4">
+              <CollectionsSidebarMobile {...sidebarProps} />
+              <div className="hidden lg:block" /> {/* spacer on desktop */}
 
-          <Select value={sortBy} onValueChange={(v) => { setSortBy(v as SortOption); setPage(1); }}>
-            <SelectTrigger className="w-[180px] h-9 text-xs font-body">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Newest First</SelectItem>
-              <SelectItem value="price-low">Price: Low to High</SelectItem>
-              <SelectItem value="price-high">Price: High to Low</SelectItem>
-              <SelectItem value="name-az">Name: A to Z</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+              <Select value={sortBy} onValueChange={(v) => { setSortBy(v as SortOption); setPage(1); }}>
+                <SelectTrigger className="w-[180px] h-9 text-xs font-body">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest First</SelectItem>
+                  <SelectItem value="price-low">Price: Low to High</SelectItem>
+                  <SelectItem value="price-high">Price: High to Low</SelectItem>
+                  <SelectItem value="name-az">Name: A to Z</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* Expandable filter panel */}
-        {showFilters && (
-          <div className="bg-muted/50 rounded-lg p-5 mb-6 border border-border">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-display text-sm font-semibold">Price Range</h3>
-              {hasActiveFilters && (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+              {paginatedProducts.map(product => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+
+            {hasMore && (
+              <div className="flex justify-center mt-10">
                 <button
-                  onClick={() => { setPriceRange([0, 50000]); setPage(1); }}
-                  className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                  onClick={() => setPage(p => p + 1)}
+                  className="px-8 py-3 border border-primary text-primary text-xs tracking-[0.15em] font-body uppercase hover:bg-primary hover:text-primary-foreground transition-colors rounded-sm"
                 >
-                  <X className="h-3 w-3" /> Clear
+                  Load More ({filteredAndSorted.length - paginatedProducts.length} remaining)
                 </button>
-              )}
-            </div>
-            <Slider
-              value={priceRange}
-              onValueChange={(v) => { setPriceRange(v as [number, number]); setPage(1); }}
-              min={0}
-              max={50000}
-              step={500}
-              className="mb-3"
-            />
-            <div className="flex justify-between text-xs font-body text-muted-foreground">
-              <span>₹{priceRange[0].toLocaleString('en-IN')}</span>
-              <span>₹{priceRange[1].toLocaleString('en-IN')}</span>
-            </div>
-          </div>
-        )}
+              </div>
+            )}
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {paginatedProducts.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+            {!isLoading && filteredAndSorted.length === 0 && (
+              <p className="text-center text-muted-foreground font-body py-20">
+                No products found. Try adjusting your filters.
+              </p>
+            )}
+          </div>
         </div>
-
-        {/* Load More */}
-        {hasMore && (
-          <div className="flex justify-center mt-10">
-            <button
-              onClick={() => setPage(p => p + 1)}
-              className="px-8 py-3 border border-primary text-primary text-xs tracking-[0.15em] font-body uppercase hover:bg-primary hover:text-primary-foreground transition-colors rounded-sm"
-            >
-              Load More ({filteredAndSorted.length - paginatedProducts.length} remaining)
-            </button>
-          </div>
-        )}
-
-        {!isLoading && filteredAndSorted.length === 0 && (
-          <p className="text-center text-muted-foreground font-body py-20">
-            No products found. Try adjusting your filters.
-          </p>
-        )}
       </main>
       <Footer />
     </div>
