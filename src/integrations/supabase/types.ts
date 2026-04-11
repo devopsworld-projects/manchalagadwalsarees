@@ -682,6 +682,36 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       related_products: {
         Row: {
           id: string
@@ -934,6 +964,54 @@ export type Database = {
           rating?: number | null
           sort_order?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_addresses: {
+        Row: {
+          address_line1: string
+          address_line2: string | null
+          city: string
+          created_at: string
+          full_name: string
+          id: string
+          is_default: boolean
+          label: string
+          phone: string | null
+          pincode: string
+          state: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address_line1: string
+          address_line2?: string | null
+          city: string
+          created_at?: string
+          full_name: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          phone?: string | null
+          pincode: string
+          state: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address_line1?: string
+          address_line2?: string | null
+          city?: string
+          created_at?: string
+          full_name?: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          phone?: string | null
+          pincode?: string
+          state?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
