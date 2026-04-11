@@ -19,6 +19,11 @@ import ResetPassword from "./pages/ResetPassword.tsx";
 import Checkout from "./pages/Checkout.tsx";
 import Wishlist from "./pages/Wishlist.tsx";
 import Orders from "./pages/Orders.tsx";
+import Account from "./pages/Account.tsx";
+import ProfilePage from "./pages/account/ProfilePage.tsx";
+import AddressesPage from "./pages/account/AddressesPage.tsx";
+import OrdersPage from "./pages/account/OrdersPage.tsx";
+import WishlistPage from "./pages/account/WishlistPage.tsx";
 import FAQ from "./pages/FAQ.tsx";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
@@ -75,6 +80,12 @@ const App = () => (
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/orders" element={<Orders />} />
+              <Route path="/account" element={<Account />}>
+                <Route index element={<ProfilePage />} />
+                <Route path="addresses" element={<AddressesPage />} />
+                <Route path="orders" element={<OrdersPage />} />
+                <Route path="wishlist" element={<WishlistPage />} />
+              </Route>
               <Route path="/faq" element={<FAQ />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
