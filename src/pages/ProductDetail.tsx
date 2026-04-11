@@ -47,7 +47,7 @@ function ProductDetail() {
       const { data, error } = await supabase
         .from('products')
         .select('*, categories(name)')
-        .eq('sku', id!)
+        .or(`sku.eq.${id},id.eq.${id}`)
         .eq('is_active', true)
         .maybeSingle();
       if (error) throw error;
