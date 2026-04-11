@@ -9,6 +9,9 @@ import { TestimonialsSection } from '@/components/TestimonialsSection';
 import { NewsletterSection } from '@/components/NewsletterSection';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
+import { HeritageSection } from '@/components/HeritageSection';
+import { FabricGuideSection } from '@/components/FabricGuideSection';
+import { OccasionsBanner } from '@/components/OccasionsBanner';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -22,7 +25,7 @@ const jsonLd = {
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pattern-bg">
       <PageMeta
         title="Kavi Women's World"
         description="Discover the finest collection of handcrafted sarees. Traditional Kanjivaram, Banarasi & Premium silk sarees with free shipping across India."
@@ -35,7 +38,10 @@ const Index = () => {
         <HeroSection />
         <NewCollections />
         <CategoriesSection />
+        <HeritageSection />
         <BannerSlider />
+        <FabricGuideSection />
+        <OccasionsBanner />
         <BestSellers />
         <TestimonialsSection />
         <NewsletterSection />
