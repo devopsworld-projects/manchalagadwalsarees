@@ -104,6 +104,14 @@ export function Navbar() {
   const { data: topBarItems = [] } = useMenuItems('topbar');
   const logoSrc = settings?.logo_url || logo;
 
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) setUserMenuOpen(false);
+    }
+    if (userMenuOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [userMenuOpen]);
+
   return (
     <header className="sticky top-0 z-50">
       {/* Top utility bar */}
