@@ -8,6 +8,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { CartDrawer } from "@/components/CartDrawer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import ScrollToTop from "@/components/ScrollToTop";
 import Index from "./pages/Index.tsx";
 import Collections from "./pages/Collections.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
@@ -64,6 +65,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <ScrollToTop />
           <CartProvider>
             <CartDrawer />
             <WhatsAppButton />

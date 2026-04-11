@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,10 +12,17 @@ import { useCart, CartProduct } from '@/context/CartContext';
 import { toast } from 'sonner';
 
 export default function Wishlist() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { addToCart } = useCart();
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      toast.error('Please login to view your wishlist');
+      navigate('/login', { replace: true });
+    }
+  }, [user, authLoading, navigate]);
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ['wishlist-full', user?.id],
