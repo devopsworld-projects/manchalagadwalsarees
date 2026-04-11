@@ -22,7 +22,7 @@ export function MobileBottomNav() {
         {navItems.map(({ icon: Icon, label, path }) => {
           const isCart = path === '__cart__';
           const isAccount = path === '__account__';
-          const actualPath = isAccount ? (user ? '/orders' : '/login') : path;
+          const actualPath = isAccount ? (user ? '/account' : '/login') : path;
           const isActive = !isCart && !isAccount && location.pathname === path;
 
           if (isCart) {
