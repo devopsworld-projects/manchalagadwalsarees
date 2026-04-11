@@ -195,7 +195,14 @@ export function Navbar() {
                       <p className="text-xs text-muted-foreground font-body truncate">{user.email}</p>
                     </div>
                     <Link
-                      to="/orders"
+                      to="/account"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-body hover:bg-muted transition-colors"
+                    >
+                      <User className="h-4 w-4" /> My Account
+                    </Link>
+                    <Link
+                      to="/account/orders"
                       onClick={() => setUserMenuOpen(false)}
                       className="flex items-center gap-2 px-4 py-2.5 text-sm font-body hover:bg-muted transition-colors"
                     >
