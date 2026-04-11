@@ -11,10 +11,17 @@ import { useCart, CartProduct } from '@/context/CartContext';
 import { toast } from 'sonner';
 
 export default function Wishlist() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { addToCart } = useCart();
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      toast.error('Please login to view your wishlist');
+      navigate('/login', { replace: true });
+    }
+  }, [user, authLoading, navigate]);
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ['wishlist-full', user?.id],

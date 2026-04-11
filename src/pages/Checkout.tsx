@@ -77,12 +77,17 @@ export default function Checkout() {
     toast.success(`Coupon applied! ${data.discount_type === 'percentage' ? `${data.discount_value}% off` : `₹${data.discount_value} off`}`);
   };
 
-  // Redirect to collections if cart is empty
+  // Redirect to login if not authenticated
   useEffect(() => {
+    if (!user) {
+      toast.error('Please login to proceed to checkout');
+      navigate('/login', { replace: true });
+      return;
+    }
     if (items.length === 0) {
       navigate('/collections', { replace: true });
     }
-  }, [items.length, navigate]);
+  }, [items.length, navigate, user]);
 
   const [form, setForm] = useState({
     name: '',
