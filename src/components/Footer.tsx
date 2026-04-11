@@ -120,7 +120,7 @@ export function Footer() {
   );
 
   return (
-    <footer className="bg-foreground text-primary-foreground/80">
+    <footer className="hidden md:block bg-foreground text-primary-foreground/80">
       {/* Mobile collapsed footer */}
       <div className="md:hidden">
         <button
