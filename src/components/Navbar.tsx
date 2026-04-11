@@ -296,7 +296,14 @@ export function Navbar() {
             {user ? (
               <>
                 <Link
-                  to="/orders"
+                  to="/account"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-2 py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px] md:hidden"
+                >
+                  <User className="h-4 w-4" /> MY ACCOUNT
+                </Link>
+                <Link
+                  to="/account/orders"
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center gap-2 py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px] md:hidden"
                 >
