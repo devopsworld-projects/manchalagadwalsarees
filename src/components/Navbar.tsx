@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, ShoppingBag, Menu, X, ChevronDown, Phone, Heart, User } from 'lucide-react';
+import { Search, ShoppingBag, Menu, X, ChevronDown, Phone, Heart, User, LogOut, Package } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { SearchOverlay } from '@/components/SearchOverlay';
@@ -94,13 +94,23 @@ export function Navbar() {
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const { data: settings } = useStoreSettings();
   const { data: menuItems = [] } = useMenuItems();
   const { data: mobileMenuItems = [] } = useMenuItems('mobile');
   const { data: topBarItems = [] } = useMenuItems('topbar');
   const logoSrc = settings?.logo_url || logo;
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) setUserMenuOpen(false);
+    }
+    if (userMenuOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [userMenuOpen]);
 
   return (
     <header className="sticky top-0 z-50">
@@ -170,9 +180,41 @@ export function Navbar() {
             <Link to="/wishlist" className="p-2.5 hover:text-primary transition-colors hidden sm:block" aria-label="Wishlist">
               <Heart className="h-5 w-5" />
             </Link>
-            <Link to={user ? '/orders' : '/login'} className="p-2.5 hover:text-primary transition-colors hidden md:block" aria-label="My Orders">
-              <User className="h-5 w-5" />
-            </Link>
+            {user ? (
+              <div ref={userMenuRef} className="relative hidden md:block">
+                <button
+                  className="p-2.5 hover:text-primary transition-colors"
+                  aria-label="Account"
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                >
+                  <User className="h-5 w-5" />
+                </button>
+                {userMenuOpen && (
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-border rounded-lg shadow-lg z-50 py-1">
+                    <div className="px-4 py-2 border-b border-border">
+                      <p className="text-xs text-muted-foreground font-body truncate">{user.email}</p>
+                    </div>
+                    <Link
+                      to="/orders"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-body hover:bg-muted transition-colors"
+                    >
+                      <Package className="h-4 w-4" /> My Orders
+                    </Link>
+                    <button
+                      onClick={async () => { setUserMenuOpen(false); await signOut(); }}
+                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm font-body text-destructive hover:bg-muted transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" /> Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to="/login" className="p-2.5 hover:text-primary transition-colors hidden md:block" aria-label="Login">
+                <User className="h-5 w-5" />
+              </Link>
+            )}
             <button
               className="p-2.5 hover:text-primary transition-colors relative"
               onClick={() => setIsCartOpen(true)}
@@ -244,13 +286,31 @@ export function Navbar() {
             >
               <Heart className="h-4 w-4" /> WISHLIST
             </Link>
-            <Link
-              to={user ? '/orders' : '/login'}
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2 py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px] md:hidden"
-            >
-              <User className="h-4 w-4" /> {user ? 'MY ORDERS' : 'LOGIN'}
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  to="/orders"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-2 py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px] md:hidden"
+                >
+                  <Package className="h-4 w-4" /> MY ORDERS
+                </Link>
+                <button
+                  onClick={async () => { setMobileOpen(false); await signOut(); }}
+                  className="flex items-center gap-2 py-3 text-sm tracking-[0.12em] font-body text-destructive hover:text-foreground min-h-[44px] md:hidden w-full text-left"
+                >
+                  <LogOut className="h-4 w-4" /> LOGOUT
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-2 py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px] md:hidden"
+              >
+                <User className="h-4 w-4" /> LOGIN
+              </Link>
+            )}
             {topBarItems.map(item => (
               <Link
                 key={item.id}
