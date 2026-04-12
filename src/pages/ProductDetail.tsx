@@ -44,12 +44,19 @@ function ProductDetail() {
   const { data: product, isLoading } = useQuery({
     queryKey: ['storefront-product', id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id!);
+      const query = supabase
         .from('products')
         .select('*, categories(name)')
-        .or(`sku.eq.${id},id.eq.${id}`)
-        .eq('is_active', true)
-        .maybeSingle();
+        .eq('is_active', true);
+      
+      if (isUuid) {
+        query.or(`sku.eq.${id},id.eq.${id}`);
+      } else {
+        query.eq('sku', id!);
+      }
+      
+      const { data, error } = await query.maybeSingle();
       if (error) throw error;
       return data;
     },
