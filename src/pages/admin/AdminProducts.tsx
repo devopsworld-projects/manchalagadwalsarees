@@ -117,6 +117,7 @@ const AdminProducts = () => {
       attributes: (v.attributes as Record<string, string>) || {},
       price: String(v.price), original_price: v.original_price ? String(v.original_price) : '',
       stock: String(v.stock), is_active: v.is_active,
+      images: (v.images as string[]) || [],
     })));
     setShowForm(true);
   };
