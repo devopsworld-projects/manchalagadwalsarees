@@ -12,6 +12,8 @@ import { PageMeta } from '@/components/PageMeta';
 import { HeritageSection } from '@/components/HeritageSection';
 import { FabricGuideSection } from '@/components/FabricGuideSection';
 import { OccasionsBanner } from '@/components/OccasionsBanner';
+import { HowToDrapeSection } from '@/components/HowToDrapeSection';
+import { ScrollReveal } from '@/components/ScrollReveal';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -36,15 +38,36 @@ const Index = () => {
       <Navbar />
       <main>
         <HeroSection />
-        <NewCollections />
-        <CategoriesSection />
-        <HeritageSection />
-        <BannerSlider />
-        <FabricGuideSection />
-        <OccasionsBanner />
-        <BestSellers />
-        <TestimonialsSection />
-        <NewsletterSection />
+        <ScrollReveal>
+          <NewCollections />
+        </ScrollReveal>
+        <ScrollReveal>
+          <CategoriesSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <HeritageSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <BannerSlider />
+        </ScrollReveal>
+        <ScrollReveal>
+          <FabricGuideSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <HowToDrapeSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <OccasionsBanner />
+        </ScrollReveal>
+        <ScrollReveal>
+          <BestSellers />
+        </ScrollReveal>
+        <ScrollReveal>
+          <TestimonialsSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <NewsletterSection />
+        </ScrollReveal>
       </main>
       <Footer />
     </div>
