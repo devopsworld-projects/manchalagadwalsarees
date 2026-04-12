@@ -54,6 +54,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 import Terms from "./pages/Terms.tsx";
 import ShippingPolicy from "./pages/ShippingPolicy.tsx";
 import OrderConfirmation from "./pages/OrderConfirmation.tsx";
+import ColorMatchingTool from "./pages/ColorMatchingTool.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -95,6 +96,7 @@ const App = () => (
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/shipping-policy" element={<ShippingPolicy />} />
+              <Route path="/color-matching" element={<ColorMatchingTool />} />
               <Route path="/order-confirmation" element={<OrderConfirmation />} />
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
