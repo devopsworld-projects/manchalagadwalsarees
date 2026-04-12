@@ -578,6 +578,7 @@ export type Database = {
           attributes: Json
           created_at: string
           id: string
+          images: string[] | null
           is_active: boolean
           original_price: number | null
           price: number
@@ -590,6 +591,7 @@ export type Database = {
           attributes?: Json
           created_at?: string
           id?: string
+          images?: string[] | null
           is_active?: boolean
           original_price?: number | null
           price: number
@@ -602,6 +604,7 @@ export type Database = {
           attributes?: Json
           created_at?: string
           id?: string
+          images?: string[] | null
           is_active?: boolean
           original_price?: number | null
           price?: number
