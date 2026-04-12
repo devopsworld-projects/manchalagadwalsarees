@@ -66,6 +66,7 @@ const AdminProducts = () => {
           original_price: v.original_price ? Number(v.original_price) : null,
           stock: Number(v.stock || 0),
           is_active: v.is_active,
+          images: v.images || [],
         }));
         if (variantRows.length > 0) {
           const { error: vErr } = await supabase.from('product_variants').insert(variantRows);
