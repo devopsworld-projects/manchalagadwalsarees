@@ -15,9 +15,9 @@ import { toast } from 'sonner';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
   ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, MessageCircle, X,
-  Copy, Facebook, Twitter,
+  Copy,
 } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 const colorNameMap: Record<string, string> = {
   '#c41e3a': 'RED', '#d4af37': 'GOLD', '#8b0000': 'MAROON',
@@ -29,6 +29,46 @@ const colorNameMap: Record<string, string> = {
 
 const getColorName = (hex: string) =>
   colorNameMap[hex.toLowerCase()] || hex.replace('#', '').toUpperCase().slice(0, 3);
+
+/* ── Magnifier on hover ── */
+function ImageMagnifier({ src, alt }: { src: string; alt: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [showLens, setShowLens] = useState(false);
+  const [lensPos, setLensPos] = useState({ x: 0, y: 0 });
+  const ZOOM = 2.5;
+
+  const handleMove = useCallback((clientX: number, clientY: number) => {
+    const el = containerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = ((clientX - rect.left) / rect.width) * 100;
+    const y = ((clientY - rect.top) / rect.height) * 100;
+    setLensPos({ x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) });
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative w-full h-full overflow-hidden cursor-crosshair"
+      onMouseEnter={() => setShowLens(true)}
+      onMouseLeave={() => setShowLens(false)}
+      onMouseMove={e => handleMove(e.clientX, e.clientY)}
+    >
+      <img src={src} alt={alt} className="w-full h-full object-cover" loading="lazy" width={800} height={1067} />
+      {showLens && (
+        <div
+          className="absolute inset-0 pointer-events-none hidden md:block"
+          style={{
+            backgroundImage: `url(${src})`,
+            backgroundSize: `${ZOOM * 100}%`,
+            backgroundPosition: `${lensPos.x}% ${lensPos.y}%`,
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+      )}
+    </div>
+  );
+}
 
 function ProductDetail() {
   const { id } = useParams();
@@ -49,13 +89,11 @@ function ProductDetail() {
         .from('products')
         .select('*, categories(name)')
         .eq('is_active', true);
-      
       if (isUuid) {
         query.or(`sku.eq.${id},id.eq.${id}`);
       } else {
         query.eq('sku', id!);
       }
-      
       const { data, error } = await query.maybeSingle();
       if (error) throw error;
       return data;
@@ -77,7 +115,6 @@ function ProductDetail() {
     enabled: !!product?.id,
   });
 
-  // Track recently viewed — must be before any early returns
   useEffect(() => {
     if (product) {
       addToRecentlyViewed({
@@ -87,12 +124,9 @@ function ProductDetail() {
     }
   }, [product]);
 
-  // Close share menu on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (shareRef.current && !shareRef.current.contains(e.target as Node)) {
-        setShowShareMenu(false);
-      }
+      if (shareRef.current && !shareRef.current.contains(e.target as Node)) setShowShareMenu(false);
     };
     if (showShareMenu) document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -101,20 +135,13 @@ function ProductDetail() {
   if (isLoading) {
     return (
       <div className="min-h-screen">
-        <AnnouncementBar />
-        <Navbar />
+        <AnnouncementBar /><Navbar />
         <div className="container py-6 md:py-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14">
             <Skeleton className="aspect-[3/4] w-full" />
             <div className="space-y-5">
-              <Skeleton className="h-8 w-3/4" />
-              <Skeleton className="h-6 w-1/4" />
-              <Skeleton className="h-10 w-1/3" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-2/3" />
-              </div>
+              <Skeleton className="h-8 w-3/4" /><Skeleton className="h-6 w-1/4" /><Skeleton className="h-10 w-1/3" />
+              <div className="space-y-2"><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-2/3" /></div>
               <Skeleton className="h-12 w-full" />
             </div>
           </div>
@@ -127,8 +154,7 @@ function ProductDetail() {
   if (!product) {
     return (
       <div className="min-h-screen">
-        <AnnouncementBar />
-        <Navbar />
+        <AnnouncementBar /><Navbar />
         <div className="container py-20 text-center">
           <h1 className="font-display text-3xl mb-4">Product Not Found</h1>
           <Link to="/collections" className="text-primary underline font-body">Back to Collections</Link>
@@ -138,11 +164,10 @@ function ProductDetail() {
     );
   }
 
-  const images = product.images && product.images.length > 0 ? product.images : ['/placeholder.svg'];
+  const baseImages = product.images && product.images.length > 0 ? product.images : ['/placeholder.svg'];
   const colors = product.colors || [];
   const hasVariants = variants && variants.length > 0;
 
-  // Compute attribute options from variants
   const variantAttrKeys = hasVariants
     ? Array.from(new Set(variants.flatMap(v => Object.keys((v.attributes as Record<string, string>) || {}))))
     : [];
@@ -153,7 +178,6 @@ function ProductDetail() {
     ));
   });
 
-  // Find selected variant
   const selectedVariant = hasVariants
     ? variants.find(v => {
         const attrs = (v.attributes as Record<string, string>) || {};
@@ -161,11 +185,19 @@ function ProductDetail() {
       })
     : null;
 
-  const allAttributesSelected = hasVariants
-    ? variantAttrKeys.every(k => selectedAttributes[k])
-    : true;
+  const allAttributesSelected = hasVariants ? variantAttrKeys.every(k => selectedAttributes[k]) : true;
 
-  // Use variant price/stock if a variant is selected, otherwise base product
+  // Use variant images if available, else fall back to base product images
+  const variantImages = selectedVariant?.images && (selectedVariant.images as string[]).length > 0
+    ? (selectedVariant.images as string[])
+    : null;
+  const images = variantImages || baseImages;
+
+  // Reset current image when images change
+  useEffect(() => {
+    setCurrentImage(0);
+  }, [selectedVariant?.id]);
+
   const displayPrice = selectedVariant ? selectedVariant.price : product.price;
   const displayOriginalPrice = selectedVariant ? selectedVariant.original_price : product.original_price;
   const displayStock = selectedVariant ? selectedVariant.stock : (product.stock ?? 0);
@@ -187,12 +219,7 @@ function ProductDetail() {
   ];
 
   const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(productUrl);
-      toast.success('Link copied to clipboard!');
-    } catch {
-      toast.error('Unable to copy link');
-    }
+    try { await navigator.clipboard.writeText(productUrl); toast.success('Link copied!'); } catch { toast.error('Unable to copy'); }
     setShowShareMenu(false);
   };
 
@@ -212,16 +239,10 @@ function ProductDetail() {
   };
 
   const productJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.name,
-    description: product.description || '',
-    sku: product.sku,
-    image: images[0],
+    '@context': 'https://schema.org', '@type': 'Product',
+    name: product.name, description: product.description || '', sku: product.sku, image: images[0],
     offers: {
-      '@type': 'Offer',
-      price: displayPrice,
-      priceCurrency: 'INR',
+      '@type': 'Offer', price: displayPrice, priceCurrency: 'INR',
       availability: isInStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       url: `https://kaviwomensworld.lovable.app/product/${product.sku}`,
     },
@@ -232,64 +253,60 @@ function ProductDetail() {
       <PageMeta
         title={product.name}
         description={product.description || `Buy ${product.name} at ₹${product.price.toLocaleString()} — Free shipping across India.`}
-        canonicalPath={`/product/${product.sku}`}
-        ogImage={images[0]}
-        ogType="product"
-        jsonLd={productJsonLd}
+        canonicalPath={`/product/${product.sku}`} ogImage={images[0]} ogType="product" jsonLd={productJsonLd}
       />
-      <AnnouncementBar />
-      <Navbar />
+      <AnnouncementBar /><Navbar />
       <main className="container py-6 md:py-10">
-        <Link
-          to="/collections"
-          className="inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-primary transition-colors mb-6"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Collections
+        <Link to="/collections" className="inline-flex items-center gap-1.5 font-body text-sm text-muted-foreground hover:text-primary transition-colors mb-6">
+          <ArrowLeft className="h-4 w-4" /> Back to Collections
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14">
-          {/* Image carousel */}
-          <div className="relative group">
-            <div className="aspect-[3/4] overflow-hidden bg-muted relative">
-              <img
-                src={images[currentImage]}
-                alt={product.name}
-                className="w-full h-full object-cover"
-                loading="lazy"
-                width={800}
-                height={1067}
-              />
-              <button
-                onClick={() => setShowZoom(true)}
-                className="absolute top-4 right-4 bg-background/80 backdrop-blur p-2 rounded-full shadow-sm hover:bg-background transition-colors"
-                aria-label="Zoom image"
-              >
-                <ZoomIn className="h-4 w-4" />
-              </button>
+          {/* ── Image Gallery ── */}
+          <div className="space-y-3">
+            <div className="relative group">
+              <div className="aspect-[3/4] overflow-hidden bg-muted relative rounded-sm">
+                <ImageMagnifier src={images[currentImage]} alt={product.name} />
+                <button
+                  onClick={() => setShowZoom(true)}
+                  className="absolute top-4 right-4 bg-background/80 backdrop-blur p-2 rounded-full shadow-sm hover:bg-background transition-colors z-10"
+                  aria-label="Zoom image"
+                >
+                  <ZoomIn className="h-4 w-4" />
+                </button>
+              </div>
+              {images.length > 1 && (
+                <>
+                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2.5 rounded-full shadow md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10" aria-label="Previous image">
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2.5 rounded-full shadow md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10" aria-label="Next image">
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </>
+              )}
             </div>
 
+            {/* Thumbnail strip */}
             {images.length > 1 && (
-              <>
-                <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2.5 rounded-full shadow md:opacity-0 md:group-hover:opacity-100 transition-opacity" aria-label="Previous image">
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2.5 rounded-full shadow md:opacity-0 md:group-hover:opacity-100 transition-opacity" aria-label="Next image">
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-              </>
-            )}
-
-            {images.length > 1 && (
-              <div className="flex justify-center gap-2 mt-3">
-                {images.map((_, i) => (
-                  <button key={i} onClick={() => setCurrentImage(i)} className={`h-2 w-2 rounded-full transition-colors ${i === currentImage ? 'bg-primary' : 'bg-border'}`} aria-label={`Image ${i + 1}`} />
+              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                {images.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentImage(i)}
+                    className={`shrink-0 w-16 h-20 md:w-20 md:h-24 rounded-sm overflow-hidden border-2 transition-all ${
+                      i === currentImage ? 'border-primary ring-1 ring-primary/30' : 'border-transparent opacity-60 hover:opacity-100'
+                    }`}
+                    aria-label={`View image ${i + 1}`}
+                  >
+                    <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
+                  </button>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Product details */}
+          {/* ── Product Details ── */}
           <div className="space-y-5">
             <div className="flex items-start justify-between">
               <div>
@@ -308,78 +325,44 @@ function ProductDetail() {
                   <Heart className={`h-5 w-5 ${isWishlisted(product.id) ? 'fill-current' : ''}`} />
                 </button>
                 <div className="relative" ref={shareRef}>
-                  <button
-                    onClick={() => setShowShareMenu(prev => !prev)}
-                    className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors"
-                    aria-label="Share product"
-                  >
+                  <button onClick={() => setShowShareMenu(prev => !prev)} className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors" aria-label="Share product">
                     <Share2 className="h-5 w-5" />
                   </button>
-                  {/* Desktop dropdown */}
                   {showShareMenu && (
                     <div className="hidden md:block absolute right-0 top-12 z-50 bg-card border border-border rounded-lg shadow-lg py-2 w-52 animate-in fade-in slide-in-from-top-2 duration-200">
                       <p className="px-4 py-1.5 font-body text-xs text-muted-foreground font-semibold uppercase tracking-wider">Share via</p>
                       {shareLinks.map(link => (
-                        <a
-                          key={link.label}
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={() => setShowShareMenu(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 font-body text-sm hover:bg-muted transition-colors"
-                        >
-                          <span className="text-base">{link.icon}</span>
-                          {link.label}
+                        <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => setShowShareMenu(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 font-body text-sm hover:bg-muted transition-colors">
+                          <span className="text-base">{link.icon}</span>{link.label}
                         </a>
                       ))}
                       <div className="border-t border-border my-1" />
-                      <button
-                        onClick={handleCopyLink}
-                        className="flex items-center gap-3 px-4 py-2.5 font-body text-sm hover:bg-muted transition-colors w-full text-left"
-                      >
-                        <Copy className="h-4 w-4" />
-                        Copy Link
+                      <button onClick={handleCopyLink} className="flex items-center gap-3 px-4 py-2.5 font-body text-sm hover:bg-muted transition-colors w-full text-left">
+                        <Copy className="h-4 w-4" /> Copy Link
                       </button>
                     </div>
                   )}
-
-                  {/* Mobile bottom sheet */}
                   {showShareMenu && (
                     <>
                       <div className="md:hidden fixed inset-0 z-50 bg-foreground/50 backdrop-blur-sm" onClick={() => setShowShareMenu(false)} />
                       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border rounded-t-2xl shadow-2xl animate-in slide-in-from-bottom duration-300 pb-safe">
-                        <div className="flex justify-center pt-3 pb-1">
-                          <div className="w-10 h-1 rounded-full bg-border" />
-                        </div>
+                        <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-border" /></div>
                         <p className="px-5 py-2 font-body text-sm font-semibold">Share this product</p>
                         <div className="grid grid-cols-4 gap-2 px-5 py-3">
                           {shareLinks.map(link => (
-                            <a
-                              key={link.label}
-                              href={link.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={() => setShowShareMenu(false)}
-                              className="flex flex-col items-center gap-1.5 py-3 rounded-xl hover:bg-muted transition-colors"
-                            >
+                            <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => setShowShareMenu(false)}
+                              className="flex flex-col items-center gap-1.5 py-3 rounded-xl hover:bg-muted transition-colors">
                               <span className="text-2xl">{link.icon}</span>
                               <span className="font-body text-[10px] text-muted-foreground">{link.label}</span>
                             </a>
                           ))}
-                          <button
-                            onClick={handleCopyLink}
-                            className="flex flex-col items-center gap-1.5 py-3 rounded-xl hover:bg-muted transition-colors"
-                          >
+                          <button onClick={handleCopyLink} className="flex flex-col items-center gap-1.5 py-3 rounded-xl hover:bg-muted transition-colors">
                             <Copy className="h-6 w-6 text-muted-foreground" />
                             <span className="font-body text-[10px] text-muted-foreground">Copy Link</span>
                           </button>
                         </div>
-                        <button
-                          onClick={() => setShowShareMenu(false)}
-                          className="w-full py-3.5 mb-2 mx-auto font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          Cancel
-                        </button>
+                        <button onClick={() => setShowShareMenu(false)} className="w-full py-3.5 mb-2 mx-auto font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Cancel</button>
                       </div>
                     </>
                   )}
@@ -427,7 +410,6 @@ function ProductDetail() {
               </div>
             )}
 
-            {/* Variant attribute selectors */}
             {hasVariants && variantAttrKeys.map(key => (
               <div key={key}>
                 <h3 className="font-body text-sm font-semibold mb-2">{key} <span className="text-primary">*</span></h3>
@@ -442,7 +424,6 @@ function ProductDetail() {
               </div>
             ))}
 
-            {/* Free Size fallback (only when no variants) */}
             {!hasVariants && (
               <div>
                 <h3 className="font-body text-sm font-semibold mb-2">Size <span className="text-primary">*</span></h3>
@@ -473,12 +454,10 @@ function ProductDetail() {
 
               <a
                 href={`https://wa.me/919494644998?text=${whatsappMessage}`}
-                target="_blank"
-                rel="noopener noreferrer"
+                target="_blank" rel="noopener noreferrer"
                 className="w-full py-3.5 text-sm tracking-[0.1em] font-body flex items-center justify-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
               >
-                <MessageCircle className="h-4 w-4" />
-                Order on WhatsApp
+                <MessageCircle className="h-4 w-4" /> Order on WhatsApp
               </a>
             </div>
 
@@ -501,12 +480,35 @@ function ProductDetail() {
         <RecentlyViewed currentSku={product.sku} />
       </main>
 
+      {/* Fullscreen zoom modal */}
       {showZoom && (
-        <div className="fixed inset-0 z-50 bg-foreground/90 flex items-center justify-center p-4" onClick={() => setShowZoom(false)}>
-          <button className="absolute top-4 right-4 p-3 bg-background/20 rounded-full text-primary-foreground" onClick={() => setShowZoom(false)} aria-label="Close zoom">
+        <div className="fixed inset-0 z-[70] bg-foreground/95 flex items-center justify-center" onClick={() => setShowZoom(false)}>
+          <button className="absolute top-4 right-4 p-3 bg-background/20 rounded-full text-white hover:bg-background/40 transition-colors z-10" onClick={() => setShowZoom(false)} aria-label="Close zoom">
             <X className="h-6 w-6" />
           </button>
-          <img src={images[currentImage]} alt={product.name} className="max-w-full max-h-full object-contain" />
+          {/* Prev / Next in fullscreen */}
+          {images.length > 1 && (
+            <>
+              <button onClick={e => { e.stopPropagation(); prevImage(); }} className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-background/20 rounded-full text-white hover:bg-background/40 z-10" aria-label="Previous">
+                <ChevronLeft className="h-6 w-6" />
+              </button>
+              <button onClick={e => { e.stopPropagation(); nextImage(); }} className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-background/20 rounded-full text-white hover:bg-background/40 z-10" aria-label="Next">
+                <ChevronRight className="h-6 w-6" />
+              </button>
+            </>
+          )}
+          <img src={images[currentImage]} alt={product.name} className="max-w-[90vw] max-h-[90vh] object-contain" onClick={e => e.stopPropagation()} />
+          {/* Thumbnails in fullscreen */}
+          {images.length > 1 && (
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 bg-background/20 backdrop-blur-sm rounded-lg p-2">
+              {images.map((img, i) => (
+                <button key={i} onClick={e => { e.stopPropagation(); setCurrentImage(i); }}
+                  className={`w-12 h-14 rounded overflow-hidden border-2 transition-all ${i === currentImage ? 'border-white' : 'border-transparent opacity-50 hover:opacity-80'}`}>
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
