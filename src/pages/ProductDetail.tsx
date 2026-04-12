@@ -204,10 +204,6 @@ function ProductDetail() {
     : null;
   const images = variantImages || baseImages;
 
-  // Reset current image when images change
-  useEffect(() => {
-    setCurrentImage(0);
-  }, [selectedVariant?.id]);
 
   const displayPrice = selectedVariant ? selectedVariant.price : product.price;
   const displayOriginalPrice = selectedVariant ? selectedVariant.original_price : product.original_price;
