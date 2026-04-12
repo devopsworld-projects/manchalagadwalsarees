@@ -115,6 +115,17 @@ function ProductDetail() {
     enabled: !!product?.id,
   });
 
+  // Reset current image when variant changes
+  const selectedVariantId = variants?.find(v => {
+    const attrs = (v.attributes as Record<string, string>) || {};
+    const keys = Object.keys(attrs);
+    return keys.every(k => attrs[k] === selectedAttributes[k]);
+  })?.id;
+
+  useEffect(() => {
+    setCurrentImage(0);
+  }, [selectedVariantId]);
+
   useEffect(() => {
     if (product) {
       addToRecentlyViewed({
