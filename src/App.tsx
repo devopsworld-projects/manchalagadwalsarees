@@ -52,6 +52,7 @@ import AdminNewsletter from "./pages/admin/AdminNewsletter.tsx";
 import AdminReturns from "./pages/admin/AdminReturns.tsx";
 import AdminAuditLog from "./pages/admin/AdminAuditLog.tsx";
 import AdminPageSEO from "./pages/admin/AdminPageSEO.tsx";
+import AdminHeroSlides from "./pages/admin/AdminHeroSlides.tsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 import Terms from "./pages/Terms.tsx";
 import ShippingPolicy from "./pages/ShippingPolicy.tsx";
@@ -126,6 +127,7 @@ const App = () => {
                   <Route path="shipping" element={<AdminShipping />} />
                   <Route path="tax" element={<AdminTax />} />
                   <Route path="banners" element={<AdminBanners />} />
+                  <Route path="hero-slides" element={<AdminHeroSlides />} />
                   <Route path="reviews" element={<AdminReviews />} />
                   <Route path="faq" element={<AdminFAQ />} />
                   <Route path="blog" element={<AdminBlog />} />

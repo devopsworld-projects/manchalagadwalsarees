@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Package, FolderOpen, ShoppingCart, Users, Settings,
   LogOut, Home, MessageSquare, Menu, Tag, Truck, Percent, Image,
   Star, HelpCircle, FileText, MessageCircleHeart, Mail, RotateCcw,
-  ScrollText, Search, Store,
+  ScrollText, Search, Store, SlidersHorizontal,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
@@ -21,6 +21,7 @@ const storeItems = [
 ];
 
 const marketingItems = [
+  { title: 'Hero Slides', url: '/admin/hero-slides', icon: SlidersHorizontal },
   { title: 'Coupons', url: '/admin/coupons', icon: Percent },
   { title: 'Banners', url: '/admin/banners', icon: Image },
   { title: 'Blog', url: '/admin/blog', icon: FileText },
