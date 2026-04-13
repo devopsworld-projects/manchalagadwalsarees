@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Instagram, Facebook, Youtube, ChevronUp } from 'lucide-react';
+import { Phone, Mail, MapPin, Instagram, Facebook, Youtube } from 'lucide-react';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useMenuItems } from '@/hooks/useMenuItems';
 import logo from '@/assets/logo.png';
@@ -12,7 +11,6 @@ function getItemUrl(item: { slug: string | null; url: string | null }) {
 }
 
 export function Footer() {
-  const [expanded, setExpanded] = useState(false);
   const { data: settings } = useStoreSettings();
   const { data: footerMenuItems = [] } = useMenuItems('footer');
 
@@ -25,17 +23,21 @@ export function Footer() {
   const fbUrl = settings?.social_facebook || 'https://facebook.com';
   const ytUrl = settings?.social_youtube || 'https://youtube.com';
 
-  const renderFooterLinks = (isMobile = false) => {
+  const renderFooterLinks = () => {
     if (footerMenuItems.length > 0) {
       return footerMenuItems.map(group => (
         <div key={group.id}>
-          <h4 className={`font-display ${isMobile ? 'text-sm' : 'text-base'} font-bold text-background tracking-[0.15em] uppercase ${isMobile ? 'mb-3' : 'mb-5'}`}>
+          <h4 className="font-display text-[11px] font-bold text-background tracking-[0.2em] uppercase mb-6">
             {group.label}
           </h4>
-          <ul className="space-y-2.5 font-body text-sm">
+          <ul className="space-y-3">
             {(group.children || []).map(child => (
               <li key={child.id}>
-                <Link to={getItemUrl(child)} className="text-background/50 hover:text-accent transition-colors tracking-wide">
+                <Link
+                  to={getItemUrl(child)}
+                  className="group/link flex items-center gap-2 text-sm font-body text-background/40 hover:text-accent transition-colors tracking-wide"
+                >
+                  <span className="w-0 group-hover/link:w-3 h-[1px] bg-accent transition-all duration-300" />
                   {child.label}
                 </Link>
               </li>
@@ -48,11 +50,15 @@ export function Footer() {
     return (
       <>
         <div>
-          <h4 className={`font-display ${isMobile ? 'text-sm' : 'text-base'} font-bold text-background tracking-[0.15em] uppercase ${isMobile ? 'mb-3' : 'mb-5'}`}>Quick Links</h4>
-          <ul className="space-y-2.5 font-body text-sm">
+          <h4 className="font-display text-[11px] font-bold text-background tracking-[0.2em] uppercase mb-6">Quick Links</h4>
+          <ul className="space-y-3">
             {['Home', 'Collections', 'New Arrivals', 'About', 'Contact'].map(link => (
               <li key={link}>
-                <Link to={link === 'Home' ? '/' : `/${link.toLowerCase().replace(' ', '-')}`} className="text-background/50 hover:text-accent transition-colors tracking-wide">
+                <Link
+                  to={link === 'Home' ? '/' : `/${link.toLowerCase().replace(' ', '-')}`}
+                  className="group/link flex items-center gap-2 text-sm font-body text-background/40 hover:text-accent transition-colors tracking-wide"
+                >
+                  <span className="w-0 group-hover/link:w-3 h-[1px] bg-accent transition-all duration-300" />
                   {link}
                 </Link>
               </li>
@@ -60,11 +66,15 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <h4 className={`font-display ${isMobile ? 'text-sm' : 'text-base'} font-bold text-background tracking-[0.15em] uppercase ${isMobile ? 'mb-3' : 'mb-5'}`}>Categories</h4>
-          <ul className="space-y-2.5 font-body text-sm">
+          <h4 className="font-display text-[11px] font-bold text-background tracking-[0.2em] uppercase mb-6">Categories</h4>
+          <ul className="space-y-3">
             {['Pattu Sarees', 'Banarasi', 'Premium', 'Best Sellers', 'Offers'].map(cat => (
               <li key={cat}>
-                <Link to={`/collections?filter=${cat.toLowerCase().replace(' ', '-')}`} className="text-background/50 hover:text-accent transition-colors tracking-wide">
+                <Link
+                  to={`/collections?filter=${cat.toLowerCase().replace(' ', '-')}`}
+                  className="group/link flex items-center gap-2 text-sm font-body text-background/40 hover:text-accent transition-colors tracking-wide"
+                >
+                  <span className="w-0 group-hover/link:w-3 h-[1px] bg-accent transition-all duration-300" />
                   {cat}
                 </Link>
               </li>
@@ -75,102 +85,94 @@ export function Footer() {
     );
   };
 
-  const socialIcons = (
-    <div className="flex gap-3 mt-4">
-      {[
-        { url: igUrl, Icon: Instagram },
-        { url: fbUrl, Icon: Facebook },
-        { url: ytUrl, Icon: Youtube },
-      ].map(({ url, Icon }) => (
-        <a key={url} href={url} target="_blank" rel="noopener noreferrer" className="p-2.5 border border-background/10 hover:border-accent/50 hover:text-accent transition-all">
-          <Icon className="h-4 w-4" />
-        </a>
-      ))}
-    </div>
-  );
-
-  const contactSection = (isMobile = false) => (
-    <div>
-      <h4 className={`font-display ${isMobile ? 'text-sm' : 'text-base'} font-bold text-background tracking-[0.15em] uppercase ${isMobile ? 'mb-3' : 'mb-5'}`}>Contact Us</h4>
-      <ul className={`space-y-3 font-body text-sm`}>
-        <li className="flex items-center gap-3 text-background/50">
-          <Phone className="h-4 w-4 text-accent shrink-0" />
-          <span>{phone}</span>
-        </li>
-        <li className="flex items-start gap-3 text-background/50">
-          <Mail className="h-4 w-4 text-accent shrink-0 mt-0.5" />
-          <span className="break-all">{email}</span>
-        </li>
-        <li className="flex items-start gap-3 text-background/50">
-          <MapPin className="h-4 w-4 text-accent shrink-0 mt-0.5" />
-          <span>{address}</span>
-        </li>
-      </ul>
-    </div>
-  );
-
-  const policyLinks = (
-    <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 font-body text-[10px] text-background/30 tracking-wider uppercase">
-      <Link to="/privacy-policy" className="hover:text-accent transition-colors">Privacy Policy</Link>
-      <Link to="/terms" className="hover:text-accent transition-colors">Terms & Conditions</Link>
-      <Link to="/shipping-policy" className="hover:text-accent transition-colors">Shipping Policy</Link>
-    </div>
-  );
-
   return (
-    <footer className="hidden md:block bg-foreground text-background/60 relative">
-      {/* Top ornate gold border */}
+    <footer className="bg-foreground text-background/60 relative">
+      {/* Top ornate border */}
       <div className="ornate-line" />
 
-      {/* Mobile collapsed footer */}
-      <div className="md:hidden">
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="w-full flex items-center justify-between px-6 py-4 text-background/70"
-        >
-          <div className="flex items-center gap-3">
-            <img src={logoSrc} alt="Kavi Women's World" className="h-8 w-auto brightness-200" loading="lazy" width={512} height={512} />
-            <span className="font-body text-xs text-background/30">© {new Date().getFullYear()}</span>
-          </div>
-          <ChevronUp className={`h-5 w-5 transition-transform duration-300 ${expanded ? '' : 'rotate-180'}`} />
-        </button>
+      {/* ─── Main Footer Content ─── */}
+      <div className="container py-16 md:py-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-12">
+          {/* Brand column */}
+          <div className="col-span-2 md:col-span-1">
+            <img src={logoSrc} alt="Kavi Women's World" className="h-14 w-auto mb-5 brightness-200" loading="lazy" width={512} height={512} />
+            <p className="font-serif text-sm leading-relaxed text-background/35 italic mb-6 max-w-xs">
+              {description}
+            </p>
 
-        {expanded && (
-          <div className="px-6 pb-6 space-y-6 animate-in slide-in-from-bottom-2 duration-300">
-            <div>
-              <p className="font-serif text-sm leading-relaxed text-background/40 italic">{description}</p>
-              {socialIcons}
-            </div>
-            <div className="grid grid-cols-2 gap-6">
-              {renderFooterLinks(true)}
-            </div>
-            {contactSection(true)}
-            <div className="ornate-line" />
-            <div className="pt-3">
-              {policyLinks}
+            {/* Social icons */}
+            <div className="flex gap-2">
+              {[
+                { url: igUrl, Icon: Instagram },
+                { url: fbUrl, Icon: Facebook },
+                { url: ytUrl, Icon: Youtube },
+              ].map(({ url, Icon }) => (
+                <a
+                  key={url}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 border border-background/10 flex items-center justify-center text-background/40 hover:border-accent hover:text-accent hover:bg-accent/10 transition-all"
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              ))}
             </div>
           </div>
-        )}
+
+          {/* Link columns */}
+          {renderFooterLinks()}
+
+          {/* Contact column */}
+          <div>
+            <h4 className="font-display text-[11px] font-bold text-background tracking-[0.2em] uppercase mb-6">
+              Contact Us
+            </h4>
+            <ul className="space-y-4">
+              <li>
+                <a href={`tel:${phone.replace(/\s/g, '')}`} className="flex items-center gap-3 text-sm font-body text-background/40 hover:text-accent transition-colors">
+                  <span className="w-8 h-8 border border-accent/20 flex items-center justify-center shrink-0">
+                    <Phone className="h-3.5 w-3.5 text-accent" />
+                  </span>
+                  {phone}
+                </a>
+              </li>
+              <li>
+                <a href={`mailto:${email}`} className="flex items-start gap-3 text-sm font-body text-background/40 hover:text-accent transition-colors">
+                  <span className="w-8 h-8 border border-accent/20 flex items-center justify-center shrink-0">
+                    <Mail className="h-3.5 w-3.5 text-accent" />
+                  </span>
+                  <span className="break-all pt-1.5">{email}</span>
+                </a>
+              </li>
+              <li className="flex items-start gap-3 text-sm font-body text-background/40">
+                <span className="w-8 h-8 border border-accent/20 flex items-center justify-center shrink-0">
+                  <MapPin className="h-3.5 w-3.5 text-accent" />
+                </span>
+                <span className="pt-1.5">{address}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
 
-      {/* Desktop footer */}
-      <div className="container py-14 md:py-20 hidden md:block">
-        <div className={`grid md:grid-cols-${Math.min(footerMenuItems.length + 2, 4)} gap-10`}>
-          <div>
-            <img src={logoSrc} alt="Kavi Women's World" className="h-20 w-auto mb-5 brightness-200" loading="lazy" width={512} height={512} />
-            <p className="font-serif text-sm leading-relaxed text-background/40 italic">{description}</p>
-            {socialIcons}
+      {/* ─── Bottom Bar ─── */}
+      <div className="border-t border-background/8">
+        <div className="container py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          {/* Policy links */}
+          <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-1">
+            <Link to="/privacy-policy" className="text-[9px] font-display tracking-[0.2em] text-background/25 hover:text-accent transition-colors uppercase">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="text-[9px] font-display tracking-[0.2em] text-background/25 hover:text-accent transition-colors uppercase">
+              Terms & Conditions
+            </Link>
+            <Link to="/shipping-policy" className="text-[9px] font-display tracking-[0.2em] text-background/25 hover:text-accent transition-colors uppercase">
+              Shipping Policy
+            </Link>
           </div>
-          {renderFooterLinks(false)}
-          {contactSection(false)}
-        </div>
 
-        <div className="mt-12 pt-6 flex flex-col items-center gap-4 text-center">
-          <div className="ornate-line w-full" />
-          <div className="pt-4">
-            {policyLinks}
-          </div>
-          <p className="font-body text-[10px] text-background/25 tracking-[0.15em]">
+          <p className="font-body text-[10px] text-background/20 tracking-[0.1em]">
             © {new Date().getFullYear()} Kavi Women's World. All rights reserved.
           </p>
         </div>
