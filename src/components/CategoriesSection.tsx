@@ -81,7 +81,7 @@ export function CategoriesSection() {
             Shop by Category
           </h2>
           <p className="font-body text-muted-foreground mt-2">
-            {categories.length} curated collections — find your perfect saree
+            {withProducts.length} curated collections — find your perfect saree
           </p>
         </div>
 
