@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lato:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lato:wght@300;400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,42 +6,45 @@
 
 @layer base {
   :root {
-    --background: 40 33% 97%;
-    --foreground: 20 10% 15%;
+    --background: 35 30% 96%;
+    --foreground: 15 20% 12%;
 
-    --card: 40 30% 99%;
-    --card-foreground: 20 10% 15%;
+    --card: 38 28% 98%;
+    --card-foreground: 15 20% 12%;
 
-    --popover: 40 30% 99%;
-    --popover-foreground: 20 10% 15%;
+    --popover: 38 28% 98%;
+    --popover-foreground: 15 20% 12%;
 
-    --primary: 350 45% 30%;
-    --primary-foreground: 40 30% 97%;
+    --primary: 345 55% 28%;
+    --primary-foreground: 38 30% 96%;
 
-    --secondary: 40 40% 93%;
-    --secondary-foreground: 20 10% 15%;
+    --secondary: 35 30% 91%;
+    --secondary-foreground: 15 20% 12%;
 
-    --muted: 40 20% 94%;
-    --muted-foreground: 20 10% 40%;
+    --muted: 35 18% 93%;
+    --muted-foreground: 15 12% 45%;
 
-    --accent: 38 70% 50%;
-    --accent-foreground: 20 10% 10%;
+    --accent: 36 72% 48%;
+    --accent-foreground: 15 30% 8%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 35 25% 88%;
-    --input: 35 25% 88%;
-    --ring: 350 45% 30%;
+    --border: 32 22% 85%;
+    --input: 32 22% 85%;
+    --ring: 345 55% 28%;
 
-    --radius: 0.25rem;
+    --radius: 0.2rem;
 
-    --gold: 38 70% 50%;
-    --gold-light: 40 60% 70%;
-    --burgundy: 350 45% 30%;
-    --burgundy-light: 350 35% 45%;
-    --cream: 40 33% 97%;
-    --cream-dark: 38 25% 90%;
+    --gold: 36 72% 48%;
+    --gold-light: 38 55% 65%;
+    --gold-dark: 34 80% 35%;
+    --burgundy: 345 55% 28%;
+    --burgundy-light: 345 40% 42%;
+    --cream: 35 30% 96%;
+    --cream-dark: 35 22% 88%;
+    --temple-red: 0 60% 35%;
+    --temple-green: 150 30% 30%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -54,25 +57,25 @@
   }
 
   .dark {
-    --background: 20 10% 8%;
-    --foreground: 40 20% 92%;
-    --card: 20 10% 10%;
-    --card-foreground: 40 20% 92%;
-    --popover: 20 10% 10%;
-    --popover-foreground: 40 20% 92%;
-    --primary: 38 70% 50%;
-    --primary-foreground: 20 10% 8%;
-    --secondary: 20 10% 15%;
-    --secondary-foreground: 40 20% 92%;
-    --muted: 20 10% 15%;
-    --muted-foreground: 40 10% 60%;
-    --accent: 350 45% 40%;
-    --accent-foreground: 40 20% 92%;
+    --background: 15 15% 7%;
+    --foreground: 35 20% 90%;
+    --card: 15 15% 9%;
+    --card-foreground: 35 20% 90%;
+    --popover: 15 15% 9%;
+    --popover-foreground: 35 20% 90%;
+    --primary: 36 72% 48%;
+    --primary-foreground: 15 15% 7%;
+    --secondary: 15 12% 14%;
+    --secondary-foreground: 35 20% 90%;
+    --muted: 15 10% 14%;
+    --muted-foreground: 35 10% 58%;
+    --accent: 345 50% 38%;
+    --accent-foreground: 35 20% 90%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 20 10% 20%;
-    --input: 20 10% 20%;
-    --ring: 38 70% 50%;
+    --border: 15 10% 18%;
+    --input: 15 10% 18%;
+    --ring: 36 72% 48%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -95,7 +98,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cinzel', serif;
   }
 }
 
@@ -113,6 +116,10 @@
 
 @layer utilities {
   .font-display {
+    font-family: 'Cinzel', serif;
+  }
+
+  .font-serif {
     font-family: 'Cormorant Garamond', serif;
   }
 
@@ -121,7 +128,32 @@
   }
 }
 
-/* Traditional decorative divider */
+/* ─── Temple Heritage Decorative Elements ─── */
+
+/* Traditional temple border – top */
+.temple-border-top {
+  position: relative;
+}
+.temple-border-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(var(--gold) / 0.6) 15%,
+    hsl(var(--gold)) 30%,
+    hsl(var(--gold-light)) 50%,
+    hsl(var(--gold)) 70%,
+    hsl(var(--gold) / 0.6) 85%,
+    transparent
+  );
+}
+
+/* Ornate divider with center diamond */
 .saree-divider {
   position: relative;
   text-align: center;
@@ -136,34 +168,35 @@
   background: linear-gradient(
     to var(--dir, right),
     transparent,
-    hsl(var(--accent) / 0.5)
+    hsl(var(--gold) / 0.5)
   );
 }
 .saree-divider::before { left: 0; --dir: right; }
 .saree-divider::after { right: 0; --dir: left; }
 
-/* Temple border pattern using repeating gradients */
-.temple-border-top {
+/* Mandala-inspired radial background */
+.pattern-bg {
+  background-image:
+    radial-gradient(ellipse at 20% 50%, hsl(var(--gold) / 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, hsl(var(--primary) / 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, hsl(var(--gold) / 0.02) 0%, transparent 50%);
+}
+
+/* Temple pillar repeating border */
+.temple-pillar-border {
   background-image: repeating-linear-gradient(
-    90deg,
-    hsl(var(--accent) / 0.3) 0px,
-    hsl(var(--accent) / 0.3) 8px,
-    transparent 8px,
-    transparent 16px
+    0deg,
+    hsl(var(--gold) / 0.3) 0px,
+    hsl(var(--gold) / 0.3) 12px,
+    transparent 12px,
+    transparent 20px
   );
-  background-position: bottom;
-  background-size: 100% 2px;
+  background-position: left;
+  background-size: 3px 100%;
   background-repeat: no-repeat;
 }
 
-/* Paisley-inspired subtle background pattern */
-.pattern-bg {
-  background-image:
-    radial-gradient(circle at 20% 50%, hsl(var(--accent) / 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, hsl(var(--primary) / 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 60% 80%, hsl(var(--accent) / 0.02) 0%, transparent 50%);
-}
-
+/* Announcement marquee */
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -173,7 +206,7 @@
   animation: marquee 30s linear infinite;
 }
 
-/* Gold shimmer animation for special elements */
+/* Gold shimmer animation */
 @keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
@@ -182,15 +215,55 @@
 .gold-shimmer {
   background: linear-gradient(
     90deg,
-    hsl(var(--accent)) 0%,
+    hsl(var(--gold)) 0%,
     hsl(var(--gold-light)) 25%,
-    hsl(var(--accent)) 50%,
+    hsl(var(--gold)) 50%,
     hsl(var(--gold-light)) 75%,
-    hsl(var(--accent)) 100%
+    hsl(var(--gold)) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 3s linear infinite;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Ornate gold line */
+.ornate-line {
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--gold) / 0.3) 10%,
+    hsl(var(--gold)) 35%,
+    hsl(var(--gold-light)) 50%,
+    hsl(var(--gold)) 65%,
+    hsl(var(--gold) / 0.3) 90%,
+    transparent 100%
+  );
+}
+
+/* Temple diamond motif */
+.temple-diamond::before {
+  content: '◆';
+  color: hsl(var(--gold));
+  font-size: 8px;
+}
+
+/* Scroll-triggered glow */
+@keyframes temple-glow {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--gold) / 0); }
+  50% { box-shadow: 0 0 20px 2px hsl(var(--gold) / 0.15); }
+}
+
+.temple-glow-hover:hover {
+  animation: temple-glow 2s ease-in-out infinite;
+}
+
+/* Kolam-inspired subtle texture for sections */
+.kolam-texture {
+  background-image: 
+    radial-gradient(circle at 25% 25%, hsl(var(--gold) / 0.03) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, hsl(var(--gold) / 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
 }

@@ -49,10 +49,13 @@ export default {
         },
         gold: "hsl(var(--gold))",
         "gold-light": "hsl(var(--gold-light))",
+        "gold-dark": "hsl(var(--gold-dark))",
         burgundy: "hsl(var(--burgundy))",
         "burgundy-light": "hsl(var(--burgundy-light))",
         cream: "hsl(var(--cream))",
         "cream-dark": "hsl(var(--cream-dark))",
+        "temple-red": "hsl(var(--temple-red))",
+        "temple-green": "hsl(var(--temple-green))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -65,7 +68,8 @@ export default {
         },
       },
       fontFamily: {
-        display: ['"Cormorant Garamond"', 'serif'],
+        display: ['"Cinzel"', 'serif'],
+        serif: ['"Cormorant Garamond"', 'serif'],
         body: ['"Lato"', 'sans-serif'],
       },
       borderRadius: {
