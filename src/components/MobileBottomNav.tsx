@@ -18,6 +18,8 @@ export function MobileBottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-t border-border md:hidden safe-bottom">
+      {/* Top accent line */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
       <div className="flex items-center justify-around h-14">
         {navItems.map(({ icon: Icon, label, path }) => {
           const isCart = path === '__cart__';
@@ -34,11 +36,11 @@ export function MobileBottomNav() {
               >
                 <Icon className="h-5 w-5" />
                 {totalItems > 0 && (
-                  <span className="absolute top-0 right-2 bg-primary text-primary-foreground text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                  <span className="absolute top-0 right-2 bg-accent text-accent-foreground text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                     {totalItems}
                   </span>
                 )}
-                <span className="text-[10px] font-body">{label}</span>
+                <span className="text-[10px] font-display tracking-wider">{label}</span>
               </button>
             );
           }
@@ -53,7 +55,7 @@ export function MobileBottomNav() {
               )}
             >
               <Icon className="h-5 w-5" />
-              <span className="text-[10px] font-body">{label}</span>
+              <span className="text-[10px] font-display tracking-wider">{label}</span>
             </Link>
           );
         })}

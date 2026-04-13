@@ -53,50 +53,57 @@ const styles = [
 
 export function HowToDrapeSection() {
   return (
-    <section className="py-16 md:py-24 bg-primary/[0.03] relative overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent opacity-40" />
+    <section className="py-20 md:py-28 relative overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 ornate-line" />
 
       <div className="container">
         <ScrollReveal>
-          <div className="text-center mb-12">
-            <span className="font-body text-xs tracking-[0.3em] uppercase text-accent">Style Guide</span>
-            <h2 className="font-display text-3xl md:text-5xl font-bold mt-2">
-              The Art of <span className="text-primary italic">Draping</span>
+          <div className="text-center mb-14">
+            <span className="text-accent text-[8px]">◆ ◆ ◆</span>
+            <h2 className="font-display text-2xl md:text-4xl font-bold mt-3 tracking-wide">
+              The Art of Draping
             </h2>
-            <div className="w-16 h-[2px] bg-accent mx-auto mt-4" />
-            <p className="font-body text-muted-foreground mt-4 max-w-lg mx-auto text-sm">
+            <div className="w-20 ornate-line mx-auto mt-4" />
+            <p className="font-serif text-muted-foreground mt-4 max-w-lg mx-auto text-base italic">
               Every region of India has its own distinctive draping style. Master these timeless techniques.
             </p>
           </div>
         </ScrollReveal>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-6">
           {styles.map((style, i) => (
             <ScrollReveal key={style.name} delay={i * 0.1} direction={i % 2 === 0 ? 'left' : 'right'}>
-              <div className="group bg-card border border-border rounded-sm overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <div className="group bg-card border border-border overflow-hidden hover:shadow-xl transition-shadow duration-300 relative">
+                {/* Temple corners */}
+                <div className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2 border-accent/30 z-10" />
+                <div className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2 border-accent/30 z-10" />
+
                 <div className="flex flex-col sm:flex-row">
                   <div className="sm:w-2/5 relative overflow-hidden">
                     <img
                       src={style.image}
                       alt={`${style.name} draping style from ${style.origin}`}
-                      className="w-full h-48 sm:h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-48 sm:h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       loading="lazy"
                       width={400}
                       height={500}
                     />
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 sm:hidden">
-                      <h3 className="font-display text-lg font-bold text-white">{style.name}</h3>
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-foreground/60 to-transparent p-3 sm:hidden">
+                      <h3 className="font-display text-base font-bold text-white tracking-wider">{style.name}</h3>
                     </div>
                   </div>
-                  <div className="sm:w-3/5 p-5 flex flex-col justify-center">
-                    <div className="hidden sm:block">
-                      <h3 className="font-display text-xl font-bold mb-1">{style.name}</h3>
-                      <span className="font-body text-xs text-accent tracking-wider">{style.origin}</span>
+                  <div className="sm:w-3/5 p-6 flex flex-col justify-center">
+                    <div className="hidden sm:block mb-4">
+                      <h3 className="font-display text-lg font-bold tracking-wider">{style.name}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="w-4 h-[1px] bg-accent" />
+                        <span className="font-body text-[10px] text-accent tracking-[0.2em] uppercase">{style.origin}</span>
+                      </div>
                     </div>
-                    <ol className="mt-3 space-y-2">
+                    <ol className="space-y-2.5">
                       {style.steps.map((step, si) => (
                         <li key={si} className="flex items-start gap-3 font-body text-sm text-muted-foreground">
-                          <span className="flex-shrink-0 w-6 h-6 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-bold">
+                          <span className="flex-shrink-0 w-6 h-6 bg-primary/10 text-primary flex items-center justify-center text-xs font-display font-bold">
                             {si + 1}
                           </span>
                           {step}
@@ -111,7 +118,7 @@ export function HowToDrapeSection() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent opacity-40" />
+      <div className="absolute bottom-0 left-0 right-0 ornate-line" />
     </section>
   );
 }

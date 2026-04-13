@@ -13,30 +13,35 @@ export function AnnouncementBar() {
   const [visible, setVisible] = useState(true);
   const { data: settings } = useStoreSettings();
 
-  // If admin disabled announcements
   if (settings?.announcement_enabled === 'false') return null;
   if (!visible) return null;
 
-  // Parse custom announcements from pipe-separated string
   const customText = settings?.announcement_text;
   const announcements = customText
     ? customText.split('|').map(s => s.trim()).filter(Boolean)
     : defaultAnnouncements;
 
   return (
-    <div className="bg-primary text-primary-foreground relative overflow-hidden">
-      <div className="flex animate-marquee whitespace-nowrap py-2.5">
+    <div className="bg-foreground text-background relative overflow-hidden">
+      {/* Top gold line */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-accent to-transparent opacity-60" />
+      <div className="flex animate-marquee whitespace-nowrap py-2">
         {[...announcements, ...announcements].map((text, i) => (
-          <span key={i} className="mx-6 text-xs sm:text-sm font-body tracking-wide">{text}</span>
+          <span key={i} className="mx-8 text-[11px] font-body tracking-[0.08em] text-background/80">
+            <span className="text-accent mr-2">◆</span>
+            {text}
+          </span>
         ))}
       </div>
       <button
         onClick={() => setVisible(false)}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-background/50 hover:text-background transition-colors"
         aria-label="Close announcements"
       >
-        <X className="h-4 w-4" />
+        <X className="h-3.5 w-3.5" />
       </button>
+      {/* Bottom gold line */}
+      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
     </div>
   );
 }

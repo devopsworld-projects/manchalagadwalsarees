@@ -8,7 +8,6 @@ import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useMenuItems, type MenuItem } from '@/hooks/useMenuItems';
 import logo from '@/assets/logo.png';
 
-
 function getItemUrl(item: MenuItem) {
   if (item.url) return item.url;
   if (item.slug) return `/collections?filter=${item.slug}`;
@@ -37,7 +36,7 @@ function DropdownNavItem({ item, isOpen, onToggle, onClose }: {
     return (
       <Link
         to={getItemUrl(item)}
-        className="text-xs tracking-[0.2em] font-body font-normal text-foreground/80 hover:text-foreground transition-colors py-2"
+        className="text-[11px] tracking-[0.25em] font-display font-semibold text-foreground/70 hover:text-primary transition-colors py-2 uppercase"
       >
         {item.label}
       </Link>
@@ -49,7 +48,7 @@ function DropdownNavItem({ item, isOpen, onToggle, onClose }: {
       <button
         onClick={onToggle}
         onMouseEnter={onToggle}
-        className="flex items-center gap-1 text-xs tracking-[0.2em] font-body font-normal text-foreground/80 hover:text-foreground transition-colors py-2"
+        className="flex items-center gap-1 text-[11px] tracking-[0.25em] font-display font-semibold text-foreground/70 hover:text-primary transition-colors py-2 uppercase"
       >
         {item.label}
         <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -57,26 +56,27 @@ function DropdownNavItem({ item, isOpen, onToggle, onClose }: {
 
       {isOpen && (
         <div
-          className="absolute top-full left-0 bg-background border border-border shadow-lg rounded-sm min-w-[220px] py-3 z-50"
+          className="absolute top-full left-0 bg-background border border-border shadow-xl min-w-[240px] py-3 z-50"
           onMouseLeave={onClose}
         >
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent" />
           {children.map(child => (
             <Link
               key={child.id}
               to={getItemUrl(child)}
               onClick={onClose}
-              className="block px-5 py-2 text-xs tracking-[0.08em] font-body text-foreground/70 hover:text-foreground hover:bg-muted transition-colors"
+              className="block px-6 py-2.5 text-[11px] tracking-[0.1em] font-body text-foreground/60 hover:text-primary hover:bg-primary/5 transition-colors"
             >
               {child.label}
             </Link>
           ))}
           {item.slug && (
             <>
-              <div className="border-t border-border mx-4 my-2" />
+              <div className="ornate-line mx-4 my-2" />
               <Link
                 to={`/collections?filter=${item.slug}`}
                 onClick={onClose}
-                className="block px-5 py-2 text-xs tracking-[0.12em] font-body font-bold text-primary hover:text-primary/80 transition-colors"
+                className="block px-6 py-2 text-[11px] tracking-[0.15em] font-display font-bold text-primary hover:text-primary/80 transition-colors"
               >
                 VIEW ALL {item.label} →
               </Link>
@@ -116,13 +116,13 @@ export function Navbar() {
     <header className="sticky top-0 z-50">
       {/* Top utility bar */}
       <div className="bg-foreground text-background hidden md:block">
-        <div className="container flex items-center justify-between h-9">
+        <div className="container flex items-center justify-between h-8">
           <nav className="flex items-center gap-5">
             {topBarItems.map(item => (
               <Link
                 key={item.id}
                 to={getItemUrl(item)}
-                className="text-[11px] tracking-[0.1em] font-body text-background/80 hover:text-background transition-colors"
+                className="text-[10px] tracking-[0.15em] font-body text-background/60 hover:text-accent transition-colors uppercase"
               >
                 {item.label}
               </Link>
@@ -133,7 +133,7 @@ export function Navbar() {
               href="https://wa.me/919494644998"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-[11px] tracking-[0.05em] font-body text-background/80 hover:text-background transition-colors"
+              className="flex items-center gap-1.5 text-[10px] tracking-[0.05em] font-body text-background/60 hover:text-accent transition-colors"
             >
               <Phone className="h-3 w-3" />
               +91 94946 44998
@@ -143,7 +143,10 @@ export function Navbar() {
       </div>
 
       {/* Main navigation */}
-      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
+      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border relative">
+        {/* Subtle gold accent line at bottom of nav */}
+        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
+
         <div className="container flex items-center justify-between h-20 md:h-24">
           {/* Mobile menu button */}
           <button
@@ -159,8 +162,8 @@ export function Navbar() {
             <img src={logoSrc} alt="Kavi Women's World" className="h-20 sm:h-22 md:h-24 w-auto" />
           </Link>
 
-          {/* Desktop nav with dropdowns */}
-          <nav className="hidden md:flex items-center gap-7">
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-8">
             {menuItems.map(item => (
               <DropdownNavItem
                 key={item.id}
@@ -190,27 +193,28 @@ export function Navbar() {
                   <User className="h-5 w-5" />
                 </button>
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-border rounded-lg shadow-lg z-50 py-1">
+                  <div className="absolute right-0 top-full mt-1 w-52 bg-background border border-border shadow-xl z-50 py-1">
+                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent" />
                     <div className="px-4 py-2 border-b border-border">
-                      <p className="text-xs text-muted-foreground font-body truncate">{user.email}</p>
+                      <p className="text-[10px] text-muted-foreground font-body truncate tracking-wider">{user.email}</p>
                     </div>
                     <Link
                       to="/account"
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-body hover:bg-muted transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-body hover:bg-primary/5 hover:text-primary transition-colors"
                     >
                       <User className="h-4 w-4" /> My Account
                     </Link>
                     <Link
                       to="/account/orders"
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-body hover:bg-muted transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-body hover:bg-primary/5 hover:text-primary transition-colors"
                     >
                       <Package className="h-4 w-4" /> My Orders
                     </Link>
                     <button
                       onClick={async () => { setUserMenuOpen(false); await signOut(); }}
-                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm font-body text-destructive hover:bg-muted transition-colors"
+                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm font-body text-destructive hover:bg-destructive/5 transition-colors"
                     >
                       <LogOut className="h-4 w-4" /> Logout
                     </button>
@@ -229,7 +233,7 @@ export function Navbar() {
             >
               <ShoppingBag className="h-5 w-5" />
               {totalItems > 0 && (
-                <span className="absolute top-0.5 right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                <span className="absolute top-0.5 right-0.5 bg-accent text-accent-foreground text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
@@ -241,6 +245,7 @@ export function Navbar() {
       {/* Mobile nav */}
       {mobileOpen && (
         <nav className="md:hidden border-b border-border bg-background px-4 py-3 space-y-0.5 max-h-[75vh] overflow-y-auto overscroll-contain">
+          <div className="ornate-line mb-3" />
           {[...menuItems, ...mobileMenuItems].map(item => {
             const children = item.children || [];
             const hasChildren = children.length > 0;
@@ -251,7 +256,7 @@ export function Navbar() {
                   key={item.id}
                   to={getItemUrl(item)}
                   onClick={() => setMobileOpen(false)}
-                  className="block py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px]"
+                  className="block py-3 text-[12px] tracking-[0.2em] font-display font-semibold text-foreground/70 hover:text-primary min-h-[44px] uppercase"
                 >
                   {item.label}
                 </Link>
@@ -262,19 +267,19 @@ export function Navbar() {
               <div key={item.id}>
                 <button
                   onClick={() => setMobileExpanded(mobileExpanded === item.id ? null : item.id)}
-                  className="flex items-center justify-between w-full py-3 text-sm tracking-[0.12em] font-body text-foreground/80 min-h-[44px]"
+                  className="flex items-center justify-between w-full py-3 text-[12px] tracking-[0.2em] font-display font-semibold text-foreground/70 min-h-[44px] uppercase"
                 >
                   {item.label}
                   <ChevronDown className={`h-4 w-4 transition-transform ${mobileExpanded === item.id ? 'rotate-180' : ''}`} />
                 </button>
                 {mobileExpanded === item.id && (
-                  <div className="pl-4 pb-2 space-y-0.5">
+                  <div className="pl-4 pb-2 space-y-0.5 border-l-2 border-accent/30 ml-2">
                     {children.map(child => (
                       <Link
                         key={child.id}
                         to={getItemUrl(child)}
                         onClick={() => { setMobileOpen(false); setMobileExpanded(null); }}
-                        className="block py-2.5 text-sm tracking-[0.08em] font-body text-muted-foreground hover:text-foreground transition-colors min-h-[44px] flex items-center"
+                        className="block py-2.5 text-sm tracking-[0.08em] font-body text-muted-foreground hover:text-primary transition-colors min-h-[44px] flex items-center"
                       >
                         {child.label}
                       </Link>
@@ -285,44 +290,46 @@ export function Navbar() {
             );
           })}
 
-          <div className="border-t border-border pt-2 mt-2 space-y-0.5">
+          <div className="ornate-line my-3" />
+
+          <div className="space-y-0.5">
             <Link
               to="/wishlist"
               onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2 py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px] sm:hidden"
+              className="flex items-center gap-2 py-3 text-[12px] tracking-[0.2em] font-display text-foreground/70 hover:text-primary min-h-[44px] sm:hidden uppercase"
             >
-              <Heart className="h-4 w-4" /> WISHLIST
+              <Heart className="h-4 w-4" /> Wishlist
             </Link>
             {user ? (
               <>
                 <Link
                   to="/account"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px] md:hidden"
+                  className="flex items-center gap-2 py-3 text-[12px] tracking-[0.2em] font-display text-foreground/70 hover:text-primary min-h-[44px] md:hidden uppercase"
                 >
-                  <User className="h-4 w-4" /> MY ACCOUNT
+                  <User className="h-4 w-4" /> My Account
                 </Link>
                 <Link
                   to="/account/orders"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px] md:hidden"
+                  className="flex items-center gap-2 py-3 text-[12px] tracking-[0.2em] font-display text-foreground/70 hover:text-primary min-h-[44px] md:hidden uppercase"
                 >
-                  <Package className="h-4 w-4" /> MY ORDERS
+                  <Package className="h-4 w-4" /> My Orders
                 </Link>
                 <button
                   onClick={async () => { setMobileOpen(false); await signOut(); }}
-                  className="flex items-center gap-2 py-3 text-sm tracking-[0.12em] font-body text-destructive hover:text-foreground min-h-[44px] md:hidden w-full text-left"
+                  className="flex items-center gap-2 py-3 text-[12px] tracking-[0.2em] font-display text-destructive hover:text-foreground min-h-[44px] md:hidden w-full text-left uppercase"
                 >
-                  <LogOut className="h-4 w-4" /> LOGOUT
+                  <LogOut className="h-4 w-4" /> Logout
                 </button>
               </>
             ) : (
               <Link
                 to="/login"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-2 py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px] md:hidden"
+                className="flex items-center gap-2 py-3 text-[12px] tracking-[0.2em] font-display text-foreground/70 hover:text-primary min-h-[44px] md:hidden uppercase"
               >
-                <User className="h-4 w-4" /> LOGIN
+                <User className="h-4 w-4" /> Login
               </Link>
             )}
             {topBarItems.map(item => (
@@ -330,9 +337,9 @@ export function Navbar() {
                 key={item.id}
                 to={getItemUrl(item)}
                 onClick={() => setMobileOpen(false)}
-                className="block py-3 text-sm tracking-[0.12em] font-body text-foreground/80 hover:text-foreground min-h-[44px]"
+                className="block py-3 text-[12px] tracking-[0.2em] font-display text-foreground/70 hover:text-primary min-h-[44px] uppercase"
               >
-                {item.label.toUpperCase()}
+                {item.label}
               </Link>
             ))}
           </div>

@@ -27,7 +27,7 @@ const fabrics = [
   },
   {
     name: 'Sambalpuri Ikkat',
-    description: 'Odisha\'s tie-dye masterpiece. Threads are dyed before weaving to create mesmerizing geometric patterns and temple motifs.',
+    description: "Odisha's tie-dye masterpiece. Threads are dyed before weaving to create mesmerizing geometric patterns and temple motifs.",
     icon: '🎨',
     slug: 'sambalpuri-sarees',
   },
@@ -41,41 +41,51 @@ const fabrics = [
 
 export function FabricGuideSection() {
   return (
-    <section className="py-16 md:py-24 relative">
+    <section className="py-20 md:py-28 relative kolam-texture">
+      <div className="absolute top-0 left-0 right-0 ornate-line" />
+
       <div className="container">
-        <div className="text-center mb-12">
-          <span className="font-body text-xs tracking-[0.3em] uppercase text-accent">Know Your Fabrics</span>
-          <h2 className="font-display text-3xl md:text-5xl font-bold mt-2">
-            The Saree <span className="text-primary italic">Connoisseur's</span> Guide
+        <div className="text-center mb-14">
+          <span className="text-accent text-[8px]">◆ ◆ ◆</span>
+          <h2 className="font-display text-2xl md:text-4xl font-bold mt-3 tracking-wide">
+            The Connoisseur's Guide
           </h2>
-          <div className="w-16 h-[2px] bg-accent mx-auto mt-4" />
-          <p className="font-body text-muted-foreground mt-4 max-w-lg mx-auto text-sm">
+          <div className="w-20 ornate-line mx-auto mt-4" />
+          <p className="font-serif text-muted-foreground mt-4 max-w-lg mx-auto text-base italic">
             India's textile heritage spans millennia. Discover the story behind each weave.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {fabrics.map((fabric) => (
             <Link
               key={fabric.name}
               to={`/collections?filter=${fabric.slug}`}
-              className="group relative p-6 bg-card border border-border rounded-sm hover:border-accent/50 hover:shadow-lg transition-all duration-300"
+              className="group relative p-7 bg-card border border-border hover:border-accent/50 hover:shadow-xl transition-all duration-300"
             >
-              <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <span className="text-3xl mb-4 block">{fabric.icon}</span>
-              <h3 className="font-display text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+              {/* Temple corner accents */}
+              <div className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2 border-accent/30 group-hover:border-accent/60 transition-colors" />
+              <div className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2 border-accent/30 group-hover:border-accent/60 transition-colors" />
+
+              <span className="text-3xl mb-5 block">{fabric.icon}</span>
+              <h3 className="font-display text-base md:text-lg font-bold mb-2 group-hover:text-primary transition-colors tracking-wider uppercase">
                 {fabric.name}
               </h3>
               <p className="font-body text-sm text-muted-foreground leading-relaxed">
                 {fabric.description}
               </p>
-              <span className="font-body text-xs text-accent mt-4 inline-block tracking-wider group-hover:tracking-[0.2em] transition-all">
-                EXPLORE →
-              </span>
+              <div className="flex items-center gap-2 mt-5">
+                <div className="w-4 h-[1px] bg-accent/50 group-hover:w-8 transition-all" />
+                <span className="font-display text-[10px] text-accent tracking-[0.2em] uppercase">
+                  Explore
+                </span>
+              </div>
             </Link>
           ))}
         </div>
       </div>
+
+      <div className="absolute bottom-0 left-0 right-0 ornate-line" />
     </section>
   );
 }
