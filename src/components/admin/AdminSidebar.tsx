@@ -2,21 +2,6 @@ import {
   LayoutDashboard, Package, FolderOpen, ShoppingCart, Users, Settings,
   LogOut, Home, MessageSquare, Menu, Tag, Truck, Percent, Image,
   Star, HelpCircle, FileText, MessageCircleHeart, Mail, RotateCcw,
-  ScrollText, Search, Store,
-} from 'lucide-react';
-import { NavLink } from '@/components/NavLink';
-import { useLocation } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
-import {
-  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
-  SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
-  SidebarFooter, SidebarHeader, useSidebar,
-} from '@/components/ui/sidebar';
-
-import {
-  LayoutDashboard, Package, FolderOpen, ShoppingCart, Users, Settings,
-  LogOut, Home, MessageSquare, Menu, Tag, Truck, Percent, Image,
-  Star, HelpCircle, FileText, MessageCircleHeart, Mail, RotateCcw,
   ScrollText, Search, Store, SlidersHorizontal,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
