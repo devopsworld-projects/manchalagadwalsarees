@@ -8,7 +8,9 @@ import { AuthProvider } from "@/context/AuthContext";
 import { CartDrawer } from "@/components/CartDrawer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { TempleSplash } from "@/components/TempleSplash";
 import ScrollToTop from "@/components/ScrollToTop";
+import { useState, useCallback } from "react";
 import Index from "./pages/Index.tsx";
 import Collections from "./pages/Collections.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
@@ -59,74 +61,88 @@ import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <ScrollToTop />
-          <CartProvider>
-            <CartDrawer />
-            <WhatsAppButton />
-            <MobileBottomNav />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/collections" element={<Collections />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/wishlist" element={<Wishlist />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/account" element={<Account />}>
-                <Route index element={<ProfilePage />} />
-                <Route path="addresses" element={<AddressesPage />} />
-                <Route path="orders" element={<OrdersPage />} />
-                <Route path="wishlist" element={<WishlistPage />} />
-              </Route>
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/shipping-policy" element={<ShippingPolicy />} />
-              <Route path="/color-matching" element={<ColorMatchingTool />} />
-              <Route path="/order-confirmation" element={<OrderConfirmation />} />
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<AdminDashboard />} />
-                <Route path="products" element={<AdminProducts />} />
-                <Route path="categories" element={<AdminCategories />} />
-                <Route path="orders" element={<AdminOrders />} />
-                <Route path="contacts" element={<AdminContacts />} />
-                <Route path="menu" element={<AdminMenu />} />
-                <Route path="users" element={<AdminUsers />} />
-                <Route path="settings" element={<AdminSettings />} />
-                <Route path="coupons" element={<AdminCoupons />} />
-                <Route path="shipping" element={<AdminShipping />} />
-                <Route path="tax" element={<AdminTax />} />
-                <Route path="banners" element={<AdminBanners />} />
-                <Route path="reviews" element={<AdminReviews />} />
-                <Route path="faq" element={<AdminFAQ />} />
-                <Route path="blog" element={<AdminBlog />} />
-                <Route path="testimonials" element={<AdminTestimonials />} />
-                <Route path="newsletter" element={<AdminNewsletter />} />
-                <Route path="returns" element={<AdminReturns />} />
-                <Route path="audit-log" element={<AdminAuditLog />} />
-                <Route path="page-seo" element={<AdminPageSEO />} />
-              </Route>
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </CartProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const [showSplash, setShowSplash] = useState(() => {
+    // Only show once per session
+    if (sessionStorage.getItem('kavi-splash-shown')) return false;
+    return true;
+  });
+
+  const handleSplashComplete = useCallback(() => {
+    sessionStorage.setItem('kavi-splash-shown', 'true');
+    setShowSplash(false);
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        {showSplash && <TempleSplash onComplete={handleSplashComplete} />}
+        <BrowserRouter>
+          <AuthProvider>
+            <ScrollToTop />
+            <CartProvider>
+              <CartDrawer />
+              <WhatsAppButton />
+              <MobileBottomNav />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/collections" element={<Collections />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/account" element={<Account />}>
+                  <Route index element={<ProfilePage />} />
+                  <Route path="addresses" element={<AddressesPage />} />
+                  <Route path="orders" element={<OrdersPage />} />
+                  <Route path="wishlist" element={<WishlistPage />} />
+                </Route>
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/shipping-policy" element={<ShippingPolicy />} />
+                <Route path="/color-matching" element={<ColorMatchingTool />} />
+                <Route path="/order-confirmation" element={<OrderConfirmation />} />
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="products" element={<AdminProducts />} />
+                  <Route path="categories" element={<AdminCategories />} />
+                  <Route path="orders" element={<AdminOrders />} />
+                  <Route path="contacts" element={<AdminContacts />} />
+                  <Route path="menu" element={<AdminMenu />} />
+                  <Route path="users" element={<AdminUsers />} />
+                  <Route path="settings" element={<AdminSettings />} />
+                  <Route path="coupons" element={<AdminCoupons />} />
+                  <Route path="shipping" element={<AdminShipping />} />
+                  <Route path="tax" element={<AdminTax />} />
+                  <Route path="banners" element={<AdminBanners />} />
+                  <Route path="reviews" element={<AdminReviews />} />
+                  <Route path="faq" element={<AdminFAQ />} />
+                  <Route path="blog" element={<AdminBlog />} />
+                  <Route path="testimonials" element={<AdminTestimonials />} />
+                  <Route path="newsletter" element={<AdminNewsletter />} />
+                  <Route path="returns" element={<AdminReturns />} />
+                  <Route path="audit-log" element={<AdminAuditLog />} />
+                  <Route path="page-seo" element={<AdminPageSEO />} />
+                </Route>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </CartProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
