@@ -341,32 +341,14 @@ function ProductDetail() {
           </Link>
         </div>
 
-        {/* Product layout — immersive split */}
+        {/* Product layout */}
         <div className="container px-4 md:px-6 py-4 md:py-8">
-          <div className="flex flex-col lg:flex-row gap-6 lg:gap-0">
-            {/* ── Image Gallery — left side with vertical thumbnails ── */}
-            <div className="flex-1 flex gap-3 lg:pr-10">
-              {/* Vertical thumbnails — desktop only */}
-              {images.length > 1 && (
-                <div className="hidden md:flex flex-col gap-2 w-16 shrink-0">
-                  {images.map((img, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentImage(i)}
-                      className={`aspect-[3/4] overflow-hidden border-2 transition-all ${
-                        i === currentImage ? 'border-accent' : 'border-transparent opacity-50 hover:opacity-100'
-                      }`}
-                      aria-label={`View image ${i + 1}`}
-                    >
-                      <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
-                    </button>
-                  ))}
-                </div>
-              )}
-
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+            {/* ── Image Gallery ── */}
+            <div className="space-y-3">
               {/* Main image */}
-              <div className="flex-1 relative group">
-                <div className="aspect-[3/4] overflow-hidden bg-muted relative">
+              <div className="relative group">
+                <div className="aspect-[3/4] overflow-hidden bg-muted relative max-h-[70vh] lg:max-h-none">
                   <ImageMagnifier src={images[currentImage]} alt={product.name} />
 
                   {/* Badges */}
@@ -387,9 +369,9 @@ function ProductDetail() {
                     <ZoomIn className="h-4 w-4" />
                   </button>
 
-                  {/* Mobile image counter */}
+                  {/* Image counter */}
                   {images.length > 1 && (
-                    <div className="absolute bottom-3 right-3 bg-foreground/60 text-background text-[10px] font-body px-2 py-0.5 md:hidden">
+                    <div className="absolute bottom-3 right-3 bg-foreground/60 text-background text-[10px] font-body px-2 py-0.5">
                       {currentImage + 1}/{images.length}
                     </div>
                   )}
@@ -409,19 +391,25 @@ function ProductDetail() {
                     </button>
                   </>
                 )}
-
-                {/* Mobile thumbnail strip */}
-                {images.length > 1 && (
-                  <div className="flex gap-2 overflow-x-auto py-2 scrollbar-hide md:hidden">
-                    {images.map((img, i) => (
-                      <button key={i} onClick={() => setCurrentImage(i)}
-                        className={`shrink-0 w-14 h-[70px] overflow-hidden border-2 ${i === currentImage ? 'border-accent' : 'border-transparent opacity-60'}`}>
-                        <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
+
+              {/* Thumbnail grid below main image */}
+              {images.length > 1 && (
+                <div className="grid grid-cols-4 gap-2">
+                  {images.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentImage(i)}
+                      className={`aspect-[3/4] overflow-hidden border-2 transition-all ${
+                        i === currentImage ? 'border-accent' : 'border-transparent opacity-50 hover:opacity-100'
+                      }`}
+                      aria-label={`View image ${i + 1}`}
+                    >
+                      <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* ── Product Details — right side ── */}
