@@ -503,7 +503,17 @@ function ProductDetail() {
                     </button>
                     <div className="relative" ref={shareRef}>
                       <button
-                        onClick={() => setShowShareMenu(prev => !prev)}
+                        onClick={async () => {
+                          if (navigator.share) {
+                            try {
+                              await navigator.share({ title: product.name, text: shareText, url: productUrl });
+                              return;
+                            } catch (e: any) {
+                              if (e?.name === 'AbortError') return;
+                            }
+                          }
+                          setShowShareMenu(prev => !prev);
+                        }}
                         className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors"
                         aria-label="Share product"
                         aria-expanded={showShareMenu}
