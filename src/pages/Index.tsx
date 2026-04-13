@@ -12,7 +12,7 @@ import { PageMeta } from '@/components/PageMeta';
 import { HeritageSection } from '@/components/HeritageSection';
 import { FabricGuideSection } from '@/components/FabricGuideSection';
 import { OccasionsBanner } from '@/components/OccasionsBanner';
-import { ScrollReveal } from '@/components/ScrollReveal';
+
 
 const jsonLd = {
   '@context': 'https://schema.org',
