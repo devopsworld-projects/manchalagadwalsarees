@@ -54,83 +54,111 @@ export function CategoriesSection() {
 
   const withProducts = categories.filter(c => c.product_count > 0);
   if (withProducts.length === 0) return null;
-  const displayed = showAll ? withProducts : withProducts.slice(0, 8);
+  const displayed = showAll ? withProducts : withProducts.slice(0, 6);
+
+  // Masonry-style layout: first item is featured (tall), rest in grid
+  const featured = displayed[0];
+  const rest = displayed.slice(1);
 
   return (
-    <section className="py-20 md:py-28 kolam-texture relative">
-      {/* Top ornate line */}
-      <div className="absolute top-0 left-0 right-0 ornate-line" />
-
+    <section className="py-20 md:py-28 relative">
       <div className="container">
-        <div className="text-center mb-14">
-          <span className="text-accent text-[8px]">◆ ◆ ◆</span>
-          <h2 className="font-display text-2xl md:text-4xl font-bold text-foreground mt-3 tracking-wide">
-            Shop by Category
-          </h2>
-          <div className="w-20 ornate-line mx-auto mt-4" />
-          <p className="font-body text-muted-foreground mt-4 text-sm tracking-wide">
-            {withProducts.length} curated collections — find your perfect saree
+        {/* Section header — left-aligned editorial style */}
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-12 h-[2px] bg-accent" />
+              <span className="font-body text-[10px] tracking-[0.4em] uppercase text-accent">Curated Collections</span>
+            </div>
+            <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground tracking-wide">
+              Shop by Category
+            </h2>
+          </div>
+          <p className="font-serif text-base text-muted-foreground italic max-w-sm">
+            {withProducts.length} collections of India's finest handwoven traditions
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
-          {displayed.map((cat) => {
-            const localImg = categoryImages[cat.slug];
-            const imgSrc = cat.image_url || localImg;
-            return (
-              <Link
-                key={cat.id}
-                to={`/collections?filter=${cat.slug}`}
-                className="group relative aspect-[3/4] overflow-hidden temple-glow-hover"
-              >
-                {imgSrc ? (
-                  <img
-                    src={imgSrc}
-                    alt={cat.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    loading="lazy"
-                    width={640}
-                    height={800}
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-primary/30 to-primary/10" />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
-
-                {/* Temple corner accents */}
-                <div className="absolute top-2 left-2 w-5 h-5 border-t border-l border-accent/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="absolute bottom-2 right-2 w-5 h-5 border-b border-r border-accent/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                <div className="absolute bottom-4 left-4 right-4">
-                  <h3 className="font-display text-sm md:text-base font-bold text-white leading-tight mb-1 tracking-wider uppercase">
-                    {cat.name}
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-[1px] bg-accent/60" />
-                    <span className="text-[10px] font-body text-accent/80 tracking-wider">
-                      {cat.product_count} {cat.product_count === 1 ? 'product' : 'products'}
-                    </span>
-                  </div>
+        {/* Asymmetric masonry grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+          {/* Featured category — spans 2 rows on desktop */}
+          {featured && (
+            <Link
+              to={`/collections?filter=${featured.slug}`}
+              className="group relative col-span-2 md:col-span-1 md:row-span-2 overflow-hidden min-h-[300px] md:min-h-0"
+            >
+              <CategoryImage cat={featured} />
+              <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/30 to-transparent" />
+              {/* Corner ornaments */}
+              <div className="absolute top-3 left-3 w-8 h-8 border-t-2 border-l-2 border-accent/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute bottom-3 right-3 w-8 h-8 border-b-2 border-r-2 border-accent/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute bottom-6 left-6 right-6">
+                <p className="font-body text-[9px] tracking-[0.3em] text-accent uppercase mb-2">Featured</p>
+                <h3 className="font-display text-xl md:text-2xl font-bold text-white tracking-wider uppercase mb-2">
+                  {featured.name}
+                </h3>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-[1px] bg-accent/60" />
+                  <span className="text-[10px] font-body text-white/60 tracking-wider">
+                    {featured.product_count} products
+                  </span>
                 </div>
-              </Link>
-            );
-          })}
+              </div>
+            </Link>
+          )}
+
+          {/* Rest of categories in compact cards */}
+          {rest.map((cat) => (
+            <Link
+              key={cat.id}
+              to={`/collections?filter=${cat.slug}`}
+              className="group relative aspect-[4/5] overflow-hidden"
+            >
+              <CategoryImage cat={cat} />
+              <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/20 to-transparent group-hover:from-foreground/90 transition-all duration-500" />
+              <div className="absolute bottom-4 left-4 right-4">
+                <h3 className="font-display text-xs md:text-sm font-bold text-white tracking-[0.15em] uppercase mb-1">
+                  {cat.name}
+                </h3>
+                <span className="text-[9px] font-body text-accent/70 tracking-wider">
+                  {cat.product_count} {cat.product_count === 1 ? 'product' : 'products'}
+                </span>
+              </div>
+              {/* Hover reveal line */}
+              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-accent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+            </Link>
+          ))}
         </div>
 
-        {withProducts.length > 8 && (
+        {withProducts.length > 6 && (
           <div className="text-center mt-10">
             <button
               onClick={() => setShowAll(!showAll)}
-              className="font-display text-xs tracking-[0.25em] text-primary border border-primary px-10 py-3 hover:bg-primary hover:text-primary-foreground transition-all uppercase"
+              className="font-display text-[11px] tracking-[0.3em] text-primary border-2 border-primary px-12 py-3.5 hover:bg-primary hover:text-primary-foreground transition-all uppercase"
             >
               {showAll ? 'Show Less' : `View All ${withProducts.length} Categories`}
             </button>
           </div>
         )}
       </div>
-
-      {/* Bottom ornate line */}
-      <div className="absolute bottom-0 left-0 right-0 ornate-line" />
     </section>
   );
+}
+
+function CategoryImage({ cat }: { cat: any }) {
+  const localImg = categoryImages[cat.slug];
+  const imgSrc = cat.image_url || localImg;
+  if (imgSrc) {
+    return (
+      <img
+        src={imgSrc}
+        alt={cat.name}
+        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        loading="lazy"
+        width={640}
+        height={800}
+      />
+    );
+  }
+  return <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5" />;
 }
