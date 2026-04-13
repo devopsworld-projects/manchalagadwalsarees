@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
   ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, X, Copy, Check,
+  Facebook, Twitter, Mail,
 } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { ScrollReveal } from '@/components/ScrollReveal';
