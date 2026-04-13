@@ -22,43 +22,58 @@ export function NewsletterSection() {
   });
 
   return (
-    <section className="py-20 md:py-28 bg-foreground relative overflow-hidden">
-      {/* Top ornate gold border */}
-      <div className="absolute top-0 left-0 right-0 ornate-line" />
-
-      {/* Subtle mandala pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.03]">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-accent/20 rounded-full" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-accent/20 rounded-full" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] border border-accent/20 rounded-full" />
+    <section className="relative py-24 md:py-32 overflow-hidden">
+      {/* Two-tone background: left dark, right accent */}
+      <div className="absolute inset-0 flex">
+        <div className="flex-1 bg-foreground" />
+        <div className="w-1/3 bg-accent/10 hidden md:block" />
       </div>
 
-      <div className="container max-w-xl text-center relative z-10">
-        <span className="text-accent text-[8px]">◆ ◆ ◆</span>
-        <h2 className="font-display text-2xl md:text-4xl font-bold text-background mt-3 tracking-wide">
-          Join Our Family
-        </h2>
-        <div className="w-20 h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mt-4 mb-4" />
-        <p className="font-serif text-sm md:text-base text-background/50 mb-10 italic leading-relaxed">
-          Subscribe for new collections, exclusive offers, and styling tips from the world of traditional sarees.
-        </p>
-        <form onSubmit={e => { e.preventDefault(); if (email.trim()) subscribe.mutate(email.trim()); }} className="flex gap-2">
-          <Input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            required
-            className="flex-1 bg-background/10 border-background/20 text-background placeholder:text-background/30 font-body tracking-wider"
-          />
-          <Button type="submit" disabled={subscribe.isPending} className="bg-accent text-accent-foreground hover:bg-accent/90 font-display tracking-wider text-xs uppercase px-6">
-            <Send className="h-3.5 w-3.5 mr-2" /> {subscribe.isPending ? '...' : 'Subscribe'}
-          </Button>
-        </form>
+      {/* Mobile: full dark bg */}
+      <div className="absolute inset-0 bg-foreground md:hidden" />
+
+      <div className="container relative z-10">
+        <div className="max-w-lg">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-accent text-[7px]">◆</span>
+            <div className="w-8 h-[1px] bg-accent/40" />
+            <span className="font-body text-[10px] tracking-[0.4em] uppercase text-accent/70">Stay Connected</span>
+          </div>
+
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-background tracking-wide mb-4">
+            Join Our Family
+          </h2>
+
+          <div className="ornate-line w-24 mb-6" />
+
+          <p className="font-serif text-sm md:text-base text-background/40 mb-10 italic leading-relaxed">
+            Be the first to know about new collections, exclusive offers, and styling inspirations.
+          </p>
+
+          <form onSubmit={e => { e.preventDefault(); if (email.trim()) subscribe.mutate(email.trim()); }} className="flex flex-col sm:flex-row gap-3">
+            <Input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="Your email address"
+              required
+              className="flex-1 bg-background/10 border-background/15 text-background placeholder:text-background/25 font-body tracking-wider h-12"
+            />
+            <Button
+              type="submit"
+              disabled={subscribe.isPending}
+              className="bg-accent text-accent-foreground hover:bg-accent/90 font-display tracking-[0.2em] text-[11px] uppercase px-8 h-12"
+            >
+              <Send className="h-3.5 w-3.5 mr-2" />
+              {subscribe.isPending ? '...' : 'Subscribe'}
+            </Button>
+          </form>
+        </div>
       </div>
 
-      {/* Bottom ornate gold border */}
-      <div className="absolute bottom-0 left-0 right-0 ornate-line" />
+      {/* Decorative accent square on right */}
+      <div className="absolute right-20 top-1/2 -translate-y-1/2 w-32 h-32 border border-accent/20 rotate-45 hidden lg:block" />
+      <div className="absolute right-28 top-1/2 -translate-y-1/2 w-20 h-20 border border-accent/10 rotate-45 hidden lg:block" />
     </section>
   );
 }
