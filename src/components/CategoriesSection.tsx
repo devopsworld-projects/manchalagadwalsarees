@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+
 
 import kanjivaramImg from '@/assets/categories/kanjivaram.jpg';
 import banarasiImg from '@/assets/categories/banarasi.jpg';
@@ -64,9 +64,9 @@ export function CategoriesSection() {
     },
   });
 
-  const withProducts = categories.filter(c => c.product_count > 0);
-  if (withProducts.length === 0) return null;
-  const displayed = showAll ? withProducts : withProducts.slice(0, 8);
+  // Show all categories (not just those with products) so the grid looks full
+  if (categories.length === 0) return null;
+  const displayed = showAll ? categories : categories.slice(0, 8);
 
   return (
     <section className="py-24 md:py-32 relative">
@@ -79,21 +79,18 @@ export function CategoriesSection() {
           </h2>
           <div className="w-20 ornate-line mx-auto mt-5" />
           <p className="font-serif text-base md:text-lg text-muted-foreground mt-4 italic max-w-md mx-auto">
-            {withProducts.length} curated collections of India's finest handwoven traditions
+            {categories.length} curated collections of India's finest handwoven traditions
           </p>
         </div>
 
-        {/* Staggered Grid — alternating tall/short */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        {/* Clean uniform grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
           {displayed.map((cat, i) => {
-            const isTall = i % 3 === 0; // every 3rd is tall
             return (
               <Link
                 key={cat.id}
                 to={`/collections?filter=${cat.slug}`}
-                className={`group relative overflow-hidden ${
-                  isTall ? 'row-span-2 aspect-auto min-h-[360px] md:min-h-[500px]' : 'aspect-[3/4]'
-                }`}
+                className="group relative overflow-hidden aspect-[3/4]"
                 onMouseEnter={() => setHoveredIdx(i)}
                 onMouseLeave={() => setHoveredIdx(null)}
               >
@@ -135,13 +132,13 @@ export function CategoriesSection() {
           })}
         </div>
 
-        {withProducts.length > 8 && (
+        {categories.length > 8 && (
           <div className="text-center mt-14">
             <button
               onClick={() => setShowAll(!showAll)}
               className="relative font-display text-[11px] tracking-[0.3em] text-accent border border-accent px-14 py-4 hover:bg-accent hover:text-accent-foreground transition-all uppercase"
             >
-              {showAll ? 'Show Less' : `View All ${withProducts.length} Categories`}
+              {showAll ? 'Show Less' : `View All ${categories.length} Categories`}
               <span className="absolute top-0 left-0 w-3 h-3 border-t border-l border-primary" />
               <span className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-primary" />
             </button>
