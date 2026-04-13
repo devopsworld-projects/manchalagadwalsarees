@@ -94,9 +94,6 @@ export function CategoriesSection() {
                 onMouseEnter={() => setHoveredIdx(i)}
                 onMouseLeave={() => setHoveredIdx(null)}
               >
-                onMouseEnter={() => setHoveredIdx(i)}
-                onMouseLeave={() => setHoveredIdx(null)}
-              >
                 <CategoryImage cat={cat} />
                 
                 {/* Overlay */}
