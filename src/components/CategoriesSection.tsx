@@ -127,13 +127,13 @@ export function CategoriesSection() {
           })}
         </div>
 
-        {categories.length > 8 && (
+        {withProducts.length > 8 && (
           <div className="text-center mt-8">
             <button
               onClick={() => setShowAll(!showAll)}
               className="font-body text-sm tracking-[0.15em] text-primary border border-primary px-8 py-3 hover:bg-primary hover:text-primary-foreground transition-colors"
             >
-              {showAll ? 'SHOW LESS' : `VIEW ALL ${categories.length} CATEGORIES`}
+              {showAll ? 'SHOW LESS' : `VIEW ALL ${withProducts.length} CATEGORIES`}
             </button>
           </div>
         )}
