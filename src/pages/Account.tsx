@@ -31,12 +31,22 @@ export default function Account() {
       <PageMeta title="My Account" description="Manage your account settings, addresses and orders." canonicalPath="/account" />
       <AnnouncementBar />
       <Navbar />
-      <main className="container py-8 md:py-12">
-        <h1 className="font-display text-2xl md:text-3xl font-bold mb-8">My Account</h1>
 
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Sidebar */}
-          <aside className="md:w-56 shrink-0">
+      <main className="container py-8 md:py-14">
+        {/* Page header */}
+        <div className="mb-10">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-12 h-[2px] bg-accent" />
+            <span className="font-body text-[10px] tracking-[0.4em] uppercase text-accent">My Account</span>
+          </div>
+          <h1 className="font-display text-3xl md:text-4xl font-bold tracking-wide">
+            Welcome, <span className="gold-shimmer">{user.user_metadata?.full_name?.split(' ')[0] || 'Guest'}</span>
+          </h1>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+          {/* Sidebar navigation */}
+          <aside className="md:w-52 shrink-0">
             <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible pb-2 md:pb-0">
               {navItems.map(item => {
                 const active = item.exact
@@ -47,10 +57,10 @@ export default function Account() {
                     key={item.to}
                     to={item.to}
                     className={cn(
-                      'flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-sm font-body whitespace-nowrap transition-colors',
+                      'flex items-center gap-2.5 px-4 py-2.5 text-[11px] font-display font-bold tracking-[0.12em] uppercase whitespace-nowrap transition-all border-l-2',
                       active
-                        ? 'bg-primary text-primary-foreground'
-                        : 'hover:bg-muted text-muted-foreground'
+                        ? 'border-accent text-accent bg-accent/5'
+                        : 'border-transparent text-muted-foreground hover:text-foreground hover:border-accent/30'
                     )}
                   >
                     <item.icon className="h-4 w-4" />
@@ -58,9 +68,12 @@ export default function Account() {
                   </Link>
                 );
               })}
+
+              <div className="ornate-line my-2 hidden md:block" />
+
               <button
                 onClick={async () => { await signOut(); navigate('/'); }}
-                className="flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-sm font-body whitespace-nowrap text-destructive hover:bg-muted transition-colors"
+                className="flex items-center gap-2.5 px-4 py-2.5 text-[11px] font-display font-bold tracking-[0.12em] uppercase whitespace-nowrap text-destructive hover:bg-destructive/5 transition-colors border-l-2 border-transparent"
               >
                 <LogOut className="h-4 w-4" />
                 Logout
@@ -74,6 +87,7 @@ export default function Account() {
           </div>
         </div>
       </main>
+
       <Footer />
     </div>
   );
