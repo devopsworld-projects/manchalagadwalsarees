@@ -412,12 +412,12 @@ function ProductDetail() {
               )}
             </div>
 
-            {/* ── Product Details — right side ── */}
+            {/* ── Product Details ── */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="lg:w-[440px] xl:w-[480px] shrink-0 space-y-5"
+              className="space-y-5"
             >
               {/* Category & SKU top line */}
               <div className="flex items-center gap-3">
