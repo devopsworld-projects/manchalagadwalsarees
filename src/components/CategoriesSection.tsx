@@ -8,23 +8,36 @@ import kanjivaramImg from '@/assets/categories/kanjivaram.jpg';
 import banarasiImg from '@/assets/categories/banarasi.jpg';
 import softSilkImg from '@/assets/categories/soft-silk.jpg';
 import cottonImg from '@/assets/categories/cotton.jpg';
-import linenImg from '@/assets/categories/linen.jpg';
-import georgetteImg from '@/assets/categories/georgette.jpg';
-import chiffonImg from '@/assets/categories/chiffon.jpg';
-import weddingImg from '@/assets/categories/wedding.jpg';
+import maggamImg from '@/assets/categories/maggam.jpg';
+import powerloomImg from '@/assets/categories/powerloom.jpg';
+import kalamkariImg from '@/assets/categories/kalamkari.jpg';
+import mysoreSilkImg from '@/assets/categories/mysore-silk.jpg';
+import sambalpuriImg from '@/assets/categories/sambalpuri.jpg';
+import rawSilkImg from '@/assets/categories/raw-silk.jpg';
 
 const categoryImages: Record<string, string> = {
   'kanjivaram-sarees': kanjivaramImg,
   'banarasi-sarees': banarasiImg,
   'soft-silk-sarees': softSilkImg,
-  'bengali-cotton-sarees': cottonImg,
+  'maggam-sarees': maggamImg,
+  'Powerloom Sarees': powerloomImg,
+  'Pen Kalamkari': kalamkariImg,
+  'kalamkari-sarees': kalamkariImg,
+  'mysore-silk-sarees': mysoreSilkImg,
+  'Mysore Silk Sarees': mysoreSilkImg,
+  'sambalpuri-sarees': sambalpuriImg,
+  'raw-silk-sarees': rawSilkImg,
+  'Bangalore Silk Sarees': kanjivaramImg,
+  'bengali-sarees': banarasiImg,
+  'maheshwari-silk-sarees': softSilkImg,
+  'maheshwari-cotton-sarees': cottonImg,
   'jaipur-cotton-sarees': cottonImg,
   'south-cotton-sarees': cottonImg,
-  'linen-sarees': linenImg,
-  'georgette-sarees': georgetteImg,
-  'chiffon-sarees': chiffonImg,
-  'wedding-sarees': weddingImg,
-  'bridal-collection': weddingImg,
+  'dr-khadi-sarees': cottonImg,
+  'block-printed-sarees': kalamkariImg,
+  'madhubani-print-sarees': kalamkariImg,
+  'office-wear-sarees': softSilkImg,
+  'tamilnadu-sarees': kanjivaramImg,
 };
 
 export function CategoriesSection() {
