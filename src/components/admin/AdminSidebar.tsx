@@ -13,6 +13,21 @@ import {
   SidebarFooter, SidebarHeader, useSidebar,
 } from '@/components/ui/sidebar';
 
+import {
+  LayoutDashboard, Package, FolderOpen, ShoppingCart, Users, Settings,
+  LogOut, Home, MessageSquare, Menu, Tag, Truck, Percent, Image,
+  Star, HelpCircle, FileText, MessageCircleHeart, Mail, RotateCcw,
+  ScrollText, Search, Store, SlidersHorizontal,
+} from 'lucide-react';
+import { NavLink } from '@/components/NavLink';
+import { useLocation } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+import {
+  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
+  SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
+  SidebarFooter, SidebarHeader, useSidebar,
+} from '@/components/ui/sidebar';
+
 const storeItems = [
   { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
   { title: 'Products', url: '/admin/products', icon: Package },
@@ -21,6 +36,7 @@ const storeItems = [
 ];
 
 const marketingItems = [
+  { title: 'Hero Slides', url: '/admin/hero-slides', icon: SlidersHorizontal },
   { title: 'Coupons', url: '/admin/coupons', icon: Percent },
   { title: 'Banners', url: '/admin/banners', icon: Image },
   { title: 'Blog', url: '/admin/blog', icon: FileText },
