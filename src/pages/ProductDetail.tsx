@@ -671,6 +671,35 @@ function ProductDetail() {
                 ))}
               </div>
 
+              {/* Care Information */}
+              <div className="border border-border rounded-lg overflow-hidden">
+                <div className="bg-muted/50 px-4 py-2.5 border-b border-border">
+                  <h3 className="font-display text-sm font-semibold text-foreground flex items-center gap-2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 text-primary" aria-hidden="true">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" strokeLinecap="round" />
+                      <path d="M12 16v-4M12 8h.01" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    Care Information
+                  </h3>
+                </div>
+                <div className="px-4 py-3 space-y-3">
+                  {[
+                    { icon: '🧼', title: 'Dry Clean Only', desc: 'Professional dry cleaning recommended to preserve fabric quality and sheen.' },
+                    { icon: '👜', title: 'Proper Storage', desc: 'Store silk saree in a cotton bag in a dry environment. Zari tends to react to weather changes.' },
+                    { icon: '🚫', title: 'Avoid Perfume', desc: 'Avoid spraying perfume directly on the garment to prevent staining and discoloration.' },
+                    { icon: '🌬️', title: 'Air Regularly', desc: 'Air the sarees every few months to keep the fabric fresh and prevent moisture buildup.' },
+                  ].map(({ icon, title, desc }) => (
+                    <div key={title} className="flex items-start gap-3">
+                      <span className="text-base mt-0.5 shrink-0">{icon}</span>
+                      <div>
+                        <p className="font-body text-xs font-semibold text-foreground">{title}</p>
+                        <p className="font-body text-[11px] text-muted-foreground leading-relaxed">{desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               {/* SKU */}
               <p className="font-body text-[10px] text-muted-foreground pt-1">SKU: {product.sku}</p>
             </div>
