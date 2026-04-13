@@ -379,7 +379,7 @@ function ProductDetail() {
                           {shareLinks.map(link => (
                             <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => setShowShareMenu(false)}
                               className="flex items-center gap-3 px-4 py-2.5 font-body text-sm hover:bg-muted transition-colors">
-                              <span className="text-base">{link.icon}</span>{link.label}
+                              <span className={`${link.color}`}>{link.icon}</span>{link.label}
                             </a>
                           ))}
                           <div className="border-t border-border my-1" />
@@ -398,7 +398,7 @@ function ProductDetail() {
                               {shareLinks.map(link => (
                                 <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => setShowShareMenu(false)}
                                   className="flex flex-col items-center gap-1.5 py-3 rounded-xl hover:bg-muted transition-colors">
-                                  <span className="text-2xl">{link.icon}</span>
+                                  <span className={`${link.color}`}>{link.icon}</span>
                                   <span className="font-body text-[10px] text-muted-foreground">{link.label}</span>
                                 </a>
                               ))}
