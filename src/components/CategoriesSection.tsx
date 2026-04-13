@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+
 
 import kanjivaramImg from '@/assets/categories/kanjivaram.jpg';
 import banarasiImg from '@/assets/categories/banarasi.jpg';
