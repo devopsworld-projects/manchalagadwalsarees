@@ -20,6 +20,7 @@ import {
   Facebook, Twitter, Mail,
 } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { ScrollReveal } from '@/components/ScrollReveal';
 
 const colorNameMap: Record<string, string> = {
@@ -32,6 +33,16 @@ const colorNameMap: Record<string, string> = {
 
 const getColorName = (hex: string) =>
   colorNameMap[hex.toLowerCase()] || hex.replace('#', '').toUpperCase().slice(0, 3);
+
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <rect x="3.25" y="3.25" width="17.5" height="17.5" rx="5.25" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="12" cy="12" r="4.25" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" />
+    </svg>
+  );
+}
 
 /* ── Magnifier on hover (desktop only) ── */
 function ImageMagnifier({ src, alt }: { src: string; alt: string }) {
@@ -85,6 +96,8 @@ function ProductDetail() {
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
   const [showShareMenu, setShowShareMenu] = useState(false);
   const shareRef = useRef<HTMLDivElement>(null);
+  const desktopShareMenuRef = useRef<HTMLDivElement>(null);
+  const mobileShareMenuRef = useRef<HTMLDivElement>(null);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ['storefront-product', id],
@@ -139,10 +152,26 @@ function ProductDetail() {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (shareRef.current && !shareRef.current.contains(e.target as Node)) setShowShareMenu(false);
+      const target = e.target as Node;
+      const clickedTrigger = shareRef.current?.contains(target);
+      const clickedDesktopMenu = desktopShareMenuRef.current?.contains(target);
+      const clickedMobileMenu = mobileShareMenuRef.current?.contains(target);
+
+      if (!clickedTrigger && !clickedDesktopMenu && !clickedMobileMenu) {
+        setShowShareMenu(false);
+      }
     };
     if (showShareMenu) document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
+  }, [showShareMenu]);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowShareMenu(false);
+    };
+
+    if (showShareMenu) document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
   }, [showShareMenu]);
 
   if (isLoading) {
@@ -217,17 +246,76 @@ function ProductDetail() {
   const productUrl = window.location.href;
   const shareText = `Check out ${product.name} at ₹${Number(displayPrice).toLocaleString()}`;
 
-  const shareLinks = [
-    { label: 'WhatsApp', icon: <WhatsAppIcon className="h-5 w-5" />, color: 'text-[#25D366]', url: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + productUrl)}` },
-    { label: 'Facebook', icon: <Facebook className="h-5 w-5" />, color: 'text-[#1877F2]', url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}` },
-    { label: 'X', icon: <Twitter className="h-5 w-5" />, color: 'text-foreground', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(productUrl)}` },
-    { label: 'Pinterest', icon: <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>, color: 'text-[#E60023]', url: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(productUrl)}&media=${encodeURIComponent(images[0])}&description=${encodeURIComponent(shareText)}` },
-    { label: 'Email', icon: <Mail className="h-5 w-5" />, color: 'text-muted-foreground', url: `mailto:?subject=${encodeURIComponent(product.name)}&body=${encodeURIComponent(shareText + '\n' + productUrl)}` },
+  const handleInstagramShare = async () => {
+    try {
+      await navigator.clipboard.writeText(productUrl);
+      toast.success('Link copied. Paste it in Instagram story or DM.');
+    } catch {
+      toast.error('Open Instagram and paste the product link manually.');
+    }
+
+    window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
+    setShowShareMenu(false);
+  };
+
+  const shareLinks: Array<{ label: string; icon: JSX.Element; url?: string; onClick?: () => void }> = [
+    { label: 'WhatsApp', icon: <WhatsAppIcon className="h-5 w-5" />, url: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + productUrl)}` },
+    { label: 'Instagram', icon: <InstagramIcon className="h-5 w-5" />, onClick: handleInstagramShare },
+    { label: 'Facebook', icon: <Facebook className="h-5 w-5" />, url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}` },
+    { label: 'X', icon: <Twitter className="h-5 w-5" />, url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(productUrl)}` },
+    { label: 'Pinterest', icon: <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>, url: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(productUrl)}&media=${encodeURIComponent(images[0])}&description=${encodeURIComponent(shareText)}` },
+    { label: 'Email', icon: <Mail className="h-5 w-5" />, url: `mailto:?subject=${encodeURIComponent(product.name)}&body=${encodeURIComponent(shareText + '\n' + productUrl)}` },
   ];
 
   const handleCopyLink = async () => {
     try { await navigator.clipboard.writeText(productUrl); toast.success('Link copied!'); } catch { toast.error('Unable to copy'); }
     setShowShareMenu(false);
+  };
+
+  const renderShareAction = (
+    link: (typeof shareLinks)[number],
+    layout: 'desktop' | 'mobile',
+  ) => {
+    const itemClassName = layout === 'desktop'
+      ? 'flex flex-col items-center gap-2 rounded-xl bg-muted/50 px-2 py-3 text-center transition-colors hover:bg-muted'
+      : 'flex flex-col items-center gap-2 rounded-xl bg-muted/50 px-3 py-3 text-center transition-colors hover:bg-muted';
+
+    const content = (
+      <>
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground shadow-sm">
+          {link.icon}
+        </span>
+        <span className={`font-body leading-tight text-foreground ${layout === 'desktop' ? 'text-[11px]' : 'text-xs'}`}>
+          {link.label}
+        </span>
+      </>
+    );
+
+    if (link.url) {
+      return (
+        <a
+          key={link.label}
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => setShowShareMenu(false)}
+          className={itemClassName}
+        >
+          {content}
+        </a>
+      );
+    }
+
+    return (
+      <button
+        key={link.label}
+        type="button"
+        onClick={link.onClick}
+        className={itemClassName}
+      >
+        {content}
+      </button>
+    );
   };
 
   const whatsappEnquiry = encodeURIComponent(
@@ -266,6 +354,50 @@ function ProductDetail() {
   const canAddToCart = isInStock &&
     (colors.length === 0 || selectedColor !== null) &&
     allAttributesSelected;
+
+  const mobileShareSheet = showShareMenu && typeof document !== 'undefined'
+    ? createPortal(
+        <>
+          <div
+            className="md:hidden fixed inset-0 z-[70] bg-foreground/50 backdrop-blur-sm"
+            onClick={() => setShowShareMenu(false)}
+          />
+          <div
+            ref={mobileShareMenuRef}
+            className="md:hidden fixed inset-x-0 bottom-0 z-[80] rounded-t-3xl border-t border-border bg-card px-5 pt-3 pb-3 shadow-2xl safe-bottom"
+          >
+            <div className="flex justify-center pb-2">
+              <div className="h-1 w-10 rounded-full bg-border" />
+            </div>
+            <div className="pb-3">
+              <p className="font-body text-sm font-semibold text-foreground">Share this product</p>
+              <p className="font-body text-xs text-muted-foreground">Tap an option to send or copy the product link.</p>
+            </div>
+            <div className="grid grid-cols-3 gap-3 pb-4">
+              {shareLinks.map(link => renderShareAction(link, 'mobile'))}
+              <button
+                type="button"
+                onClick={handleCopyLink}
+                className="flex flex-col items-center gap-2 rounded-xl bg-muted/50 px-3 py-3 text-center transition-colors hover:bg-muted"
+              >
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground shadow-sm">
+                  <Copy className="h-5 w-5" />
+                </span>
+                <span className="font-body text-xs leading-tight text-foreground">Copy Link</span>
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowShareMenu(false)}
+              className="mb-2 w-full rounded-2xl border border-border bg-background px-4 py-3 font-body text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Cancel
+            </button>
+          </div>
+        </>,
+        document.body,
+      )
+    : null;
 
   return (
     <div className="min-h-screen pb-16 md:pb-0">
@@ -370,46 +502,32 @@ function ProductDetail() {
                       <Heart className={`h-4 w-4 md:h-5 md:w-5 ${isWishlisted(product.id) ? 'fill-current' : ''}`} />
                     </button>
                     <div className="relative" ref={shareRef}>
-                      <button onClick={() => setShowShareMenu(prev => !prev)} className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors" aria-label="Share product">
+                      <button
+                        onClick={() => setShowShareMenu(prev => !prev)}
+                        className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors"
+                        aria-label="Share product"
+                        aria-expanded={showShareMenu}
+                        aria-haspopup="dialog"
+                      >
                         <Share2 className="h-4 w-4 md:h-5 md:w-5" />
                       </button>
                       {showShareMenu && (
-                        <div className="hidden md:block absolute right-0 top-12 z-50 bg-card border border-border rounded-lg shadow-lg py-2 w-52 animate-in fade-in slide-in-from-top-2 duration-200">
-                          <p className="px-4 py-1.5 font-body text-xs text-muted-foreground font-semibold uppercase tracking-wider">Share via</p>
-                          {shareLinks.map(link => (
-                            <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => setShowShareMenu(false)}
-                              className="flex items-center gap-3 px-4 py-2.5 font-body text-sm hover:bg-muted transition-colors">
-                              <span className={`${link.color}`}>{link.icon}</span>{link.label}
-                            </a>
-                          ))}
-                          <div className="border-t border-border my-1" />
-                          <button onClick={handleCopyLink} className="flex items-center gap-3 px-4 py-2.5 font-body text-sm hover:bg-muted transition-colors w-full text-left">
-                            <Copy className="h-4 w-4" /> Copy Link
-                          </button>
-                        </div>
-                      )}
-                      {showShareMenu && (
-                        <>
-                          <div className="md:hidden fixed inset-0 z-50 bg-foreground/50 backdrop-blur-sm" onClick={() => setShowShareMenu(false)} />
-                          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border rounded-t-2xl shadow-2xl animate-in slide-in-from-bottom duration-300 pb-20">
-                            <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1 rounded-full bg-border" /></div>
-                            <p className="px-5 py-2 font-body text-sm font-semibold">Share this product</p>
-                            <div className="grid grid-cols-4 gap-2 px-5 py-3">
-                              {shareLinks.map(link => (
-                                <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => setShowShareMenu(false)}
-                                  className="flex flex-col items-center gap-1.5 py-3 rounded-xl hover:bg-muted transition-colors">
-                                  <span className={`${link.color}`}>{link.icon}</span>
-                                  <span className="font-body text-[10px] text-muted-foreground">{link.label}</span>
-                                </a>
-                              ))}
-                              <button onClick={handleCopyLink} className="flex flex-col items-center gap-1.5 py-3 rounded-xl hover:bg-muted transition-colors">
-                                <Copy className="h-6 w-6 text-muted-foreground" />
-                                <span className="font-body text-[10px] text-muted-foreground">Copy Link</span>
-                              </button>
-                            </div>
-                            <button onClick={() => setShowShareMenu(false)} className="w-full py-3.5 mb-2 font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Cancel</button>
+                        <div ref={desktopShareMenuRef} className="hidden md:block absolute right-0 top-12 z-50 w-64 rounded-2xl border border-border bg-card p-3 shadow-xl animate-in fade-in slide-in-from-top-2 duration-200">
+                          <p className="px-1 pb-3 font-body text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Share via</p>
+                          <div className="grid grid-cols-3 gap-2">
+                            {shareLinks.map(link => renderShareAction(link, 'desktop'))}
+                            <button
+                              type="button"
+                              onClick={handleCopyLink}
+                              className="flex flex-col items-center gap-2 rounded-xl bg-muted/50 px-2 py-3 text-center transition-colors hover:bg-muted"
+                            >
+                              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground shadow-sm">
+                                <Copy className="h-5 w-5" />
+                              </span>
+                              <span className="font-body text-[11px] leading-tight text-foreground">Copy Link</span>
+                            </button>
                           </div>
-                        </>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -553,6 +671,8 @@ function ProductDetail() {
         <RelatedProducts productId={product.id} currentSku={product.sku} />
         <RecentlyViewed currentSku={product.sku} />
       </main>
+
+      {mobileShareSheet}
 
       {/* Fullscreen zoom modal */}
       {showZoom && (
