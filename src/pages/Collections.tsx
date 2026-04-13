@@ -41,9 +41,21 @@ const Collections = () => {
   const { data: categories = [] } = useQuery({
     queryKey: ['storefront-categories-list'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('categories').select('*').order('sort_order');
+      const { data: cats, error } = await supabase.from('categories').select('*').order('sort_order');
       if (error) throw error;
-      return data;
+
+      // Only return categories that have at least one active product
+      const { data: productCounts } = await supabase
+        .from('products')
+        .select('category_id')
+        .eq('is_active', true);
+
+      const counts: Record<string, number> = {};
+      productCounts?.forEach(p => {
+        if (p.category_id) counts[p.category_id] = (counts[p.category_id] || 0) + 1;
+      });
+
+      return (cats || []).filter(c => (counts[c.id] || 0) > 0);
     },
   });
 
