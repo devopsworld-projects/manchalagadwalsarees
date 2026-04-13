@@ -22,15 +22,19 @@ export function BestSellers() {
   if (bestSellers.length === 0) return null;
 
   return (
-    <section className="py-16 md:py-24 bg-secondary/50">
+    <section className="py-20 md:py-28 bg-secondary/40 kolam-texture relative">
+      <div className="absolute top-0 left-0 right-0 ornate-line" />
+
       <div className="container">
-        <div className="text-center mb-10">
-          <span className="inline-block text-xs tracking-[0.2em] font-body text-muted-foreground border border-border px-4 py-1.5 mb-4 uppercase">
-            Most Loved
-          </span>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">
+        <div className="text-center mb-14">
+          <span className="text-accent text-[8px]">◆ ◆ ◆</span>
+          <h2 className="font-display text-2xl md:text-4xl font-bold text-foreground mt-3 tracking-wide">
             Best Sellers
           </h2>
+          <div className="w-20 ornate-line mx-auto mt-4" />
+          <p className="font-serif text-muted-foreground mt-3 text-base italic">
+            Most loved by our customers
+          </p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
@@ -39,15 +43,17 @@ export function BestSellers() {
           ))}
         </div>
 
-        <div className="text-center mt-10">
+        <div className="text-center mt-12">
           <Link
             to="/collections?filter=best-sellers"
-            className="inline-block border-2 border-primary text-primary px-10 py-3 text-sm tracking-[0.15em] font-body hover:bg-primary hover:text-primary-foreground transition-all"
+            className="inline-block border-2 border-primary text-primary px-12 py-3.5 text-xs tracking-[0.25em] font-display hover:bg-primary hover:text-primary-foreground transition-all uppercase"
           >
             View All
           </Link>
         </div>
       </div>
+
+      <div className="absolute bottom-0 left-0 right-0 ornate-line" />
     </section>
   );
 }

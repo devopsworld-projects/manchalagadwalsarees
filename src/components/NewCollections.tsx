@@ -32,31 +32,33 @@ export function NewCollections() {
   if (newProducts.length === 0) return null;
 
   return (
-    <section className="py-16 md:py-24">
+    <section className="py-20 md:py-28">
       <div className="container">
-        <div className="text-center mb-10">
-          <span className="inline-block text-xs tracking-[0.2em] font-body text-muted-foreground border border-border px-4 py-1.5 mb-4 uppercase">
+        <div className="text-center mb-14">
+          <span className="text-accent text-[8px]">◆ ◆ ◆</span>
+          <h2 className="font-display text-2xl md:text-4xl font-bold text-foreground mt-3 tracking-wide">
             New Arrivals
-          </span>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">
-            New Collections
           </h2>
+          <div className="w-20 ornate-line mx-auto mt-4" />
+          <p className="font-serif text-muted-foreground mt-3 text-base italic">
+            Freshly curated — the latest additions to our collection
+          </p>
         </div>
 
         <div className="relative">
           <button
             onClick={() => scroll('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur border border-border rounded-full p-2 shadow-sm hover:shadow-md transition-shadow hidden md:block"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur border border-accent/30 p-2.5 shadow-md hover:shadow-lg hover:border-accent transition-all hidden md:block"
             aria-label="Scroll left"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-5 w-5 text-primary" />
           </button>
           <button
             onClick={() => scroll('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur border border-border rounded-full p-2 shadow-sm hover:shadow-md transition-shadow hidden md:block"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/90 backdrop-blur border border-accent/30 p-2.5 shadow-md hover:shadow-lg hover:border-accent transition-all hidden md:block"
             aria-label="Scroll right"
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-5 w-5 text-primary" />
           </button>
 
           <div

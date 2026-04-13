@@ -26,21 +26,6 @@ const categoryImages: Record<string, string> = {
   'bridal-collection': weddingImg,
 };
 
-const categoryColors: Record<string, string> = {
-  'kanjivaram-sarees': 'from-rose-900/80 to-rose-700/40',
-  'banarasi-sarees': 'from-purple-900/80 to-purple-700/40',
-  'soft-silk-sarees': 'from-pink-900/80 to-pink-700/40',
-  'mysore-silk-sarees': 'from-emerald-900/80 to-emerald-700/40',
-  'jaipur-cotton-sarees': 'from-amber-900/80 to-amber-700/40',
-  'linen-sarees': 'from-stone-900/80 to-stone-700/40',
-  'georgette-sarees': 'from-fuchsia-900/80 to-fuchsia-700/40',
-  'sambalpuri-sarees': 'from-red-900/80 to-red-700/40',
-  'ikkat-sarees': 'from-indigo-900/80 to-indigo-700/40',
-  'chanderi-cotton-silk': 'from-cyan-900/80 to-cyan-700/40',
-  'kalamkari-sarees': 'from-orange-900/80 to-orange-700/40',
-  'chiffon-sarees': 'from-violet-900/80 to-violet-700/40',
-};
-
 export function CategoriesSection() {
   const [showAll, setShowAll] = useState(false);
 
@@ -68,33 +53,35 @@ export function CategoriesSection() {
   });
 
   const withProducts = categories.filter(c => c.product_count > 0);
-
   if (withProducts.length === 0) return null;
-
   const displayed = showAll ? withProducts : withProducts.slice(0, 8);
 
   return (
-    <section className="py-16 md:py-24">
+    <section className="py-20 md:py-28 kolam-texture relative">
+      {/* Top ornate line */}
+      <div className="absolute top-0 left-0 right-0 ornate-line" />
+
       <div className="container">
-        <div className="text-center mb-10">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">
+        <div className="text-center mb-14">
+          <span className="text-accent text-[8px]">◆ ◆ ◆</span>
+          <h2 className="font-display text-2xl md:text-4xl font-bold text-foreground mt-3 tracking-wide">
             Shop by Category
           </h2>
-          <p className="font-body text-muted-foreground mt-2">
+          <div className="w-20 ornate-line mx-auto mt-4" />
+          <p className="font-body text-muted-foreground mt-4 text-sm tracking-wide">
             {withProducts.length} curated collections — find your perfect saree
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
           {displayed.map((cat) => {
             const localImg = categoryImages[cat.slug];
             const imgSrc = cat.image_url || localImg;
-            const gradient = categoryColors[cat.slug] || 'from-foreground/70 to-foreground/30';
             return (
               <Link
                 key={cat.id}
                 to={`/collections?filter=${cat.slug}`}
-                className="group relative aspect-[3/4] overflow-hidden rounded-lg"
+                className="group relative aspect-[3/4] overflow-hidden temple-glow-hover"
               >
                 {imgSrc ? (
                   <img
@@ -106,21 +93,24 @@ export function CategoriesSection() {
                     height={800}
                   />
                 ) : (
-                  <div className={`w-full h-full bg-gradient-to-br ${gradient}`} />
+                  <div className="w-full h-full bg-gradient-to-br from-primary/30 to-primary/10" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/30 to-transparent" />
+
+                {/* Temple corner accents */}
+                <div className="absolute top-2 left-2 w-5 h-5 border-t border-l border-accent/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute bottom-2 right-2 w-5 h-5 border-b border-r border-accent/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+
                 <div className="absolute bottom-4 left-4 right-4">
-                  <h3 className="font-display text-base md:text-lg font-bold text-white leading-tight mb-1">
+                  <h3 className="font-display text-sm md:text-base font-bold text-white leading-tight mb-1 tracking-wider uppercase">
                     {cat.name}
                   </h3>
-                  <span className="text-[11px] font-body text-white/70 tracking-wide">
-                    {cat.product_count} {cat.product_count === 1 ? 'product' : 'products'}
-                  </span>
-                </div>
-                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="text-xs font-body text-white bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
-                    Explore →
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-[1px] bg-accent/60" />
+                    <span className="text-[10px] font-body text-accent/80 tracking-wider">
+                      {cat.product_count} {cat.product_count === 1 ? 'product' : 'products'}
+                    </span>
+                  </div>
                 </div>
               </Link>
             );
@@ -128,16 +118,19 @@ export function CategoriesSection() {
         </div>
 
         {withProducts.length > 8 && (
-          <div className="text-center mt-8">
+          <div className="text-center mt-10">
             <button
               onClick={() => setShowAll(!showAll)}
-              className="font-body text-sm tracking-[0.15em] text-primary border border-primary px-8 py-3 hover:bg-primary hover:text-primary-foreground transition-colors"
+              className="font-display text-xs tracking-[0.25em] text-primary border border-primary px-10 py-3 hover:bg-primary hover:text-primary-foreground transition-all uppercase"
             >
-              {showAll ? 'SHOW LESS' : `VIEW ALL ${withProducts.length} CATEGORIES`}
+              {showAll ? 'Show Less' : `View All ${withProducts.length} Categories`}
             </button>
           </div>
         )}
       </div>
+
+      {/* Bottom ornate line */}
+      <div className="absolute bottom-0 left-0 right-0 ornate-line" />
     </section>
   );
 }
