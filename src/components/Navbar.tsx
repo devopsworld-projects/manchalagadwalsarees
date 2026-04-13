@@ -36,7 +36,7 @@ function DropdownNavItem({ item, isOpen, onToggle, onClose }: {
     return (
       <Link
         to={getItemUrl(item)}
-        className="relative text-[11px] tracking-[0.25em] font-display font-semibold text-foreground/70 hover:text-accent transition-colors py-2 uppercase group"
+        className="relative text-[11px] tracking-[0.25em] font-display font-semibold text-foreground hover:text-accent transition-colors py-2 uppercase group"
       >
         {item.label}
         <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-accent scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
@@ -49,7 +49,7 @@ function DropdownNavItem({ item, isOpen, onToggle, onClose }: {
       <button
         onClick={onToggle}
         onMouseEnter={onToggle}
-        className="relative flex items-center gap-1 text-[11px] tracking-[0.25em] font-display font-semibold text-foreground/70 hover:text-accent transition-colors py-2 uppercase"
+        className="relative flex items-center gap-1 text-[11px] tracking-[0.25em] font-display font-semibold text-foreground hover:text-accent transition-colors py-2 uppercase"
       >
         {item.label}
         <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
@@ -72,7 +72,7 @@ function DropdownNavItem({ item, isOpen, onToggle, onClose }: {
               key={child.id}
               to={getItemUrl(child)}
               onClick={onClose}
-              className="group/item flex items-center gap-3 px-6 py-2.5 text-[11px] tracking-[0.1em] font-body text-foreground/55 hover:text-accent transition-colors"
+              className="group/item flex items-center gap-3 px-6 py-2.5 text-[11px] tracking-[0.1em] font-body font-normal text-foreground/80 hover:text-accent transition-colors"
             >
               <span className="w-3 h-[1px] bg-accent/0 group-hover/item:bg-accent transition-colors" />
               {child.label}
@@ -130,7 +130,7 @@ export function Navbar() {
               <Link
                 key={item.id}
                 to={getItemUrl(item)}
-                className="text-[9px] tracking-[0.2em] font-display text-background/50 hover:text-accent transition-colors uppercase"
+                className="text-[10px] tracking-[0.2em] font-display font-medium text-background/70 hover:text-accent transition-colors uppercase"
               >
                 {item.label}
               </Link>
@@ -140,7 +140,7 @@ export function Navbar() {
             href="https://wa.me/919494644998"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-[9px] tracking-[0.1em] font-body text-background/50 hover:text-accent transition-colors"
+            className="flex items-center gap-2 text-[10px] tracking-[0.1em] font-body font-normal text-background/70 hover:text-accent transition-colors"
           >
             <Phone className="h-3 w-3 text-accent/70" />
             +91 94946 44998
@@ -183,19 +183,19 @@ export function Navbar() {
           {/* Right actions */}
           <div className="flex items-center gap-0.5 sm:gap-1">
             <button
-              className="p-2.5 text-foreground/60 hover:text-accent transition-colors"
+              className="p-2.5 text-foreground/80 hover:text-accent transition-colors"
               aria-label="Search"
               onClick={() => setSearchOpen(true)}
             >
               <Search className="h-[18px] w-[18px]" />
             </button>
-            <Link to="/wishlist" className="p-2.5 text-foreground/60 hover:text-accent transition-colors hidden sm:block" aria-label="Wishlist">
+            <Link to="/wishlist" className="p-2.5 text-foreground/80 hover:text-accent transition-colors hidden sm:block" aria-label="Wishlist">
               <Heart className="h-[18px] w-[18px]" />
             </Link>
             {user ? (
               <div ref={userMenuRef} className="relative hidden md:block">
                 <button
-                  className="p-2.5 text-foreground/60 hover:text-accent transition-colors"
+                  className="p-2.5 text-foreground/80 hover:text-accent transition-colors"
                   aria-label="Account"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                 >
@@ -232,12 +232,12 @@ export function Navbar() {
                 )}
               </div>
             ) : (
-              <Link to="/login" className="p-2.5 text-foreground/60 hover:text-accent transition-colors hidden md:block" aria-label="Login">
+              <Link to="/login" className="p-2.5 text-foreground/80 hover:text-accent transition-colors hidden md:block" aria-label="Login">
                 <User className="h-[18px] w-[18px]" />
               </Link>
             )}
             <button
-              className="p-2.5 text-foreground/60 hover:text-accent transition-colors relative"
+              className="p-2.5 text-foreground/80 hover:text-accent transition-colors relative"
               onClick={() => setIsCartOpen(true)}
               aria-label="Cart"
             >

@@ -35,7 +35,7 @@ export function Footer() {
               <li key={child.id}>
                 <Link
                   to={getItemUrl(child)}
-                  className="group/link flex items-center gap-2 text-sm font-body text-background/40 hover:text-accent transition-colors tracking-wide"
+className="group/link flex items-center gap-2 text-sm font-body font-normal text-background/70 hover:text-accent transition-colors tracking-wide"
                 >
                   <span className="w-0 group-hover/link:w-3 h-[1px] bg-accent transition-all duration-300" />
                   {child.label}
@@ -56,7 +56,7 @@ export function Footer() {
               <li key={link}>
                 <Link
                   to={link === 'Home' ? '/' : `/${link.toLowerCase().replace(' ', '-')}`}
-                  className="group/link flex items-center gap-2 text-sm font-body text-background/40 hover:text-accent transition-colors tracking-wide"
+className="group/link flex items-center gap-2 text-sm font-body font-normal text-background/70 hover:text-accent transition-colors tracking-wide"
                 >
                   <span className="w-0 group-hover/link:w-3 h-[1px] bg-accent transition-all duration-300" />
                   {link}
@@ -72,7 +72,7 @@ export function Footer() {
               <li key={cat}>
                 <Link
                   to={`/collections?filter=${cat.toLowerCase().replace(' ', '-')}`}
-                  className="group/link flex items-center gap-2 text-sm font-body text-background/40 hover:text-accent transition-colors tracking-wide"
+                  className="group/link flex items-center gap-2 text-sm font-body font-normal text-background/70 hover:text-accent transition-colors tracking-wide"
                 >
                   <span className="w-0 group-hover/link:w-3 h-[1px] bg-accent transition-all duration-300" />
                   {cat}
@@ -96,7 +96,7 @@ export function Footer() {
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
             <img src={logoSrc} alt="Kavi Women's World" className="h-14 w-auto mb-5 brightness-200" loading="lazy" width={512} height={512} />
-            <p className="font-serif text-sm leading-relaxed text-background/35 italic mb-6 max-w-xs">
+            <p className="font-serif text-sm leading-relaxed text-background/60 italic mb-6 max-w-xs">
               {description}
             </p>
 
@@ -112,7 +112,7 @@ export function Footer() {
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 border border-background/10 flex items-center justify-center text-background/40 hover:border-accent hover:text-accent hover:bg-accent/10 transition-all"
+                  className="w-9 h-9 border border-background/20 flex items-center justify-center text-background/60 hover:border-accent hover:text-accent hover:bg-accent/10 transition-all"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -130,7 +130,7 @@ export function Footer() {
             </h4>
             <ul className="space-y-4">
               <li>
-                <a href={`tel:${phone.replace(/\s/g, '')}`} className="flex items-center gap-3 text-sm font-body text-background/40 hover:text-accent transition-colors">
+                <a href={`tel:${phone.replace(/\s/g, '')}`} className="flex items-center gap-3 text-sm font-body font-normal text-background/70 hover:text-accent transition-colors">
                   <span className="w-8 h-8 border border-accent/20 flex items-center justify-center shrink-0">
                     <Phone className="h-3.5 w-3.5 text-accent" />
                   </span>
@@ -138,14 +138,14 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href={`mailto:${email}`} className="flex items-start gap-3 text-sm font-body text-background/40 hover:text-accent transition-colors">
+                <a href={`mailto:${email}`} className="flex items-start gap-3 text-sm font-body font-normal text-background/70 hover:text-accent transition-colors">
                   <span className="w-8 h-8 border border-accent/20 flex items-center justify-center shrink-0">
                     <Mail className="h-3.5 w-3.5 text-accent" />
                   </span>
                   <span className="break-all pt-1.5">{email}</span>
                 </a>
               </li>
-              <li className="flex items-start gap-3 text-sm font-body text-background/40">
+              <li className="flex items-start gap-3 text-sm font-body font-normal text-background/70">
                 <span className="w-8 h-8 border border-accent/20 flex items-center justify-center shrink-0">
                   <MapPin className="h-3.5 w-3.5 text-accent" />
                 </span>
@@ -161,18 +161,18 @@ export function Footer() {
         <div className="container py-6 flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Policy links */}
           <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-1">
-            <Link to="/privacy-policy" className="text-[9px] font-display tracking-[0.2em] text-background/25 hover:text-accent transition-colors uppercase">
+            <Link to="/privacy-policy" className="text-[10px] font-display tracking-[0.2em] text-background/50 hover:text-accent transition-colors uppercase">
               Privacy Policy
             </Link>
-            <Link to="/terms" className="text-[9px] font-display tracking-[0.2em] text-background/25 hover:text-accent transition-colors uppercase">
+            <Link to="/terms" className="text-[10px] font-display tracking-[0.2em] text-background/50 hover:text-accent transition-colors uppercase">
               Terms & Conditions
             </Link>
-            <Link to="/shipping-policy" className="text-[9px] font-display tracking-[0.2em] text-background/25 hover:text-accent transition-colors uppercase">
+            <Link to="/shipping-policy" className="text-[10px] font-display tracking-[0.2em] text-background/50 hover:text-accent transition-colors uppercase">
               Shipping Policy
             </Link>
           </div>
 
-          <p className="font-body text-[10px] text-background/20 tracking-[0.1em]">
+          <p className="font-body text-[11px] text-background/40 tracking-[0.1em]">
             © {new Date().getFullYear()} Kavi Women's World. All rights reserved.
           </p>
         </div>
