@@ -83,17 +83,17 @@ export function CategoriesSection() {
           </p>
         </div>
 
-        {/* Staggered Grid — alternating tall/short */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        {/* Clean uniform grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
           {displayed.map((cat, i) => {
-            const isTall = i % 3 === 0; // every 3rd is tall
             return (
               <Link
                 key={cat.id}
                 to={`/collections?filter=${cat.slug}`}
-                className={`group relative overflow-hidden ${
-                  isTall ? 'row-span-2 aspect-auto min-h-[360px] md:min-h-[500px]' : 'aspect-[3/4]'
-                }`}
+                className="group relative overflow-hidden aspect-[3/4]"
+                onMouseEnter={() => setHoveredIdx(i)}
+                onMouseLeave={() => setHoveredIdx(null)}
+              >
                 onMouseEnter={() => setHoveredIdx(i)}
                 onMouseLeave={() => setHoveredIdx(null)}
               >
