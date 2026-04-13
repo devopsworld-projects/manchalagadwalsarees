@@ -616,7 +616,7 @@ function ProductDetail() {
                   {[
                     { icon: '🧼', title: 'Dry Clean Only', desc: 'Professional dry cleaning recommended.' },
                     { icon: '👜', title: 'Proper Storage', desc: 'Store in cotton bag. Zari reacts to weather.' },
-                    { icon: '🚫', title: 'Avoid Perfume', desc: 'Don't spray directly on the garment.' },
+                    { icon: '🚫', title: 'Avoid Perfume', desc: 'Do not spray directly on the garment.' },
                     { icon: '🌬️', title: 'Air Regularly', desc: 'Air sarees every few months.' },
                   ].map(({ icon, title, desc }) => (
                     <div key={title} className="flex items-start gap-3">
