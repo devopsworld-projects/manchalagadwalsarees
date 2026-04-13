@@ -95,7 +95,7 @@ className="group/link flex items-center gap-2 text-sm font-body font-normal text
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-12">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
-            <img src={logoSrc} alt="Kavi Women's World" className="h-14 w-auto mb-5 brightness-200" loading="lazy" width={512} height={512} />
+            <img src={logoSrc} alt="Kavi Women's World" className="h-20 w-auto mb-5 brightness-200" loading="lazy" width={512} height={512} />
             <p className="font-serif text-sm leading-relaxed text-background/60 italic mb-6 max-w-xs">
               {description}
             </p>
