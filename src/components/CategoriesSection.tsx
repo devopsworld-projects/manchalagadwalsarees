@@ -67,9 +67,11 @@ export function CategoriesSection() {
     },
   });
 
-  if (categories.length === 0) return null;
+  const withProducts = categories.filter(c => c.product_count > 0);
 
-  const displayed = showAll ? categories : categories.slice(0, 8);
+  if (withProducts.length === 0) return null;
+
+  const displayed = showAll ? withProducts : withProducts.slice(0, 8);
 
   return (
     <section className="py-16 md:py-24">
@@ -79,7 +81,7 @@ export function CategoriesSection() {
             Shop by Category
           </h2>
           <p className="font-body text-muted-foreground mt-2">
-            {categories.length} curated collections — find your perfect saree
+            {withProducts.length} curated collections — find your perfect saree
           </p>
         </div>
 
@@ -125,13 +127,13 @@ export function CategoriesSection() {
           })}
         </div>
 
-        {categories.length > 8 && (
+        {withProducts.length > 8 && (
           <div className="text-center mt-8">
             <button
               onClick={() => setShowAll(!showAll)}
               className="font-body text-sm tracking-[0.15em] text-primary border border-primary px-8 py-3 hover:bg-primary hover:text-primary-foreground transition-colors"
             >
-              {showAll ? 'SHOW LESS' : `VIEW ALL ${categories.length} CATEGORIES`}
+              {showAll ? 'SHOW LESS' : `VIEW ALL ${withProducts.length} CATEGORIES`}
             </button>
           </div>
         )}
