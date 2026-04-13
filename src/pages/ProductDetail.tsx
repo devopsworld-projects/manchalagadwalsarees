@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { ScrollReveal } from '@/components/ScrollReveal';
+import { motion } from 'framer-motion';
 
 const colorNameMap: Record<string, string> = {
   '#c41e3a': 'RED', '#d4af37': 'GOLD', '#8b0000': 'MAROON',
@@ -44,7 +44,6 @@ function InstagramIcon({ className }: { className?: string }) {
   );
 }
 
-/* ── Magnifier on hover (desktop only) ── */
 function ImageMagnifier({ src, alt }: { src: string; alt: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showLens, setShowLens] = useState(false);
@@ -156,20 +155,14 @@ function ProductDetail() {
       const clickedTrigger = shareRef.current?.contains(target);
       const clickedDesktopMenu = desktopShareMenuRef.current?.contains(target);
       const clickedMobileMenu = mobileShareMenuRef.current?.contains(target);
-
-      if (!clickedTrigger && !clickedDesktopMenu && !clickedMobileMenu) {
-        setShowShareMenu(false);
-      }
+      if (!clickedTrigger && !clickedDesktopMenu && !clickedMobileMenu) setShowShareMenu(false);
     };
     if (showShareMenu) document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [showShareMenu]);
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setShowShareMenu(false);
-    };
-
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowShareMenu(false); };
     if (showShareMenu) document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [showShareMenu]);
@@ -180,7 +173,7 @@ function ProductDetail() {
         <AnnouncementBar /><Navbar />
         <div className="container py-4 md:py-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-14">
-            <Skeleton className="aspect-[3/4] w-full rounded-lg" />
+            <Skeleton className="aspect-[3/4] w-full" />
             <div className="space-y-4 pt-2">
               <Skeleton className="h-7 w-3/4" /><Skeleton className="h-5 w-1/4" /><Skeleton className="h-10 w-1/3" />
               <div className="space-y-2"><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-2/3" /></div>
@@ -198,7 +191,7 @@ function ProductDetail() {
       <div className="min-h-screen">
         <AnnouncementBar /><Navbar />
         <div className="container py-20 text-center">
-          <h1 className="font-display text-3xl mb-4">Product Not Found</h1>
+          <h1 className="font-display text-3xl mb-4 tracking-wide">Product Not Found</h1>
           <Link to="/collections" className="text-primary underline font-body">Back to Collections</Link>
         </div>
         <Footer />
@@ -247,13 +240,7 @@ function ProductDetail() {
   const shareText = `Check out ${product.name} at ₹${Number(displayPrice).toLocaleString()}`;
 
   const handleInstagramShare = async () => {
-    try {
-      await navigator.clipboard.writeText(productUrl);
-      toast.success('Link copied. Paste it in Instagram story or DM.');
-    } catch {
-      toast.error('Open Instagram and paste the product link manually.');
-    }
-
+    try { await navigator.clipboard.writeText(productUrl); toast.success('Link copied. Paste it in Instagram.'); } catch { toast.error('Copy the link manually.'); }
     window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
     setShowShareMenu(false);
   };
@@ -263,7 +250,6 @@ function ProductDetail() {
     { label: 'Instagram', icon: <InstagramIcon className="h-5 w-5" />, onClick: handleInstagramShare },
     { label: 'Facebook', icon: <Facebook className="h-5 w-5" />, url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}` },
     { label: 'X', icon: <Twitter className="h-5 w-5" />, url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(productUrl)}` },
-    { label: 'Pinterest', icon: <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>, url: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(productUrl)}&media=${encodeURIComponent(images[0])}&description=${encodeURIComponent(shareText)}` },
     { label: 'Email', icon: <Mail className="h-5 w-5" />, url: `mailto:?subject=${encodeURIComponent(product.name)}&body=${encodeURIComponent(shareText + '\n' + productUrl)}` },
   ];
 
@@ -272,59 +258,22 @@ function ProductDetail() {
     setShowShareMenu(false);
   };
 
-  const renderShareAction = (
-    link: (typeof shareLinks)[number],
-    layout: 'desktop' | 'mobile',
-  ) => {
-    const itemClassName = layout === 'desktop'
-      ? 'flex flex-col items-center gap-2 rounded-xl bg-muted/50 px-2 py-3 text-center transition-colors hover:bg-muted'
-      : 'flex flex-col items-center gap-2 rounded-xl bg-muted/50 px-3 py-3 text-center transition-colors hover:bg-muted';
-
+  const renderShareAction = (link: (typeof shareLinks)[number], layout: 'desktop' | 'mobile') => {
+    const cls = layout === 'desktop'
+      ? 'flex flex-col items-center gap-2 bg-muted/50 px-2 py-3 text-center transition-colors hover:bg-muted'
+      : 'flex flex-col items-center gap-2 bg-muted/50 px-3 py-3 text-center transition-colors hover:bg-muted';
     const content = (
       <>
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground shadow-sm">
-          {link.icon}
-        </span>
-        <span className={`font-body leading-tight text-foreground ${layout === 'desktop' ? 'text-[11px]' : 'text-xs'}`}>
-          {link.label}
-        </span>
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground shadow-sm">{link.icon}</span>
+        <span className={`font-body leading-tight text-foreground ${layout === 'desktop' ? 'text-[11px]' : 'text-xs'}`}>{link.label}</span>
       </>
     );
-
-    if (link.url) {
-      return (
-        <a
-          key={link.label}
-          href={link.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => setShowShareMenu(false)}
-          className={itemClassName}
-        >
-          {content}
-        </a>
-      );
-    }
-
-    return (
-      <button
-        key={link.label}
-        type="button"
-        onClick={link.onClick}
-        className={itemClassName}
-      >
-        {content}
-      </button>
-    );
+    if (link.url) return <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => setShowShareMenu(false)} className={cls}>{content}</a>;
+    return <button key={link.label} type="button" onClick={link.onClick} className={cls}>{content}</button>;
   };
 
-  const whatsappEnquiry = encodeURIComponent(
-    `Hi, I'm interested in ${product.name} (SKU: ${selectedVariant?.sku || product.sku}) priced at ₹${Number(displayPrice).toLocaleString()}. Please share more details.`
-  );
-
-  const whatsappConfirm = encodeURIComponent(
-    `Hi, I'd like to confirm my order for ${product.name} (SKU: ${selectedVariant?.sku || product.sku}) at ₹${Number(displayPrice).toLocaleString()} before checkout. Please confirm availability.`
-  );
+  const whatsappEnquiry = encodeURIComponent(`Hi, I'm interested in ${product.name} (SKU: ${selectedVariant?.sku || product.sku}) priced at ₹${Number(displayPrice).toLocaleString()}. Please share more details.`);
+  const whatsappConfirm = encodeURIComponent(`Hi, I'd like to confirm my order for ${product.name} (SKU: ${selectedVariant?.sku || product.sku}) at ₹${Number(displayPrice).toLocaleString()}.`);
 
   const cartProduct = {
     id: selectedVariant?.sku || product.sku,
@@ -347,50 +296,26 @@ function ProductDetail() {
     },
   };
 
-  const discountPercent = displayOriginalPrice
-    ? Math.round((1 - Number(displayPrice) / Number(displayOriginalPrice)) * 100)
-    : 0;
-
-  const canAddToCart = isInStock &&
-    (colors.length === 0 || selectedColor !== null) &&
-    allAttributesSelected;
+  const discountPercent = displayOriginalPrice ? Math.round((1 - Number(displayPrice) / Number(displayOriginalPrice)) * 100) : 0;
+  const canAddToCart = isInStock && (colors.length === 0 || selectedColor !== null) && allAttributesSelected;
 
   const mobileShareSheet = showShareMenu && typeof document !== 'undefined'
     ? createPortal(
         <>
-          <div
-            className="md:hidden fixed inset-0 z-[70] bg-foreground/50 backdrop-blur-sm"
-            onClick={() => setShowShareMenu(false)}
-          />
-          <div
-            ref={mobileShareMenuRef}
-            className="md:hidden fixed inset-x-0 bottom-0 z-[80] rounded-t-3xl border-t border-border bg-card px-5 pt-3 pb-3 shadow-2xl safe-bottom"
-          >
-            <div className="flex justify-center pb-2">
-              <div className="h-1 w-10 rounded-full bg-border" />
-            </div>
+          <div className="md:hidden fixed inset-0 z-[70] bg-foreground/50 backdrop-blur-sm" onClick={() => setShowShareMenu(false)} />
+          <div ref={mobileShareMenuRef} className="md:hidden fixed inset-x-0 bottom-0 z-[80] rounded-t-3xl border-t border-border bg-card px-5 pt-3 pb-3 shadow-2xl safe-bottom">
+            <div className="flex justify-center pb-2"><div className="h-1 w-10 rounded-full bg-border" /></div>
             <div className="pb-3">
-              <p className="font-body text-sm font-semibold text-foreground">Share this product</p>
-              <p className="font-body text-xs text-muted-foreground">Tap an option to send or copy the product link.</p>
+              <p className="font-display text-sm font-bold tracking-wider text-foreground">Share this product</p>
             </div>
             <div className="grid grid-cols-3 gap-3 pb-4">
               {shareLinks.map(link => renderShareAction(link, 'mobile'))}
-              <button
-                type="button"
-                onClick={handleCopyLink}
-                className="flex flex-col items-center gap-2 rounded-xl bg-muted/50 px-3 py-3 text-center transition-colors hover:bg-muted"
-              >
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground shadow-sm">
-                  <Copy className="h-5 w-5" />
-                </span>
+              <button type="button" onClick={handleCopyLink} className="flex flex-col items-center gap-2 bg-muted/50 px-3 py-3 text-center transition-colors hover:bg-muted">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground shadow-sm"><Copy className="h-5 w-5" /></span>
                 <span className="font-body text-xs leading-tight text-foreground">Copy Link</span>
               </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowShareMenu(false)}
-              className="mb-2 w-full rounded-2xl border border-border bg-background px-4 py-3 font-body text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
+            <button type="button" onClick={() => setShowShareMenu(false)} className="mb-2 w-full border border-border bg-background px-4 py-3 font-display text-xs font-medium tracking-wider text-muted-foreground uppercase">
               Cancel
             </button>
           </div>
@@ -403,181 +328,202 @@ function ProductDetail() {
     <div className="min-h-screen pb-16 md:pb-0">
       <PageMeta
         title={product.name}
-        description={product.description || `Buy ${product.name} at ₹${product.price.toLocaleString()} — Free shipping across India.`}
+        description={product.description || `Buy ${product.name} at ₹${product.price.toLocaleString()}`}
         canonicalPath={`/product/${product.sku}`} ogImage={images[0]} ogType="product" jsonLd={productJsonLd}
       />
       <AnnouncementBar /><Navbar />
 
-      <main className="container px-4 md:px-6 py-4 md:py-10">
+      <main>
         {/* Breadcrumb */}
-        <Link to="/collections" className="inline-flex items-center gap-1.5 font-body text-xs md:text-sm text-muted-foreground hover:text-primary transition-colors mb-4 md:mb-6">
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to Collections
-        </Link>
+        <div className="container px-4 md:px-6 pt-4 md:pt-6">
+          <Link to="/collections" className="inline-flex items-center gap-2 font-display text-[10px] tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors uppercase">
+            <ArrowLeft className="h-3 w-3" /> Back to Collections
+          </Link>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-14">
-          {/* ── Image Gallery ── */}
-          <div className="space-y-2 md:space-y-3">
-            <div className="relative group">
-              <div className="aspect-[3/4] overflow-hidden bg-muted relative rounded-lg">
-                <ImageMagnifier src={images[currentImage]} alt={product.name} />
+        {/* Product layout — immersive split */}
+        <div className="container px-4 md:px-6 py-4 md:py-8">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-0">
+            {/* ── Image Gallery — left side with vertical thumbnails ── */}
+            <div className="flex-1 flex gap-3 lg:pr-10">
+              {/* Vertical thumbnails — desktop only */}
+              {images.length > 1 && (
+                <div className="hidden md:flex flex-col gap-2 w-16 shrink-0">
+                  {images.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentImage(i)}
+                      className={`aspect-[3/4] overflow-hidden border-2 transition-all ${
+                        i === currentImage ? 'border-accent' : 'border-transparent opacity-50 hover:opacity-100'
+                      }`}
+                      aria-label={`View image ${i + 1}`}
+                    >
+                      <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    </button>
+                  ))}
+                </div>
+              )}
 
-                {/* Badges */}
-                <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
-                  {product.is_new && (
-                    <span className="bg-primary text-primary-foreground text-[10px] font-body font-bold px-2.5 py-1 rounded">NEW</span>
+              {/* Main image */}
+              <div className="flex-1 relative group">
+                <div className="aspect-[3/4] overflow-hidden bg-muted relative">
+                  <ImageMagnifier src={images[currentImage]} alt={product.name} />
+
+                  {/* Badges */}
+                  <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
+                    {product.is_new && (
+                      <span className="bg-primary text-primary-foreground text-[9px] font-display font-bold tracking-[0.15em] px-3 py-1 uppercase">New</span>
+                    )}
+                    {discountPercent > 0 && (
+                      <span className="bg-accent text-accent-foreground text-[9px] font-body font-bold px-2.5 py-1">{discountPercent}% OFF</span>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => setShowZoom(true)}
+                    className="absolute top-4 right-4 bg-background/70 backdrop-blur p-2.5 shadow-sm hover:bg-background transition-colors z-10"
+                    aria-label="Zoom"
+                  >
+                    <ZoomIn className="h-4 w-4" />
+                  </button>
+
+                  {/* Mobile image counter */}
+                  {images.length > 1 && (
+                    <div className="absolute bottom-3 right-3 bg-foreground/60 text-background text-[10px] font-body px-2 py-0.5 md:hidden">
+                      {currentImage + 1}/{images.length}
+                    </div>
                   )}
-                  {discountPercent > 0 && (
-                    <span className="bg-destructive text-destructive-foreground text-[10px] font-body font-bold px-2.5 py-1 rounded">{discountPercent}% OFF</span>
-                  )}
+
+                  {/* Temple corner accents */}
+                  <div className="absolute top-2 left-2 w-6 h-6 border-t border-l border-accent/30" />
+                  <div className="absolute bottom-2 right-2 w-6 h-6 border-b border-r border-accent/30" />
                 </div>
 
-                <button
-                  onClick={() => setShowZoom(true)}
-                  className="absolute top-3 right-3 bg-background/80 backdrop-blur p-2 rounded-full shadow-sm hover:bg-background transition-colors z-10"
-                  aria-label="Zoom image"
-                >
-                  <ZoomIn className="h-4 w-4" />
-                </button>
-
-                {/* Image counter on mobile */}
                 {images.length > 1 && (
-                  <div className="absolute bottom-3 right-3 bg-foreground/60 text-background text-[10px] font-body px-2 py-0.5 rounded-full md:hidden">
-                    {currentImage + 1}/{images.length}
+                  <>
+                    <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/70 backdrop-blur p-2 shadow md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10" aria-label="Previous">
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+                    <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/70 backdrop-blur p-2 shadow md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10" aria-label="Next">
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </>
+                )}
+
+                {/* Mobile thumbnail strip */}
+                {images.length > 1 && (
+                  <div className="flex gap-2 overflow-x-auto py-2 scrollbar-hide md:hidden">
+                    {images.map((img, i) => (
+                      <button key={i} onClick={() => setCurrentImage(i)}
+                        className={`shrink-0 w-14 h-[70px] overflow-hidden border-2 ${i === currentImage ? 'border-accent' : 'border-transparent opacity-60'}`}>
+                        <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
-
-              {images.length > 1 && (
-                <>
-                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2 rounded-full shadow md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10" aria-label="Previous image">
-                    <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
-                  </button>
-                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2 rounded-full shadow md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10" aria-label="Next image">
-                    <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
-                  </button>
-                </>
-              )}
             </div>
 
-            {/* Thumbnail strip */}
-            {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                {images.map((img, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentImage(i)}
-                    className={`shrink-0 w-14 h-[70px] md:w-20 md:h-24 rounded overflow-hidden border-2 transition-all ${
-                      i === currentImage ? 'border-primary ring-1 ring-primary/30' : 'border-transparent opacity-60 hover:opacity-100'
-                    }`}
-                    aria-label={`View image ${i + 1}`}
-                  >
-                    <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
-                  </button>
-                ))}
+            {/* ── Product Details — right side ── */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="lg:w-[440px] xl:w-[480px] shrink-0 space-y-5"
+            >
+              {/* Category & SKU top line */}
+              <div className="flex items-center gap-3">
+                {categoryName && (
+                  <span className="font-body text-[10px] tracking-[0.2em] text-accent uppercase">{categoryName}</span>
+                )}
+                <span className="font-body text-[10px] text-muted-foreground">SKU: {product.sku}</span>
               </div>
-            )}
-          </div>
 
-          {/* ── Product Details ── */}
-          <ScrollReveal>
-            <div className="space-y-4 md:space-y-5">
-              {/* Header: Title + Actions */}
-              <div>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <h1 className="font-display text-xl md:text-3xl font-bold leading-tight">{product.name}</h1>
-                    {categoryName && (
-                      <p className="font-body text-xs text-muted-foreground mt-0.5">{categoryName}</p>
+              {/* Title */}
+              <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight tracking-wide">{product.name}</h1>
+
+              {/* Ornate separator */}
+              <div className="ornate-line w-24" />
+
+              {/* Price block */}
+              <div className="flex items-baseline gap-4">
+                <span className="font-display text-3xl md:text-4xl font-bold">₹{Number(displayPrice).toLocaleString()}</span>
+                {displayOriginalPrice && (
+                  <span className="font-body text-base text-muted-foreground line-through">₹{Number(displayOriginalPrice).toLocaleString()}</span>
+                )}
+              </div>
+
+              {/* Stock status */}
+              <div className="flex items-center gap-3">
+                <span className={`text-[10px] font-display font-bold tracking-[0.15em] px-3 py-1 border uppercase ${
+                  hasVariants && !allAttributesSelected ? 'text-muted-foreground border-border' :
+                  isInStock ? 'text-emerald-700 border-emerald-300 bg-emerald-50' : 'text-red-700 border-red-300 bg-red-50'
+                }`}>
+                  {hasVariants && !allAttributesSelected ? 'Select Options' : isInStock ? 'In Stock' : 'Out of Stock'}
+                </span>
+                {/* Actions */}
+                <div className="flex gap-2 ml-auto">
+                  <button
+                    onClick={() => {
+                      if (!isLoggedIn) { toast.error('Please login to use wishlist'); return; }
+                      if (product) toggleWishlist(product.id);
+                    }}
+                    className={`p-2.5 border transition-colors ${isWishlisted(product.id) ? 'border-primary text-primary bg-primary/10' : 'border-border hover:border-primary hover:text-primary'}`}
+                    aria-label="Wishlist"
+                  >
+                    <Heart className={`h-4 w-4 ${isWishlisted(product.id) ? 'fill-current' : ''}`} />
+                  </button>
+                  <div className="relative" ref={shareRef}>
+                    <button
+                      onClick={async () => {
+                        if (navigator.share) {
+                          try { await navigator.share({ title: product.name, text: shareText, url: productUrl }); return; } catch (e: any) { if (e?.name === 'AbortError') return; }
+                        }
+                        setShowShareMenu(prev => !prev);
+                      }}
+                      className="p-2.5 border border-border hover:border-primary hover:text-primary transition-colors"
+                      aria-label="Share"
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </button>
+                    {showShareMenu && (
+                      <div ref={desktopShareMenuRef} className="hidden md:block absolute right-0 top-12 z-50 w-64 border border-border bg-card p-3 shadow-xl animate-in fade-in slide-in-from-top-2 duration-200">
+                        <p className="px-1 pb-3 font-display text-[10px] font-bold tracking-[0.2em] uppercase text-muted-foreground">Share via</p>
+                        <div className="grid grid-cols-3 gap-2">
+                          {shareLinks.map(link => renderShareAction(link, 'desktop'))}
+                          <button type="button" onClick={handleCopyLink} className="flex flex-col items-center gap-2 bg-muted/50 px-2 py-3 text-center hover:bg-muted">
+                            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground shadow-sm"><Copy className="h-5 w-5" /></span>
+                            <span className="font-body text-[11px] text-foreground">Copy Link</span>
+                          </button>
+                        </div>
+                      </div>
                     )}
                   </div>
-                  <div className="flex gap-1.5 shrink-0">
-                    <button
-                      onClick={() => {
-                        if (!isLoggedIn) { toast.error('Please login to use wishlist'); return; }
-                        if (product) toggleWishlist(product.id);
-                      }}
-                      className={`p-2 border rounded-full transition-colors ${isWishlisted(product.id) ? 'border-primary text-primary bg-primary/10' : 'border-border hover:border-primary hover:text-primary'}`}
-                      aria-label="Add to wishlist"
-                    >
-                      <Heart className={`h-4 w-4 md:h-5 md:w-5 ${isWishlisted(product.id) ? 'fill-current' : ''}`} />
-                    </button>
-                    <div className="relative" ref={shareRef}>
-                      <button
-                        onClick={async () => {
-                          if (navigator.share) {
-                            try {
-                              await navigator.share({ title: product.name, text: shareText, url: productUrl });
-                              return;
-                            } catch (e: any) {
-                              if (e?.name === 'AbortError') return;
-                            }
-                          }
-                          setShowShareMenu(prev => !prev);
-                        }}
-                        className="p-2 border border-border rounded-full hover:border-primary hover:text-primary transition-colors"
-                        aria-label="Share product"
-                        aria-expanded={showShareMenu}
-                        aria-haspopup="dialog"
-                      >
-                        <Share2 className="h-4 w-4 md:h-5 md:w-5" />
-                      </button>
-                      {showShareMenu && (
-                        <div ref={desktopShareMenuRef} className="hidden md:block absolute right-0 top-12 z-50 w-64 rounded-2xl border border-border bg-card p-3 shadow-xl animate-in fade-in slide-in-from-top-2 duration-200">
-                          <p className="px-1 pb-3 font-body text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Share via</p>
-                          <div className="grid grid-cols-3 gap-2">
-                            {shareLinks.map(link => renderShareAction(link, 'desktop'))}
-                            <button
-                              type="button"
-                              onClick={handleCopyLink}
-                              className="flex flex-col items-center gap-2 rounded-xl bg-muted/50 px-2 py-3 text-center transition-colors hover:bg-muted"
-                            >
-                              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground shadow-sm">
-                                <Copy className="h-5 w-5" />
-                              </span>
-                              <span className="font-body text-[11px] leading-tight text-foreground">Copy Link</span>
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Price */}
-                <div className="flex items-baseline gap-3 mt-3">
-                  <span className="font-display text-2xl md:text-3xl font-bold">₹{Number(displayPrice).toLocaleString()}</span>
-                  {displayOriginalPrice && (
-                    <span className="font-body text-sm md:text-base text-muted-foreground line-through">₹{Number(displayOriginalPrice).toLocaleString()}</span>
-                  )}
-                  <span className={`text-[10px] md:text-xs font-body font-semibold px-2.5 py-0.5 rounded-full border ${isInStock ? 'text-emerald-700 border-emerald-300 bg-emerald-50' : 'text-red-700 border-red-300 bg-red-50'}`}>
-                    {hasVariants && !allAttributesSelected ? 'Select Options' : isInStock ? 'In Stock' : 'Out of Stock'}
-                  </span>
                 </div>
               </div>
 
               {/* Description */}
               {product.description && (
-                <div>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed">{product.description}</p>
-                </div>
+                <p className="font-serif text-sm text-muted-foreground leading-relaxed italic">{product.description}</p>
               )}
 
-              {/* Separator */}
-              <div className="border-t border-border" />
+              <div className="ornate-line" />
 
               {/* Colors */}
               {colors.length > 0 && (
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="font-body text-sm font-semibold">Color:</span>
-                    <span className="font-body text-sm text-muted-foreground">
-                      {selectedColor !== null ? getColorName(colors[selectedColor]) : 'Select a color'}
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="font-display text-[11px] font-bold tracking-[0.15em] uppercase">Color</span>
+                    <span className="font-body text-xs text-muted-foreground">
+                      {selectedColor !== null ? getColorName(colors[selectedColor]) : '— Select'}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {colors.map((color, i) => (
                       <button key={i} onClick={() => setSelectedColor(i)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-body font-medium border transition-all ${selectedColor === i ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:border-foreground/40'}`}>
+                        className={`px-4 py-2 text-[11px] font-display font-bold tracking-[0.1em] border transition-all uppercase ${
+                          selectedColor === i ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:border-primary/50'
+                        }`}>
                         {getColorName(color)}
                       </button>
                     ))}
@@ -585,14 +531,16 @@ function ProductDetail() {
                 </div>
               )}
 
-              {/* Variant attributes */}
+              {/* Variants */}
               {hasVariants && variantAttrKeys.map(key => (
                 <div key={key}>
-                  <h3 className="font-body text-sm font-semibold mb-2">{key} <span className="text-primary">*</span></h3>
+                  <h3 className="font-display text-[11px] font-bold tracking-[0.15em] uppercase mb-3">{key} <span className="text-accent">*</span></h3>
                   <div className="flex flex-wrap gap-2">
                     {attrOptions[key]?.map(val => (
                       <button key={val} onClick={() => setSelectedAttributes(prev => ({ ...prev, [key]: val }))}
-                        className={`px-4 py-1.5 rounded text-xs font-body font-medium border transition-all ${selectedAttributes[key] === val ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:border-foreground/40'}`}>
+                        className={`px-4 py-2 text-[11px] font-display tracking-[0.1em] border transition-all ${
+                          selectedAttributes[key] === val ? 'border-primary bg-primary/10 text-primary font-bold' : 'border-border text-muted-foreground hover:border-primary/50'
+                        }`}>
                         {val}
                       </button>
                     ))}
@@ -602,139 +550,115 @@ function ProductDetail() {
 
               {!hasVariants && (
                 <div>
-                  <h3 className="font-body text-sm font-semibold mb-2">Size <span className="text-primary">*</span></h3>
-                  <div className="inline-block border border-primary rounded px-5 py-2 text-sm font-body font-medium text-foreground">Free Size</div>
+                  <h3 className="font-display text-[11px] font-bold tracking-[0.15em] uppercase mb-3">Size</h3>
+                  <div className="inline-block border-2 border-primary px-6 py-2 text-[11px] font-display font-bold tracking-[0.15em] text-primary uppercase">Free Size</div>
                 </div>
               )}
 
-              {/* CTA Buttons */}
-              <div className="space-y-2.5 pt-1">
+              {/* CTAs */}
+              <div className="space-y-3 pt-2">
                 <button
-                  onClick={() => {
-                    if (!canAddToCart) return;
-                    addToCart(cartProduct);
-                  }}
+                  onClick={() => { if (canAddToCart) addToCart(cartProduct); }}
                   disabled={!canAddToCart}
-                  className={`w-full py-3 md:py-3.5 text-sm tracking-[0.12em] font-body font-medium flex items-center justify-center gap-2 rounded-lg transition-colors ${
-                    canAddToCart
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                      : 'bg-muted text-muted-foreground cursor-not-allowed'
+                  className={`w-full py-4 text-[11px] tracking-[0.25em] font-display font-bold flex items-center justify-center gap-3 transition-colors uppercase ${
+                    canAddToCart ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-muted text-muted-foreground cursor-not-allowed'
                   }`}
                 >
                   <ShoppingBag className="h-4 w-4" />
-                  {hasVariants && !allAttributesSelected ? 'SELECT OPTIONS ABOVE' : !isInStock ? 'OUT OF STOCK' : colors.length > 0 && selectedColor === null ? 'SELECT COLOR ABOVE' : 'ADD TO CART'}
+                  {hasVariants && !allAttributesSelected ? 'Select Options Above' : !isInStock ? 'Out of Stock' : colors.length > 0 && selectedColor === null ? 'Select Color Above' : 'Add to Cart'}
                 </button>
-
                 <a
                   href={`https://wa.me/${phone}?text=${whatsappEnquiry}`}
                   target="_blank" rel="noopener noreferrer"
-                  className="w-full py-3 md:py-3.5 text-sm tracking-[0.08em] font-body font-medium flex items-center justify-center gap-2 bg-[#25D366] text-white hover:bg-[#1ebe57] rounded-lg transition-colors"
+                  className="w-full py-4 text-[11px] tracking-[0.2em] font-display font-bold flex items-center justify-center gap-3 bg-[#25D366] text-white hover:bg-[#1ebe57] transition-colors uppercase"
                 >
-                  <WhatsAppIcon className="h-4 w-4" /> ORDER ON WHATSAPP
+                  <WhatsAppIcon className="h-4 w-4" /> Order on WhatsApp
                 </a>
               </div>
 
-              {/* WhatsApp Confirmation Notice */}
-              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3.5 md:p-4">
+              {/* WhatsApp confirmation */}
+              <div className="bg-emerald-50 border border-emerald-200 p-4">
                 <div className="flex items-start gap-3">
-                  <div className="shrink-0 bg-[#25D366] text-white p-1.5 rounded-full mt-0.5">
-                    <Check className="h-3.5 w-3.5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-body text-sm font-semibold text-emerald-900">WhatsApp us before checkout!</p>
-                    <p className="font-body text-xs text-emerald-700 mt-1 leading-relaxed">
-                      Confirm product availability, get styling advice, and secure your order via WhatsApp before you checkout.
-                    </p>
-                    <a
-                      href={`https://wa.me/${phone}?text=${whatsappConfirm}`}
-                      target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 mt-2 font-body text-xs font-semibold text-[#25D366] hover:underline"
-                    >
-                      <WhatsAppIcon className="h-3.5 w-3.5" /> Chat with us to confirm
+                  <div className="shrink-0 bg-[#25D366] text-white p-1.5 mt-0.5"><Check className="h-3 w-3" /></div>
+                  <div>
+                    <p className="font-display text-[11px] font-bold tracking-wider text-emerald-900 uppercase">WhatsApp us before checkout!</p>
+                    <p className="font-body text-[11px] text-emerald-700 mt-1 leading-relaxed">Confirm availability and get styling advice.</p>
+                    <a href={`https://wa.me/${phone}?text=${whatsappConfirm}`} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 mt-2 font-display text-[10px] font-bold text-[#25D366] tracking-wider hover:underline uppercase">
+                      <WhatsAppIcon className="h-3 w-3" /> Chat to confirm
                     </a>
                   </div>
                 </div>
               </div>
 
-              {/* Trust badges */}
-              <div className="grid grid-cols-3 gap-3 pt-3 border-t border-border">
+              {/* Trust badges — horizontal */}
+              <div className="grid grid-cols-3 gap-2 pt-3">
                 {[
                   { icon: Truck, label: 'Free Shipping', sub: 'Pan India' },
                   { icon: Shield, label: 'Secure Payment', sub: '100% Safe' },
-                  { icon: RotateCcw, label: 'Easy Returns', sub: '7-day policy' },
+                  { icon: RotateCcw, label: 'Easy Returns', sub: '7-day Policy' },
                 ].map(({ icon: Icon, label, sub }) => (
-                  <div key={label} className="text-center">
-                    <Icon className="h-5 w-5 mx-auto mb-1 text-primary/70" />
-                    <p className="font-body text-[10px] md:text-xs font-medium text-foreground">{label}</p>
-                    <p className="font-body text-[9px] md:text-[10px] text-muted-foreground">{sub}</p>
+                  <div key={label} className="text-center p-3 border border-border">
+                    <Icon className="h-5 w-5 mx-auto mb-1.5 text-accent" />
+                    <p className="font-display text-[9px] font-bold tracking-wider text-foreground uppercase">{label}</p>
+                    <p className="font-body text-[9px] text-muted-foreground">{sub}</p>
                   </div>
                 ))}
               </div>
 
               {/* Care Information */}
-              <div className="border border-border rounded-lg overflow-hidden">
-                <div className="bg-muted/50 px-4 py-2.5 border-b border-border">
-                  <h3 className="font-display text-sm font-semibold text-foreground flex items-center gap-2">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 text-primary" aria-hidden="true">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" strokeLinecap="round" />
-                      <path d="M12 16v-4M12 8h.01" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    Care Information
-                  </h3>
+              <div className="border border-border overflow-hidden">
+                <div className="bg-foreground px-5 py-3 flex items-center gap-2">
+                  <span className="text-accent text-[7px]">◆</span>
+                  <h3 className="font-display text-[11px] font-bold tracking-[0.2em] text-background uppercase">Care Information</h3>
                 </div>
-                <div className="px-4 py-3 space-y-3">
+                <div className="px-5 py-4 space-y-3">
                   {[
-                    { icon: '🧼', title: 'Dry Clean Only', desc: 'Professional dry cleaning recommended to preserve fabric quality and sheen.' },
-                    { icon: '👜', title: 'Proper Storage', desc: 'Store silk saree in a cotton bag in a dry environment. Zari tends to react to weather changes.' },
-                    { icon: '🚫', title: 'Avoid Perfume', desc: 'Avoid spraying perfume directly on the garment to prevent staining and discoloration.' },
-                    { icon: '🌬️', title: 'Air Regularly', desc: 'Air the sarees every few months to keep the fabric fresh and prevent moisture buildup.' },
+                    { icon: '🧼', title: 'Dry Clean Only', desc: 'Professional dry cleaning recommended.' },
+                    { icon: '👜', title: 'Proper Storage', desc: 'Store in cotton bag. Zari reacts to weather.' },
+                    { icon: '🚫', title: 'Avoid Perfume', desc: 'Don't spray directly on the garment.' },
+                    { icon: '🌬️', title: 'Air Regularly', desc: 'Air sarees every few months.' },
                   ].map(({ icon, title, desc }) => (
                     <div key={title} className="flex items-start gap-3">
-                      <span className="text-base mt-0.5 shrink-0">{icon}</span>
+                      <span className="text-sm mt-0.5 shrink-0">{icon}</span>
                       <div>
-                        <p className="font-body text-xs font-semibold text-foreground">{title}</p>
+                        <p className="font-display text-[10px] font-bold tracking-wider text-foreground uppercase">{title}</p>
                         <p className="font-body text-[11px] text-muted-foreground leading-relaxed">{desc}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-
-              {/* SKU */}
-              <p className="font-body text-[10px] text-muted-foreground pt-1">SKU: {product.sku}</p>
-            </div>
-          </ScrollReveal>
+            </motion.div>
+          </div>
         </div>
 
-        <ProductReviews productId={product.id} />
-        <RelatedProducts productId={product.id} currentSku={product.sku} />
-        <RecentlyViewed currentSku={product.sku} />
+        {/* Below-fold sections */}
+        <div className="container px-4 md:px-6">
+          <ProductReviews productId={product.id} />
+          <RelatedProducts productId={product.id} currentSku={product.sku} />
+          <RecentlyViewed currentSku={product.sku} />
+        </div>
       </main>
 
       {mobileShareSheet}
 
-      {/* Fullscreen zoom modal */}
+      {/* Fullscreen zoom */}
       {showZoom && (
         <div className="fixed inset-0 z-[70] bg-foreground/95 flex items-center justify-center" onClick={() => setShowZoom(false)}>
-          <button className="absolute top-4 right-4 p-3 bg-background/20 rounded-full text-white hover:bg-background/40 transition-colors z-10" onClick={() => setShowZoom(false)} aria-label="Close zoom">
-            <X className="h-6 w-6" />
-          </button>
+          <button className="absolute top-4 right-4 p-3 bg-background/20 text-white hover:bg-background/40 z-10" onClick={() => setShowZoom(false)} aria-label="Close"><X className="h-6 w-6" /></button>
           {images.length > 1 && (
             <>
-              <button onClick={e => { e.stopPropagation(); prevImage(); }} className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-background/20 rounded-full text-white hover:bg-background/40 z-10" aria-label="Previous">
-                <ChevronLeft className="h-6 w-6" />
-              </button>
-              <button onClick={e => { e.stopPropagation(); nextImage(); }} className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-background/20 rounded-full text-white hover:bg-background/40 z-10" aria-label="Next">
-                <ChevronRight className="h-6 w-6" />
-              </button>
+              <button onClick={e => { e.stopPropagation(); prevImage(); }} className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-background/20 text-white hover:bg-background/40 z-10"><ChevronLeft className="h-6 w-6" /></button>
+              <button onClick={e => { e.stopPropagation(); nextImage(); }} className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-background/20 text-white hover:bg-background/40 z-10"><ChevronRight className="h-6 w-6" /></button>
             </>
           )}
           <img src={images[currentImage]} alt={product.name} className="max-w-[90vw] max-h-[85vh] object-contain" onClick={e => e.stopPropagation()} />
           {images.length > 1 && (
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 bg-background/20 backdrop-blur-sm rounded-lg p-2">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 bg-background/20 backdrop-blur-sm p-2">
               {images.map((img, i) => (
                 <button key={i} onClick={e => { e.stopPropagation(); setCurrentImage(i); }}
-                  className={`w-10 h-12 md:w-12 md:h-14 rounded overflow-hidden border-2 transition-all ${i === currentImage ? 'border-white' : 'border-transparent opacity-50 hover:opacity-80'}`}>
+                  className={`w-10 h-12 overflow-hidden border-2 ${i === currentImage ? 'border-white' : 'border-transparent opacity-50 hover:opacity-80'}`}>
                   <img src={img} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
