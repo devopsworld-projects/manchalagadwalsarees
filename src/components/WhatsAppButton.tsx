@@ -1,5 +1,5 @@
-import { MessageCircle } from 'lucide-react';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
+import { WhatsAppIcon } from '@/components/WhatsAppIcon';
 
 export function WhatsAppButton() {
   const { data: settings } = useStoreSettings();
@@ -12,9 +12,9 @@ export function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"
-      className="fixed top-1/2 -translate-y-1/2 right-0 z-50 bg-[#25D366] hover:bg-[#1ebe57] text-white rounded-l-full p-3 shadow-lg transition-transform hover:scale-110"
+      className="fixed bottom-20 md:bottom-6 right-4 z-50 bg-[#25D366] hover:bg-[#1ebe57] text-white rounded-full p-3.5 shadow-lg transition-transform hover:scale-110"
     >
-      <MessageCircle className="h-6 w-6" />
+      <WhatsAppIcon className="h-6 w-6" />
     </a>
   );
 }
