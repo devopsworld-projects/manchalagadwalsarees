@@ -37,33 +37,15 @@ const Index = () => {
       <Navbar />
       <main>
         <HeroSection />
-        <ScrollReveal>
-          <NewCollections />
-        </ScrollReveal>
-        <ScrollReveal>
-          <CategoriesSection />
-        </ScrollReveal>
-        <ScrollReveal>
-          <HeritageSection />
-        </ScrollReveal>
-        <ScrollReveal>
-          <BannerSlider />
-        </ScrollReveal>
-        <ScrollReveal>
-          <FabricGuideSection />
-        </ScrollReveal>
-        <ScrollReveal>
-          <OccasionsBanner />
-        </ScrollReveal>
-        <ScrollReveal>
-          <BestSellers />
-        </ScrollReveal>
-        <ScrollReveal>
-          <TestimonialsSection />
-        </ScrollReveal>
-        <ScrollReveal>
-          <NewsletterSection />
-        </ScrollReveal>
+        <NewCollections />
+        <CategoriesSection />
+        <HeritageSection />
+        <BannerSlider />
+        <FabricGuideSection />
+        <OccasionsBanner />
+        <BestSellers />
+        <TestimonialsSection />
+        <NewsletterSection />
       </main>
       <Footer />
     </div>
