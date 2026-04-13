@@ -10,7 +10,7 @@ const occasions = [
 
 export function OccasionsBanner() {
   return (
-    <section className="relative py-20 md:py-28 overflow-hidden">
+    <section className="relative py-24 md:py-32 overflow-hidden">
       <div className="absolute inset-0">
         <img
           src={flatlay}
@@ -20,17 +20,20 @@ export function OccasionsBanner() {
           width={1280}
           height={640}
         />
-        <div className="absolute inset-0 bg-foreground/75 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-foreground/80" />
       </div>
 
+      {/* Ornate borders */}
+      <div className="absolute top-0 left-0 right-0 ornate-line" />
+      <div className="absolute bottom-0 left-0 right-0 ornate-line" />
+
       <div className="relative container text-center z-10">
-        <span className="font-body text-xs tracking-[0.3em] uppercase text-accent">
-          For Every Moment
-        </span>
-        <h2 className="font-display text-3xl md:text-5xl font-bold text-background mt-3 mb-4">
+        <span className="text-accent text-[8px]">◆ ◆ ◆</span>
+        <h2 className="font-display text-2xl md:text-5xl font-bold text-background mt-3 tracking-wide">
           A Saree for Every Occasion
         </h2>
-        <p className="font-body text-sm text-background/70 max-w-lg mx-auto mb-10">
+        <div className="w-20 h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mt-4 mb-4" />
+        <p className="font-serif text-sm md:text-base text-background/50 max-w-lg mx-auto mb-12 italic">
           From grand celebrations to quiet everyday elegance — find the perfect drape for your story.
         </p>
 
@@ -39,10 +42,14 @@ export function OccasionsBanner() {
             <Link
               key={occ.name}
               to={`/collections?filter=${occ.filter}`}
-              className="group bg-background/10 backdrop-blur-md border border-background/20 rounded-sm p-5 hover:bg-background/20 transition-all"
+              className="group relative bg-background/5 backdrop-blur-md border border-accent/20 p-6 md:p-8 hover:bg-background/10 hover:border-accent/50 transition-all duration-300"
             >
-              <span className="text-3xl md:text-4xl block mb-2">{occ.emoji}</span>
-              <span className="font-display text-lg font-semibold text-background">{occ.name}</span>
+              {/* Corner accents */}
+              <div className="absolute top-1 left-1 w-3 h-3 border-t border-l border-accent/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute bottom-1 right-1 w-3 h-3 border-b border-r border-accent/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+              <span className="text-3xl md:text-4xl block mb-3">{occ.emoji}</span>
+              <span className="font-display text-sm md:text-base font-bold text-background tracking-wider">{occ.name}</span>
             </Link>
           ))}
         </div>
