@@ -22,18 +22,24 @@ export function BestSellers() {
   if (bestSellers.length === 0) return null;
 
   return (
-    <section className="py-20 md:py-28 bg-secondary/40 kolam-texture relative">
+    <section className="py-24 md:py-32 relative overflow-hidden">
+      {/* Two-tone background */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-secondary/30" />
+        <div className="absolute inset-0 kolam-texture" />
+      </div>
       <div className="absolute top-0 left-0 right-0 ornate-line" />
 
-      <div className="container">
-        <div className="text-center mb-14">
-          <span className="text-accent text-[8px]">◆ ◆ ◆</span>
-          <h2 className="font-display text-2xl md:text-4xl font-bold text-foreground mt-3 tracking-wide">
+      <div className="container relative z-10">
+        {/* Centered header */}
+        <div className="text-center mb-16">
+          <span className="text-accent text-[8px] tracking-[0.5em]">◆&nbsp;&nbsp;◆&nbsp;&nbsp;◆</span>
+          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mt-4 tracking-wide">
             Best Sellers
           </h2>
-          <div className="w-20 ornate-line mx-auto mt-4" />
-          <p className="font-serif text-muted-foreground mt-3 text-base italic">
-            Most loved by our customers
+          <div className="w-20 ornate-line mx-auto mt-5" />
+          <p className="font-serif text-muted-foreground mt-4 text-base md:text-lg italic">
+            Most loved by our patrons — timeless pieces that define elegance
           </p>
         </div>
 
@@ -43,12 +49,14 @@ export function BestSellers() {
           ))}
         </div>
 
-        <div className="text-center mt-12">
+        <div className="text-center mt-14">
           <Link
             to="/collections?filter=best-sellers"
-            className="inline-block border-2 border-primary text-primary px-12 py-3.5 text-xs tracking-[0.25em] font-display hover:bg-primary hover:text-primary-foreground transition-all uppercase"
+            className="relative inline-block border border-accent text-accent px-14 py-4 text-[11px] tracking-[0.25em] font-display hover:bg-accent hover:text-accent-foreground transition-all uppercase"
           >
-            View All
+            View All Best Sellers
+            <span className="absolute top-0 left-0 w-3 h-3 border-t border-l border-primary" />
+            <span className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-primary" />
           </Link>
         </div>
       </div>

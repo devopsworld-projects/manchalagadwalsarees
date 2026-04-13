@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 
 import kanjivaramImg from '@/assets/categories/kanjivaram.jpg';
 import banarasiImg from '@/assets/categories/banarasi.jpg';
@@ -28,6 +29,7 @@ const categoryImages: Record<string, string> = {
 
 export function CategoriesSection() {
   const [showAll, setShowAll] = useState(false);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   const { data: categories = [] } = useQuery({
     queryKey: ['storefront-categories-with-count'],
@@ -37,106 +39,98 @@ export function CategoriesSection() {
         .select('*')
         .order('sort_order', { ascending: true });
       if (error) throw error;
-
       const { data: products } = await supabase
         .from('products')
         .select('category_id')
         .eq('is_active', true);
-
       const counts: Record<string, number> = {};
       products?.forEach(p => {
         if (p.category_id) counts[p.category_id] = (counts[p.category_id] || 0) + 1;
       });
-
       return (cats || []).map(c => ({ ...c, product_count: counts[c.id] || 0 }));
     },
   });
 
   const withProducts = categories.filter(c => c.product_count > 0);
   if (withProducts.length === 0) return null;
-  const displayed = showAll ? withProducts : withProducts.slice(0, 6);
-
-  // Masonry-style layout: first item is featured (tall), rest in grid
-  const featured = displayed[0];
-  const rest = displayed.slice(1);
+  const displayed = showAll ? withProducts : withProducts.slice(0, 8);
 
   return (
-    <section className="py-20 md:py-28 relative">
+    <section className="py-24 md:py-32 relative">
       <div className="container">
-        {/* Section header — left-aligned editorial style */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-12 h-[2px] bg-accent" />
-              <span className="font-body text-[10px] tracking-[0.4em] uppercase text-accent">Curated Collections</span>
-            </div>
-            <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground tracking-wide">
-              Shop by Category
-            </h2>
-          </div>
-          <p className="font-serif text-base text-muted-foreground italic max-w-sm">
-            {withProducts.length} collections of India's finest handwoven traditions
+        {/* Header */}
+        <div className="text-center mb-16 md:mb-20">
+          <span className="text-accent text-[8px] tracking-[0.5em]">◆&nbsp;&nbsp;◆&nbsp;&nbsp;◆</span>
+          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mt-4 tracking-wide">
+            Our Collections
+          </h2>
+          <div className="w-20 ornate-line mx-auto mt-5" />
+          <p className="font-serif text-base md:text-lg text-muted-foreground mt-4 italic max-w-md mx-auto">
+            {withProducts.length} curated collections of India's finest handwoven traditions
           </p>
         </div>
 
-        {/* Asymmetric masonry grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-          {/* Featured category — spans 2 rows on desktop */}
-          {featured && (
-            <Link
-              to={`/collections?filter=${featured.slug}`}
-              className="group relative col-span-2 md:col-span-1 md:row-span-2 overflow-hidden min-h-[300px] md:min-h-0"
-            >
-              <CategoryImage cat={featured} />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/30 to-transparent" />
-              {/* Corner ornaments */}
-              <div className="absolute top-3 left-3 w-8 h-8 border-t-2 border-l-2 border-accent/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="absolute bottom-3 right-3 w-8 h-8 border-b-2 border-r-2 border-accent/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="absolute bottom-6 left-6 right-6">
-                <p className="font-body text-[9px] tracking-[0.3em] text-accent uppercase mb-2">Featured</p>
-                <h3 className="font-display text-xl md:text-2xl font-bold text-white tracking-wider uppercase mb-2">
-                  {featured.name}
-                </h3>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-[1px] bg-accent/60" />
-                  <span className="text-[10px] font-body text-white/60 tracking-wider">
-                    {featured.product_count} products
-                  </span>
-                </div>
-              </div>
-            </Link>
-          )}
+        {/* Staggered Grid — alternating tall/short */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          {displayed.map((cat, i) => {
+            const isTall = i % 3 === 0; // every 3rd is tall
+            return (
+              <Link
+                key={cat.id}
+                to={`/collections?filter=${cat.slug}`}
+                className={`group relative overflow-hidden ${
+                  isTall ? 'row-span-2 aspect-auto min-h-[360px] md:min-h-[500px]' : 'aspect-[3/4]'
+                }`}
+                onMouseEnter={() => setHoveredIdx(i)}
+                onMouseLeave={() => setHoveredIdx(null)}
+              >
+                <CategoryImage cat={cat} />
+                
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/30 to-transparent transition-opacity duration-500" />
+                
+                {/* Hover reveal border */}
+                <div className="absolute inset-2 border border-accent/0 group-hover:border-accent/40 transition-all duration-500" />
 
-          {/* Rest of categories in compact cards */}
-          {rest.map((cat) => (
-            <Link
-              key={cat.id}
-              to={`/collections?filter=${cat.slug}`}
-              className="group relative aspect-[4/5] overflow-hidden"
-            >
-              <CategoryImage cat={cat} />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/20 to-transparent group-hover:from-foreground/90 transition-all duration-500" />
-              <div className="absolute bottom-4 left-4 right-4">
-                <h3 className="font-display text-xs md:text-sm font-bold text-white tracking-[0.15em] uppercase mb-1">
-                  {cat.name}
-                </h3>
-                <span className="text-[9px] font-body text-accent/70 tracking-wider">
-                  {cat.product_count} {cat.product_count === 1 ? 'product' : 'products'}
-                </span>
-              </div>
-              {/* Hover reveal line */}
-              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-accent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-            </Link>
-          ))}
+                {/* Corner ornaments on hover */}
+                <div className="absolute top-4 left-4 w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  <div className="absolute top-0 left-0 w-full h-[1px] bg-accent/60" />
+                  <div className="absolute top-0 left-0 h-full w-[1px] bg-accent/60" />
+                </div>
+                <div className="absolute bottom-4 right-4 w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  <div className="absolute bottom-0 right-0 w-full h-[1px] bg-accent/60" />
+                  <div className="absolute bottom-0 right-0 h-full w-[1px] bg-accent/60" />
+                </div>
+
+                {/* Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-5 h-[1px] bg-accent/60 group-hover:w-8 transition-all duration-500" />
+                    <span className="text-[9px] font-body text-accent/70 tracking-[0.2em] uppercase">
+                      {cat.product_count} {cat.product_count === 1 ? 'piece' : 'pieces'}
+                    </span>
+                  </div>
+                  <h3 className="font-display text-sm md:text-base font-bold text-background tracking-[0.12em] uppercase group-hover:text-accent transition-colors duration-300">
+                    {cat.name}
+                  </h3>
+                </div>
+
+                {/* Bottom gold accent */}
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-accent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+              </Link>
+            );
+          })}
         </div>
 
-        {withProducts.length > 6 && (
-          <div className="text-center mt-10">
+        {withProducts.length > 8 && (
+          <div className="text-center mt-14">
             <button
               onClick={() => setShowAll(!showAll)}
-              className="font-display text-[11px] tracking-[0.3em] text-primary border-2 border-primary px-12 py-3.5 hover:bg-primary hover:text-primary-foreground transition-all uppercase"
+              className="relative font-display text-[11px] tracking-[0.3em] text-accent border border-accent px-14 py-4 hover:bg-accent hover:text-accent-foreground transition-all uppercase"
             >
               {showAll ? 'Show Less' : `View All ${withProducts.length} Categories`}
+              <span className="absolute top-0 left-0 w-3 h-3 border-t border-l border-primary" />
+              <span className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-primary" />
             </button>
           </div>
         )}
