@@ -3,8 +3,6 @@ import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Loader2, Save, Lock } from 'lucide-react';
 
@@ -17,11 +15,7 @@ export default function ProfilePage() {
   const { data: profile, isLoading } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', user!.id)
-        .maybeSingle();
+      const { data, error } = await supabase.from('profiles').select('*').eq('user_id', user!.id).maybeSingle();
       if (error) throw error;
       return data;
     },
@@ -29,97 +23,73 @@ export default function ProfilePage() {
   });
 
   useEffect(() => {
-    if (profile) {
-      setFullName(profile.full_name || '');
-      setPhone(profile.phone || '');
-    }
+    if (profile) { setFullName(profile.full_name || ''); setPhone(profile.phone || ''); }
   }, [profile]);
 
   const updateProfile = useMutation({
     mutationFn: async () => {
       if (profile) {
-        const { error } = await supabase
-          .from('profiles')
-          .update({ full_name: fullName, phone })
-          .eq('user_id', user!.id);
+        const { error } = await supabase.from('profiles').update({ full_name: fullName, phone }).eq('user_id', user!.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase
-          .from('profiles')
-          .insert({ user_id: user!.id, full_name: fullName, phone });
+        const { error } = await supabase.from('profiles').insert({ user_id: user!.id, full_name: fullName, phone });
         if (error) throw error;
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-      toast.success('Profile updated successfully');
-    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['profile'] }); toast.success('Profile updated'); },
     onError: () => toast.error('Failed to update profile'),
   });
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
   }
 
   return (
-    <div>
-      <h2 className="font-display text-xl font-semibold mb-6">Personal Information</h2>
+    <div className="space-y-10">
+      {/* Personal Info */}
+      <section>
+        <div className="flex items-center gap-3 mb-5">
+          <span className="text-accent text-[7px]">◆</span>
+          <h2 className="font-display text-lg font-bold tracking-[0.1em] uppercase">Personal Information</h2>
+        </div>
+        <div className="relative border border-border p-6 md:p-8">
+          <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-accent/20" />
+          <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-accent/20" />
 
-      <div className="bg-muted/30 rounded-xl border border-border p-6">
-        <form
-          onSubmit={e => { e.preventDefault(); updateProfile.mutate(); }}
-          className="space-y-5 max-w-md"
-        >
-          <div>
-            <Label className="font-body text-sm">Email</Label>
-            <Input value={user?.email || ''} disabled className="mt-1.5 font-body bg-muted" />
-            <p className="text-xs text-muted-foreground font-body mt-1">Email cannot be changed</p>
-          </div>
-
-          <div>
-            <Label className="font-body text-sm">Full Name</Label>
-            <Input
-              value={fullName}
-              onChange={e => setFullName(e.target.value)}
-              placeholder="Enter your full name"
-              className="mt-1.5 font-body"
-            />
-          </div>
-
-          <div>
-            <Label className="font-body text-sm">Phone Number</Label>
-            <Input
-              value={phone}
-              onChange={e => setPhone(e.target.value)}
-              placeholder="+91 XXXXX XXXXX"
-              className="mt-1.5 font-body"
-            />
-          </div>
-
-          <Button
-            type="submit"
-            disabled={updateProfile.isPending}
-            className="font-body tracking-wider uppercase text-xs"
-          >
-            {updateProfile.isPending ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4 mr-2" />
-            )}
-            Save Changes
-          </Button>
-        </form>
-      </div>
+          <form onSubmit={e => { e.preventDefault(); updateProfile.mutate(); }} className="space-y-5 max-w-md">
+            <div>
+              <label className="font-display text-[10px] font-bold tracking-[0.15em] uppercase text-foreground/60 mb-1.5 block">Email</label>
+              <Input value={user?.email || ''} disabled className="font-body bg-muted/50 border-border" />
+              <p className="text-[10px] text-muted-foreground font-body mt-1 italic">Email cannot be changed</p>
+            </div>
+            <div>
+              <label className="font-display text-[10px] font-bold tracking-[0.15em] uppercase text-foreground/60 mb-1.5 block">Full Name</label>
+              <Input value={fullName} onChange={e => setFullName(e.target.value)} className="font-body border-border" placeholder="Enter your full name" />
+            </div>
+            <div>
+              <label className="font-display text-[10px] font-bold tracking-[0.15em] uppercase text-foreground/60 mb-1.5 block">Phone</label>
+              <Input value={phone} onChange={e => setPhone(e.target.value)} className="font-body border-border" placeholder="+91 XXXXX XXXXX" />
+            </div>
+            <button type="submit" disabled={updateProfile.isPending} className="bg-primary text-primary-foreground px-8 py-3 font-display text-[11px] font-bold tracking-[0.2em] uppercase flex items-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-50">
+              {updateProfile.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+              Save Changes
+            </button>
+          </form>
+        </div>
+      </section>
 
       {/* Change Password */}
-      <h2 className="font-display text-xl font-semibold mb-6 mt-10">Change Password</h2>
-      <div className="bg-muted/30 rounded-xl border border-border p-6">
-        <ChangePasswordForm />
-      </div>
+      <section>
+        <div className="flex items-center gap-3 mb-5">
+          <span className="text-accent text-[7px]">◆</span>
+          <h2 className="font-display text-lg font-bold tracking-[0.1em] uppercase">Change Password</h2>
+        </div>
+        <div className="relative border border-border p-6 md:p-8">
+          <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-accent/20" />
+          <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-accent/20" />
+          <ChangePasswordForm />
+        </div>
+      </section>
     </div>
   );
 }
@@ -131,62 +101,34 @@ function ChangePasswordForm() {
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
+    if (newPassword.length < 6) { toast.error('Password must be at least 6 characters'); return; }
+    if (newPassword !== confirmPassword) { toast.error('Passwords do not match'); return; }
     setLoading(true);
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     setLoading(false);
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Password changed successfully');
-      setNewPassword('');
-      setConfirmPassword('');
-    }
+    if (error) { toast.error(error.message); } else { toast.success('Password changed'); setNewPassword(''); setConfirmPassword(''); }
   };
 
   return (
     <form onSubmit={handleChangePassword} className="space-y-5 max-w-md">
       <div>
-        <Label className="font-body text-sm">New Password</Label>
-        <div className="relative mt-1.5">
+        <label className="font-display text-[10px] font-bold tracking-[0.15em] uppercase text-foreground/60 mb-1.5 block">New Password</label>
+        <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="password"
-            value={newPassword}
-            onChange={e => setNewPassword(e.target.value)}
-            placeholder="Min 6 characters"
-            className="pl-10 font-body"
-            minLength={6}
-            required
-          />
+          <Input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className="pl-10 font-body border-border" placeholder="Min 6 characters" minLength={6} required />
         </div>
       </div>
       <div>
-        <Label className="font-body text-sm">Confirm New Password</Label>
-        <div className="relative mt-1.5">
+        <label className="font-display text-[10px] font-bold tracking-[0.15em] uppercase text-foreground/60 mb-1.5 block">Confirm Password</label>
+        <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="password"
-            value={confirmPassword}
-            onChange={e => setConfirmPassword(e.target.value)}
-            placeholder="Re-enter password"
-            className="pl-10 font-body"
-            minLength={6}
-            required
-          />
+          <Input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="pl-10 font-body border-border" placeholder="Re-enter password" minLength={6} required />
         </div>
       </div>
-      <Button type="submit" disabled={loading} variant="outline" className="font-body tracking-wider uppercase text-xs">
-        {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Lock className="h-4 w-4 mr-2" />}
+      <button type="submit" disabled={loading} className="border-2 border-primary text-primary px-8 py-3 font-display text-[11px] font-bold tracking-[0.2em] uppercase flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50">
+        {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Lock className="h-3.5 w-3.5" />}
         Update Password
-      </Button>
+      </button>
     </form>
   );
 }
