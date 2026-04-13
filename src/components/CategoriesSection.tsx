@@ -67,9 +67,11 @@ export function CategoriesSection() {
     },
   });
 
-  if (categories.length === 0) return null;
+  const withProducts = categories.filter(c => c.product_count > 0);
 
-  const displayed = showAll ? categories : categories.slice(0, 8);
+  if (withProducts.length === 0) return null;
+
+  const displayed = showAll ? withProducts : withProducts.slice(0, 8);
 
   return (
     <section className="py-16 md:py-24">
