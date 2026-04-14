@@ -536,12 +536,6 @@ function ProductDetail() {
                 </div>
               ))}
 
-              {!hasVariants && (
-                <div>
-                  <h3 className="font-display text-[11px] font-bold tracking-[0.15em] uppercase mb-3">Size</h3>
-                  <div className="inline-block border-2 border-primary px-6 py-2 text-[11px] font-display font-bold tracking-[0.15em] text-primary uppercase">Free Size</div>
-                </div>
-              )}
 
               {/* CTAs */}
               <div className="space-y-3 pt-2">
