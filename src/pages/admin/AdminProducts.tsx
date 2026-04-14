@@ -86,6 +86,7 @@ const AdminProducts = () => {
   });
 
   const deleteProduct = async (id: string) => {
+    await supabase.from('order_items').delete().eq('product_id', id);
     await supabase.from('product_variants').delete().eq('product_id', id);
     await supabase.from('wishlists').delete().eq('product_id', id);
     await supabase.from('reviews').delete().eq('product_id', id);
