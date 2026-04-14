@@ -2,8 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Trash2, Download } from 'lucide-react';
 import { toast } from 'sonner';
+import { useBulkSelect } from '@/hooks/useBulkSelect';
 
 export default function AdminNewsletter() {
   const qc = useQueryClient();
@@ -17,9 +19,19 @@ export default function AdminNewsletter() {
     },
   });
 
+  const bulk = useBulkSelect(subs);
+
   const del = useMutation({
     mutationFn: async (id: string) => { const { error } = await supabase.from('newsletter_subscribers').delete().eq('id', id); if (error) throw error; },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-newsletter'] }); toast.success('Removed'); },
+  });
+
+  const bulkDel = useMutation({
+    mutationFn: async (ids: string[]) => {
+      for (const id of ids) { const { error } = await supabase.from('newsletter_subscribers').delete().eq('id', id); if (error) throw error; }
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-newsletter'] }); toast.success(`${bulk.count} subscribers removed`); bulk.clear(); },
+    onError: (e: any) => toast.error(e.message),
   });
 
   const exportCSV = () => {
@@ -33,7 +45,14 @@ export default function AdminNewsletter() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div><h1 className="text-2xl font-bold">Newsletter Subscribers</h1><p className="text-muted-foreground text-sm">{subs.length} total subscribers</p></div>
-        <Button variant="outline" onClick={exportCSV} disabled={subs.length === 0}><Download className="h-4 w-4 mr-2" /> Export CSV</Button>
+        <div className="flex gap-2">
+          {bulk.someSelected && (
+            <Button variant="destructive" onClick={() => { if (confirm(`Remove ${bulk.count} subscribers?`)) bulkDel.mutate(Array.from(bulk.selectedIds)); }} disabled={bulkDel.isPending}>
+              <Trash2 className="h-4 w-4 mr-2" /> Remove {bulk.count}
+            </Button>
+          )}
+          <Button variant="outline" onClick={exportCSV} disabled={subs.length === 0}><Download className="h-4 w-4 mr-2" /> Export CSV</Button>
+        </div>
       </div>
 
       {isLoading ? <p className="text-center py-12 text-muted-foreground">Loading...</p> : subs.length === 0 ? (
@@ -41,10 +60,19 @@ export default function AdminNewsletter() {
       ) : (
         <div className="border rounded-lg overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-muted/50"><tr><th className="text-left p-3">Email</th><th className="text-left p-3">Status</th><th className="text-left p-3 hidden sm:table-cell">Date</th><th className="text-right p-3">Actions</th></tr></thead>
+            <thead className="bg-muted/50">
+              <tr>
+                <th className="p-3 w-10"><Checkbox checked={bulk.allSelected} onCheckedChange={bulk.toggleAll} /></th>
+                <th className="text-left p-3">Email</th>
+                <th className="text-left p-3">Status</th>
+                <th className="text-left p-3 hidden sm:table-cell">Date</th>
+                <th className="text-right p-3">Actions</th>
+              </tr>
+            </thead>
             <tbody>
               {subs.map((s: any) => (
-                <tr key={s.id} className="border-t">
+                <tr key={s.id} className={`border-t ${bulk.selectedIds.has(s.id) ? 'bg-primary/5' : ''}`}>
+                  <td className="p-3"><Checkbox checked={bulk.selectedIds.has(s.id)} onCheckedChange={() => bulk.toggle(s.id)} /></td>
                   <td className="p-3">{s.email}</td>
                   <td className="p-3"><Badge variant={s.is_active ? 'default' : 'secondary'}>{s.is_active ? 'Active' : 'Unsubscribed'}</Badge></td>
                   <td className="p-3 hidden sm:table-cell text-muted-foreground">{new Date(s.created_at).toLocaleDateString()}</td>

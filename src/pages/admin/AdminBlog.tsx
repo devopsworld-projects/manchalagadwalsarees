@@ -6,10 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useBulkSelect } from '@/hooks/useBulkSelect';
 
 const defaultForm = { title: '', slug: '', content: '', excerpt: '', image_url: '', author: 'Admin', is_published: false };
 
@@ -28,6 +30,8 @@ export default function AdminBlog() {
     },
   });
 
+  const bulk = useBulkSelect(posts);
+
   const save = useMutation({
     mutationFn: async (d: any) => {
       const slug = d.slug || d.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
@@ -44,24 +48,46 @@ export default function AdminBlog() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-blog'] }); toast.success('Deleted'); },
   });
 
+  const bulkDel = useMutation({
+    mutationFn: async (ids: string[]) => {
+      for (const id of ids) { const { error } = await supabase.from('blog_posts').delete().eq('id', id); if (error) throw error; }
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-blog'] }); toast.success(`${bulk.count} posts deleted`); bulk.clear(); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
   const close = () => { setDialogOpen(false); setEditingId(null); setForm(defaultForm); };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div><h1 className="text-2xl font-bold">Blog / CMS</h1><p className="text-muted-foreground text-sm">Manage articles and content pages.</p></div>
-        <Button onClick={() => { setForm(defaultForm); setDialogOpen(true); }}><Plus className="h-4 w-4 mr-2" /> New Post</Button>
+        <div className="flex gap-2">
+          {bulk.someSelected && (
+            <Button variant="destructive" onClick={() => { if (confirm(`Delete ${bulk.count} posts?`)) bulkDel.mutate(Array.from(bulk.selectedIds)); }} disabled={bulkDel.isPending}>
+              <Trash2 className="h-4 w-4 mr-2" /> Delete {bulk.count}
+            </Button>
+          )}
+          <Button onClick={() => { setForm(defaultForm); setDialogOpen(true); }}><Plus className="h-4 w-4 mr-2" /> New Post</Button>
+        </div>
       </div>
 
       {isLoading ? <p className="text-center py-12 text-muted-foreground">Loading...</p> : posts.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground border rounded-lg">No blog posts yet.</div>
       ) : (
         <div className="space-y-3">
+          <div className="flex items-center gap-2 mb-2">
+            <Checkbox checked={bulk.allSelected} onCheckedChange={bulk.toggleAll} />
+            <span className="text-sm text-muted-foreground">Select all</span>
+          </div>
           {posts.map((p: any) => (
-            <div key={p.id} className="border rounded-lg p-4 flex items-center justify-between">
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{p.title}</p>
-                <p className="text-xs text-muted-foreground">By {p.author} • {new Date(p.created_at).toLocaleDateString()}</p>
+            <div key={p.id} className={`border rounded-lg p-4 flex items-center justify-between ${bulk.selectedIds.has(p.id) ? 'bg-primary/5 border-primary/30' : ''}`}>
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <Checkbox checked={bulk.selectedIds.has(p.id)} onCheckedChange={() => bulk.toggle(p.id)} />
+                <div className="min-w-0">
+                  <p className="font-medium truncate">{p.title}</p>
+                  <p className="text-xs text-muted-foreground">By {p.author} • {new Date(p.created_at).toLocaleDateString()}</p>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Badge variant={p.is_published ? 'default' : 'secondary'}>{p.is_published ? 'Published' : 'Draft'}</Badge>
