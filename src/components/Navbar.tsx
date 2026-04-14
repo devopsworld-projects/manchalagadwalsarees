@@ -152,7 +152,7 @@ export function Navbar() {
 
       {/* ─── Main Navigation ─── */}
       <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border/50 relative">
-        <div className="container flex items-center justify-between h-18 md:h-20">
+        <div className="container flex items-center justify-between py-2 md:py-3">
           {/* Mobile menu button */}
           <button
             className="md:hidden p-2 text-foreground/70 hover:text-accent transition-colors"
@@ -164,7 +164,7 @@ export function Navbar() {
 
           {/* Logo — centered approach */}
           <Link to="/" className="flex items-center">
-            <img src={logoSrc} alt="Kavi Women's World" className="h-20 sm:h-24 md:h-24 w-auto" />
+            <img src={logoSrc} alt="Kavi Women's World" className="h-16 sm:h-20 md:h-24 w-auto" />
           </Link>
 
           {/* Desktop nav */}
