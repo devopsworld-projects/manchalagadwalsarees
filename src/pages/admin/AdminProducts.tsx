@@ -84,12 +84,23 @@ const AdminProducts = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      // Delete all dependent records first
+      await supabase.from('product_variants').delete().eq('product_id', id);
+      await supabase.from('wishlists').delete().eq('product_id', id);
+      await supabase.from('reviews').delete().eq('product_id', id);
+      await supabase.from('related_products').delete().eq('product_id', id);
+      await supabase.from('related_products').delete().eq('related_product_id', id);
+      await supabase.from('product_tag_map').delete().eq('product_id', id);
+      // Now delete the product
       const { error } = await supabase.from('products').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
       toast({ title: 'Product deleted' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Failed to delete', description: error.message, variant: 'destructive' });
     },
   });
 
