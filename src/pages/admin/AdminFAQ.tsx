@@ -6,10 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useBulkSelect } from '@/hooks/useBulkSelect';
 
 const defaultForm = { question: '', answer: '', category: 'General', sort_order: 0, is_active: true };
 
@@ -28,6 +30,8 @@ export default function AdminFAQ() {
     },
   });
 
+  const bulk = useBulkSelect(items);
+
   const save = useMutation({
     mutationFn: async (d: any) => {
       const payload = { question: d.question, answer: d.answer, category: d.category, sort_order: d.sort_order, is_active: d.is_active };
@@ -43,26 +47,48 @@ export default function AdminFAQ() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-faq'] }); toast.success('Deleted'); },
   });
 
+  const bulkDel = useMutation({
+    mutationFn: async (ids: string[]) => {
+      for (const id of ids) { const { error } = await supabase.from('faq_items').delete().eq('id', id); if (error) throw error; }
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-faq'] }); toast.success(`${bulk.count} FAQs deleted`); bulk.clear(); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
   const close = () => { setDialogOpen(false); setEditingId(null); setForm(defaultForm); };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div><h1 className="text-2xl font-bold">FAQ Management</h1><p className="text-muted-foreground text-sm">Manage frequently asked questions.</p></div>
-        <Button onClick={() => { setForm({ ...defaultForm, sort_order: items.length }); setDialogOpen(true); }}><Plus className="h-4 w-4 mr-2" /> Add FAQ</Button>
+        <div className="flex gap-2">
+          {bulk.someSelected && (
+            <Button variant="destructive" onClick={() => { if (confirm(`Delete ${bulk.count} FAQs?`)) bulkDel.mutate(Array.from(bulk.selectedIds)); }} disabled={bulkDel.isPending}>
+              <Trash2 className="h-4 w-4 mr-2" /> Delete {bulk.count}
+            </Button>
+          )}
+          <Button onClick={() => { setForm({ ...defaultForm, sort_order: items.length }); setDialogOpen(true); }}><Plus className="h-4 w-4 mr-2" /> Add FAQ</Button>
+        </div>
       </div>
 
       {isLoading ? <p className="text-center py-12 text-muted-foreground">Loading...</p> : items.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground border rounded-lg">No FAQs yet.</div>
       ) : (
         <div className="space-y-3">
+          <div className="flex items-center gap-2 mb-2">
+            <Checkbox checked={bulk.allSelected} onCheckedChange={bulk.toggleAll} />
+            <span className="text-sm text-muted-foreground">Select all</span>
+          </div>
           {items.map((item: any) => (
-            <div key={item.id} className="border rounded-lg p-4">
+            <div key={item.id} className={`border rounded-lg p-4 ${bulk.selectedIds.has(item.id) ? 'bg-primary/5 border-primary/30' : ''}`}>
               <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <p className="font-medium">{item.question}</p>
-                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{item.answer}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Category: {item.category}</p>
+                <div className="flex items-start gap-3 flex-1">
+                  <Checkbox checked={bulk.selectedIds.has(item.id)} onCheckedChange={() => bulk.toggle(item.id)} className="mt-1" />
+                  <div>
+                    <p className="font-medium">{item.question}</p>
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{item.answer}</p>
+                    <p className="text-xs text-muted-foreground mt-1">Category: {item.category}</p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2 ml-4">
                   <Badge variant={item.is_active ? 'default' : 'secondary'}>{item.is_active ? 'Active' : 'Hidden'}</Badge>

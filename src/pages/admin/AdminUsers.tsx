@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, ShieldCheck, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useBulkSelect } from '@/hooks/useBulkSelect';
 
 const roleBadgeStyles: Record<string, string> = {
   admin: 'bg-primary/10 text-primary',
@@ -31,11 +33,11 @@ const AdminUsers = () => {
     },
   });
 
+  const bulk = useBulkSelect(users);
+
   const changeRole = useMutation({
     mutationFn: async ({ userId, newRole }: { userId: string; newRole: string }) => {
-      // Remove existing role
       await supabase.from('user_roles').delete().eq('user_id', userId);
-      // If not "user" (default), insert the new role
       if (newRole !== 'user') {
         const { error } = await supabase.from('user_roles').insert({ user_id: userId, role: newRole as any });
         if (error) throw error;
@@ -48,16 +50,30 @@ const AdminUsers = () => {
     onError: (err: Error) => toast({ title: 'Error', description: err.message, variant: 'destructive' }),
   });
 
+  const removeUserRoles = async (userId: string) => {
+    const { error } = await supabase.from('user_roles').delete().eq('user_id', userId);
+    if (error) throw error;
+  };
+
   const removeUser = useMutation({
-    mutationFn: async (userId: string) => {
-      // Remove roles first
-      await supabase.from('user_roles').delete().eq('user_id', userId);
-      // Note: We can't delete from auth.users via client SDK.
-      // We remove their roles so they have no access.
-    },
+    mutationFn: removeUserRoles,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-user-roles'] });
       toast({ title: 'User roles removed' });
+    },
+    onError: (err: Error) => toast({ title: 'Error', description: err.message, variant: 'destructive' }),
+  });
+
+  const bulkRemove = useMutation({
+    mutationFn: async (ids: string[]) => {
+      for (const id of ids) {
+        await removeUserRoles(id);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-user-roles'] });
+      toast({ title: `Roles removed for ${bulk.count} users` });
+      bulk.clear();
     },
     onError: (err: Error) => toast({ title: 'Error', description: err.message, variant: 'destructive' }),
   });
@@ -70,7 +86,18 @@ const AdminUsers = () => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-display text-2xl font-bold">Users</h2>
-        <span className="font-body text-sm text-muted-foreground">{users?.length || 0} registered users</span>
+        <div className="flex items-center gap-3">
+          {bulk.someSelected && (
+            <button
+              onClick={() => { if (confirm(`Remove roles for ${bulk.count} selected users?`)) bulkRemove.mutate(Array.from(bulk.selectedIds)); }}
+              disabled={bulkRemove.isPending}
+              className="flex items-center gap-2 bg-destructive text-destructive-foreground px-4 py-2 text-sm font-body tracking-wider hover:bg-destructive/90 transition-colors disabled:opacity-50 rounded"
+            >
+              <Trash2 className="h-4 w-4" /> REMOVE ROLES ({bulk.count})
+            </button>
+          )}
+          <span className="font-body text-sm text-muted-foreground">{users?.length || 0} registered users</span>
+        </div>
       </div>
 
       {isLoading ? (
@@ -80,6 +107,7 @@ const AdminUsers = () => {
           <table className="w-full">
             <thead className="bg-muted">
               <tr className="font-body text-xs text-muted-foreground uppercase tracking-wider">
+                <th className="p-3 w-10"><Checkbox checked={bulk.allSelected} onCheckedChange={bulk.toggleAll} /></th>
                 <th className="text-left p-3">Email</th>
                 <th className="text-center p-3">Role</th>
                 <th className="text-left p-3">Joined</th>
@@ -91,7 +119,8 @@ const AdminUsers = () => {
               {users?.map((user) => {
                 const role = getUserRole(user.id);
                 return (
-                  <tr key={user.id} className="hover:bg-muted/30 transition-colors">
+                  <tr key={user.id} className={`hover:bg-muted/30 transition-colors ${bulk.selectedIds.has(user.id) ? 'bg-primary/5' : ''}`}>
+                    <td className="p-3"><Checkbox checked={bulk.selectedIds.has(user.id)} onCheckedChange={() => bulk.toggle(user.id)} /></td>
                     <td className="p-3 font-body text-sm font-medium">{user.email}</td>
                     <td className="p-3 text-center">
                       <select
@@ -124,7 +153,7 @@ const AdminUsers = () => {
                 );
               })}
               {(!users || users.length === 0) && (
-                <tr><td colSpan={5} className="p-8 text-center text-muted-foreground font-body">No users found.</td></tr>
+                <tr><td colSpan={6} className="p-8 text-center text-muted-foreground font-body">No users found.</td></tr>
               )}
             </tbody>
           </table>

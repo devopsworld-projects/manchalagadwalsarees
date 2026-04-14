@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Pencil, Trash2, Image, GripVertical } from 'lucide-react';
 import { toast } from 'sonner';
+import { useBulkSelect } from '@/hooks/useBulkSelect';
 
 const defaultForm = { title: '', subtitle: '', image_url: '', cta_text: 'Shop Now', cta_link: '/collections', sort_order: 0, is_active: true };
 
@@ -27,31 +29,29 @@ export default function AdminHeroSlides() {
     },
   });
 
+  const bulk = useBulkSelect(slides);
+
   const save = useMutation({
     mutationFn: async (d: any) => {
-      const payload = {
-        title: d.title || null, subtitle: d.subtitle || null, image_url: d.image_url,
-        cta_text: d.cta_text || 'Shop Now', cta_link: d.cta_link || '/collections',
-        sort_order: d.sort_order, is_active: d.is_active,
-      };
-      if (d.id) {
-        const { error } = await supabase.from('hero_slides').update(payload).eq('id', d.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('hero_slides').insert(payload);
-        if (error) throw error;
-      }
+      const payload = { title: d.title || null, subtitle: d.subtitle || null, image_url: d.image_url, cta_text: d.cta_text || 'Shop Now', cta_link: d.cta_link || '/collections', sort_order: d.sort_order, is_active: d.is_active };
+      if (d.id) { const { error } = await supabase.from('hero_slides').update(payload).eq('id', d.id); if (error) throw error; }
+      else { const { error } = await supabase.from('hero_slides').insert(payload); if (error) throw error; }
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-hero-slides'] }); toast.success('Saved'); close(); },
     onError: (e: any) => toast.error(e.message),
   });
 
   const del = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from('hero_slides').delete().eq('id', id);
-      if (error) throw error;
-    },
+    mutationFn: async (id: string) => { const { error } = await supabase.from('hero_slides').delete().eq('id', id); if (error) throw error; },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-hero-slides'] }); toast.success('Deleted'); },
+  });
+
+  const bulkDel = useMutation({
+    mutationFn: async (ids: string[]) => {
+      for (const id of ids) { const { error } = await supabase.from('hero_slides').delete().eq('id', id); if (error) throw error; }
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-hero-slides'] }); toast.success(`${bulk.count} slides deleted`); bulk.clear(); },
+    onError: (e: any) => toast.error(e.message),
   });
 
   const close = () => { setDialogOpen(false); setEditingId(null); setForm(defaultForm); };
@@ -69,13 +69,15 @@ export default function AdminHeroSlides() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Hero Slider</h1>
-          <p className="text-muted-foreground text-sm">Manage homepage hero carousel slides.</p>
+        <div><h1 className="text-2xl font-bold">Hero Slider</h1><p className="text-muted-foreground text-sm">Manage homepage hero carousel slides.</p></div>
+        <div className="flex gap-2">
+          {bulk.someSelected && (
+            <Button variant="destructive" onClick={() => { if (confirm(`Delete ${bulk.count} slides?`)) bulkDel.mutate(Array.from(bulk.selectedIds)); }} disabled={bulkDel.isPending}>
+              <Trash2 className="h-4 w-4 mr-2" /> Delete {bulk.count}
+            </Button>
+          )}
+          <Button onClick={() => { setForm({ ...defaultForm, sort_order: slides.length }); setDialogOpen(true); }}><Plus className="h-4 w-4 mr-2" /> Add Slide</Button>
         </div>
-        <Button onClick={() => { setForm({ ...defaultForm, sort_order: slides.length }); setDialogOpen(true); }}>
-          <Plus className="h-4 w-4 mr-2" /> Add Slide
-        </Button>
       </div>
 
       {isLoading ? <p className="text-center py-12 text-muted-foreground">Loading...</p> : slides.length === 0 ? (
@@ -86,40 +88,23 @@ export default function AdminHeroSlides() {
         </div>
       ) : (
         <div className="grid gap-4">
+          <div className="flex items-center gap-2">
+            <Checkbox checked={bulk.allSelected} onCheckedChange={bulk.toggleAll} />
+            <span className="text-sm text-muted-foreground">Select all</span>
+          </div>
           {slides.map((s: any) => (
-            <div key={s.id} className="border rounded-lg p-4 flex items-center gap-4">
+            <div key={s.id} className={`border rounded-lg p-4 flex items-center gap-4 ${bulk.selectedIds.has(s.id) ? 'bg-primary/5 border-primary/30' : ''}`}>
+              <Checkbox checked={bulk.selectedIds.has(s.id)} onCheckedChange={() => bulk.toggle(s.id)} />
               <GripVertical className="h-4 w-4 text-muted-foreground/40 shrink-0" />
-              {s.image_url ? (
-                <img src={s.image_url} alt={s.title || 'Slide'} className="h-20 w-36 object-cover rounded" />
-              ) : (
-                <div className="h-20 w-36 bg-muted rounded flex items-center justify-center">
-                  <Image className="h-6 w-6 text-muted-foreground" />
-                </div>
-              )}
+              {s.image_url ? <img src={s.image_url} alt={s.title || 'Slide'} className="h-20 w-36 object-cover rounded" /> : <div className="h-20 w-36 bg-muted rounded flex items-center justify-center"><Image className="h-6 w-6 text-muted-foreground" /></div>}
               <div className="flex-1 min-w-0">
                 <p className="font-medium truncate">{s.title || 'Untitled Slide'}</p>
                 <p className="text-sm text-muted-foreground truncate">{s.subtitle || 'No subtitle'}</p>
-                <p className="text-xs text-muted-foreground">
-                  CTA: {s.cta_text} → {s.cta_link} • Order: {s.sort_order}
-                </p>
+                <p className="text-xs text-muted-foreground">CTA: {s.cta_text} → {s.cta_link} • Order: {s.sort_order}</p>
               </div>
-              <Badge variant={s.is_active ? 'default' : 'secondary'}>
-                {s.is_active ? 'Active' : 'Hidden'}
-              </Badge>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
-                setEditingId(s.id);
-                setForm({
-                  title: s.title || '', subtitle: s.subtitle || '', image_url: s.image_url,
-                  cta_text: s.cta_text || 'Shop Now', cta_link: s.cta_link || '/collections',
-                  sort_order: s.sort_order, is_active: s.is_active,
-                });
-                setDialogOpen(true);
-              }}>
-                <Pencil className="h-3.5 w-3.5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => del.mutate(s.id)}>
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
+              <Badge variant={s.is_active ? 'default' : 'secondary'}>{s.is_active ? 'Active' : 'Hidden'}</Badge>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setEditingId(s.id); setForm({ title: s.title || '', subtitle: s.subtitle || '', image_url: s.image_url, cta_text: s.cta_text || 'Shop Now', cta_link: s.cta_link || '/collections', sort_order: s.sort_order, is_active: s.is_active }); setDialogOpen(true); }}><Pencil className="h-3.5 w-3.5" /></Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => del.mutate(s.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
             </div>
           ))}
         </div>
@@ -146,12 +131,7 @@ export default function AdminHeroSlides() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={close}>Cancel</Button>
-            <Button onClick={() => {
-              if (!form.image_url.trim()) { toast.error('Image is required'); return; }
-              save.mutate({ ...form, id: editingId || undefined });
-            }} disabled={save.isPending}>
-              {save.isPending ? 'Saving...' : 'Save'}
-            </Button>
+            <Button onClick={() => { if (!form.image_url.trim()) { toast.error('Image is required'); return; } save.mutate({ ...form, id: editingId || undefined }); }} disabled={save.isPending}>{save.isPending ? 'Saving...' : 'Save'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
