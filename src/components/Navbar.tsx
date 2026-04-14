@@ -164,7 +164,7 @@ export function Navbar() {
 
           {/* Logo — centered approach */}
           <Link to="/" className="flex items-center">
-            <img src={logoSrc} alt="Kavi Women's World" className="h-20 sm:h-24 md:h-24 w-auto" />
+            <img src={logoSrc} alt="Kavi Women's World" className="h-14 sm:h-16 md:h-20 w-auto" />
           </Link>
 
           {/* Desktop nav */}
