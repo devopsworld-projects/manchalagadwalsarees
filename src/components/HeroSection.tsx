@@ -123,7 +123,7 @@ export function HeroSection() {
 
               {/* Title */}
               <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[0.9] text-background tracking-wide mb-6">
-                {(slide.title || "Kavi Women's World").split(' ').map((word: string, i: number, arr: string[]) => (
+                {(slide.title || "Manchala Gadwal Sarees").split(' ').map((word: string, i: number, arr: string[]) => (
                   <span key={i} className="block">
                     {i === arr.length - 1 ? <span className="gold-shimmer">{word}</span> : word}
                   </span>

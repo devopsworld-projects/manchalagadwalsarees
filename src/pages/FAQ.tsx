@@ -20,7 +20,7 @@ export default function FAQ() {
 
   return (
     <div className="min-h-screen">
-      <PageMeta title="FAQ — Kavi Women's World" description="Frequently asked questions about our products, shipping, returns and more." canonicalPath="/faq" />
+      <PageMeta title="FAQ — Manchala Gadwal Sarees" description="Frequently asked questions about our products, shipping, returns and more." canonicalPath="/faq" />
       <AnnouncementBar />
       <Navbar />
       <main className="container max-w-3xl py-12">

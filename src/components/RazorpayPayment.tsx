@@ -94,7 +94,7 @@ export function RazorpayPayment({ amount, customerName, customerEmail, customerP
                 <CreditCard className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-semibold text-sm">Kavi Women's World</p>
+                <p className="font-semibold text-sm">Manchala Gadwal Sarees</p>
                 <p className="text-xs text-blue-200">{customerEmail}</p>
               </div>
             </div>

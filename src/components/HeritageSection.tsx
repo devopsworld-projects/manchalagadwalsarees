@@ -48,7 +48,7 @@ export function HeritageSection() {
 
               <div className="space-y-4 mb-10">
                 <p className="font-serif text-base md:text-lg text-background/50 leading-relaxed italic">
-                  Every saree at Kavi Women's World tells a story — of artisans who have dedicated
+                  Every saree at Manchala Gadwal Sarees tells a story — of artisans who have dedicated
                   their lives to preserving centuries-old weaving traditions.
                 </p>
                 <p className="font-serif text-base text-background/40 leading-relaxed italic">

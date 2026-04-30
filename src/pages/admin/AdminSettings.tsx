@@ -252,7 +252,7 @@ const AdminSettings = () => {
           {/* Hero Section */}
           <TabsContent value="hero" className="max-w-2xl space-y-5">
             <SectionTitle>Hero Banner</SectionTitle>
-            <Field label="Hero Title" value={form.hero_title} onChange={v => update('hero_title', v)} placeholder="Kavi Women's World" />
+            <Field label="Hero Title" value={form.hero_title} onChange={v => update('hero_title', v)} placeholder="Manchala Gadwal Sarees" />
             <Field label="Hero Subtitle" value={form.hero_subtitle} onChange={v => update('hero_subtitle', v)} placeholder="Elegance in Every Drape" />
             <Field label="CTA Button Text" value={form.hero_cta_text} onChange={v => update('hero_cta_text', v)} placeholder="Explore Collections" />
             <Field label="CTA Button Link" value={form.hero_cta_link} onChange={v => update('hero_cta_link', v)} placeholder="/collections" />

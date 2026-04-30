@@ -120,7 +120,7 @@ export default function ColorMatchingTool() {
   return (
     <div className="min-h-screen pattern-bg">
       <PageMeta
-        title="Saree Color Matching Tool | Kavi Women's World"
+        title="Saree Color Matching Tool | Manchala Gadwal Sarees"
         description="Find the perfect blouse color and jewelry pairing for your saree. Our expert guide helps you style any saree beautifully."
         canonicalPath="/color-matching"
       />

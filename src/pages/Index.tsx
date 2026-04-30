@@ -17,7 +17,7 @@ import { OccasionsBanner } from '@/components/OccasionsBanner';
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Store',
-  name: "Kavi Women's World",
+  name: "Manchala Gadwal Sarees",
   description: 'Premium handcrafted sarees — Kanjivaram, Banarasi, Silk & Cotton collections with free shipping across India.',
   url: 'https://kaviwomensworld.lovable.app',
   telephone: '+919494644998',
@@ -28,7 +28,7 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <PageMeta
-        title="Kavi Women's World"
+        title="Manchala Gadwal Sarees"
         description="Discover the finest collection of handcrafted sarees. Traditional Kanjivaram, Banarasi & Premium silk sarees with free shipping across India."
         canonicalPath="/"
         jsonLd={jsonLd}
