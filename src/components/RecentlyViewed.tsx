@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useCurrency } from '@/context/CurrencyContext';
 
 type RecentItem = { id: string; name: string; image: string; price: number; sku: string };
 
@@ -25,7 +26,7 @@ export function RecentlyViewed({ currentSku }: { currentSku?: string }) {
               <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
             </div>
             <p className="font-body text-xs truncate">{item.name}</p>
-            <p className="font-body text-xs font-bold">₹{item.price.toLocaleString()}</p>
+            <p className="font-body text-xs font-bold">{useCurrency().format(item.price)}</p>
           </Link>
         ))}
       </div>

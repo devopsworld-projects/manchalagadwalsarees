@@ -10,6 +10,7 @@ import { PageMeta } from '@/components/PageMeta';
 import { Badge } from '@/components/ui/badge';
 import { Package, ArrowLeft, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCurrency } from '@/context/CurrencyContext';
 
 const statusColors: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
