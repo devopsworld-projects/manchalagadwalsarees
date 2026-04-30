@@ -180,21 +180,26 @@ export function Navbar() {
       <div className="bg-background border-b border-border/60 relative">
         <div className="container flex items-center justify-between gap-4 py-3 md:py-4">
           {/* Mobile: menu button + currency on the left */}
-          <div className="flex items-center md:hidden">
+          <div className="flex items-center gap-1 md:hidden">
             <button
-              className="p-2 text-primary hover:text-accent transition-colors"
+              className="p-2 text-primary hover:text-accent transition-colors min-h-[44px] min-w-[44px]"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle menu"
             >
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
-            <CurrencySelector />
+            <span aria-hidden="true" className="h-4 w-px bg-border/80" />
+            <div data-testid="currency-mobile" className="flex items-center">
+              <CurrencySelector />
+            </div>
           </div>
 
           {/* Desktop: split nav with centered wordmark */}
-          <nav className="hidden md:flex flex-1 items-center justify-end gap-7">
-            <CurrencySelector />
-            <span className="h-4 w-px bg-border" />
+          <nav className="hidden md:flex flex-1 items-center justify-end gap-6">
+            <div data-testid="currency-desktop" className="flex items-center">
+              <CurrencySelector />
+            </div>
+            <span aria-hidden="true" className="h-4 w-px bg-border/80" />
             {menuItems.slice(0, Math.ceil(menuItems.length / 2)).map(item => (
               <MegaNavItem
                 key={item.id}
