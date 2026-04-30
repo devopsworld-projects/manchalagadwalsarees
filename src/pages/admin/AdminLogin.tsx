@@ -63,7 +63,7 @@ const AdminLogin = () => {
           <div className="h-20 w-20 rounded-2xl bg-primary-foreground/10 backdrop-blur flex items-center justify-center mx-auto mb-8 border border-primary-foreground/20">
             <Store className="h-10 w-10 text-primary-foreground" />
           </div>
-          <h2 className="font-display text-4xl font-bold text-primary-foreground mb-4">Kavi Women's World</h2>
+          <h2 className="font-display text-4xl font-bold text-primary-foreground mb-4">Manchala Gadwal Sarees</h2>
           <p className="font-body text-primary-foreground/70 text-lg leading-relaxed max-w-md">
             Manage your store, track orders, and grow your business — all from one place.
           </p>

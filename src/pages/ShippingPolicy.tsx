@@ -5,7 +5,7 @@ import { PageMeta } from '@/components/PageMeta';
 
 const ShippingPolicy = () => (
   <div className="min-h-screen">
-    <PageMeta title="Shipping Policy" description="Shipping and delivery policy for Kavi Women's World orders." canonicalPath="/shipping-policy" />
+    <PageMeta title="Shipping Policy" description="Shipping and delivery policy for Manchala Gadwal Sarees orders." canonicalPath="/shipping-policy" />
     <AnnouncementBar />
     <Navbar />
     <main className="container max-w-3xl py-12 md:py-16">

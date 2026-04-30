@@ -69,7 +69,7 @@ const AdminLayout = () => {
               <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
               <div className="hidden sm:block">
                 <h1 className="font-display text-lg font-bold leading-none">{pageTitle}</h1>
-                <p className="font-body text-[11px] text-muted-foreground mt-0.5">Kavi Women's World</p>
+                <p className="font-body text-[11px] text-muted-foreground mt-0.5">Manchala Gadwal Sarees</p>
               </div>
             </div>
 

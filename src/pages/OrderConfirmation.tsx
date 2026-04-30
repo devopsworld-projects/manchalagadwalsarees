@@ -23,7 +23,7 @@ export default function OrderConfirmation() {
 
         <h1 className="font-display text-3xl md:text-4xl font-bold mb-3">Order Confirmed!</h1>
         <p className="text-muted-foreground font-body mb-6">
-          Thank you for shopping with Kavi Women's World.
+          Thank you for shopping with Manchala Gadwal Sarees.
         </p>
 
         {orderId && (

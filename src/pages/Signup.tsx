@@ -53,7 +53,7 @@ export default function Signup() {
             </div>
             <h1 className="font-display text-3xl font-bold tracking-wide">Create Account</h1>
             <p className="font-serif text-sm text-muted-foreground italic mt-2">
-              Join the Kavi family for a personalized experience
+              Join the Manchala family for a personalized experience
             </p>
           </div>
 

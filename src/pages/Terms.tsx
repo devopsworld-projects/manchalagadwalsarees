@@ -5,7 +5,7 @@ import { PageMeta } from '@/components/PageMeta';
 
 const Terms = () => (
   <div className="min-h-screen">
-    <PageMeta title="Terms & Conditions" description="Terms and conditions for shopping at Kavi Women's World." canonicalPath="/terms" />
+    <PageMeta title="Terms & Conditions" description="Terms and conditions for shopping at Manchala Gadwal Sarees." canonicalPath="/terms" />
     <AnnouncementBar />
     <Navbar />
     <main className="container max-w-3xl py-12 md:py-16">
@@ -15,7 +15,7 @@ const Terms = () => (
 
         <section className="space-y-3">
           <h2 className="font-display text-xl font-semibold text-foreground">1. General</h2>
-          <p>By accessing and using the Kavi Women's World website, you agree to be bound by these terms and conditions. These terms apply to all visitors, users, and customers.</p>
+          <p>By accessing and using the Manchala Gadwal Sarees website, you agree to be bound by these terms and conditions. These terms apply to all visitors, users, and customers.</p>
         </section>
 
         <section className="space-y-3">
@@ -58,12 +58,12 @@ const Terms = () => (
 
         <section className="space-y-3">
           <h2 className="font-display text-xl font-semibold text-foreground">6. Intellectual Property</h2>
-          <p>All content on this website — including images, text, logos, and designs — is the property of Kavi Women's World and may not be reproduced without permission.</p>
+          <p>All content on this website — including images, text, logos, and designs — is the property of Manchala Gadwal Sarees and may not be reproduced without permission.</p>
         </section>
 
         <section className="space-y-3">
           <h2 className="font-display text-xl font-semibold text-foreground">7. Limitation of Liability</h2>
-          <p>Kavi Women's World shall not be liable for any indirect, incidental, or consequential damages arising from the use of this website or purchase of products.</p>
+          <p>Manchala Gadwal Sarees shall not be liable for any indirect, incidental, or consequential damages arising from the use of this website or purchase of products.</p>
         </section>
 
         <section className="space-y-3">

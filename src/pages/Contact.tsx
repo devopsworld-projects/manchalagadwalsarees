@@ -42,7 +42,7 @@ const Contact = () => {
     <div className="min-h-screen">
       <PageMeta
         title="Contact Us"
-        description="Get in touch with Kavi Women's World. Call, email, or WhatsApp us for inquiries about sarees and orders."
+        description="Get in touch with Manchala Gadwal Sarees. Call, email, or WhatsApp us for inquiries about sarees and orders."
         canonicalPath="/contact"
       />
       <AnnouncementBar />

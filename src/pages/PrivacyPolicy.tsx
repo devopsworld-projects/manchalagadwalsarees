@@ -5,7 +5,7 @@ import { PageMeta } from '@/components/PageMeta';
 
 const PrivacyPolicy = () => (
   <div className="min-h-screen">
-    <PageMeta title="Privacy Policy" description="Privacy policy for Kavi Women's World — how we collect, use, and protect your data." canonicalPath="/privacy-policy" />
+    <PageMeta title="Privacy Policy" description="Privacy policy for Manchala Gadwal Sarees — how we collect, use, and protect your data." canonicalPath="/privacy-policy" />
     <AnnouncementBar />
     <Navbar />
     <main className="container max-w-3xl py-12 md:py-16">

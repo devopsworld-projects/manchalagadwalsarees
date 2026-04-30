@@ -164,7 +164,7 @@ export function Navbar() {
 
           {/* Logo — centered approach */}
           <Link to="/" className="flex items-center">
-            <img src={logoSrc} alt="Kavi Women's World" className="h-20 sm:h-24 md:h-24 w-auto" />
+            <img src={logoSrc} alt="Manchala Gadwal Sarees" className="h-20 sm:h-24 md:h-24 w-auto" />
           </Link>
 
           {/* Desktop nav */}
@@ -265,7 +265,7 @@ export function Navbar() {
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-accent/50 via-accent to-accent/50" />
               <div className="flex items-center justify-between">
                 <Link to="/" onClick={() => setMobileOpen(false)}>
-                  <img src={logoSrc} alt="Kavi Women's World" className="h-16 w-auto" />
+                  <img src={logoSrc} alt="Manchala Gadwal Sarees" className="h-16 w-auto" />
                 </Link>
                 <button onClick={() => setMobileOpen(false)} className="p-2 text-foreground/60 hover:text-accent transition-colors">
                   <X className="h-5 w-5" />

@@ -9,7 +9,7 @@ interface PageMetaProps {
   jsonLd?: Record<string, any>;
 }
 
-const SITE_NAME = "Kavi Women's World";
+const SITE_NAME = "Manchala Gadwal Sarees";
 const BASE_URL = 'https://kaviwomensworld.lovable.app';
 const DEFAULT_OG_IMAGE = 'https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/379f2d56-0757-44cf-9e62-02b42192f3f6/id-preview-780846be--c033cbfb-9562-49cf-8f20-c929b922ab32.lovable.app-1775832098668.png';
 

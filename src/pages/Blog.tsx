@@ -18,7 +18,7 @@ export default function Blog() {
 
   return (
     <div className="min-h-screen">
-      <PageMeta title="Blog — Kavi Women's World" description="Read articles about sarees, fashion tips, styling guides, and more." canonicalPath="/blog" />
+      <PageMeta title="Blog — Manchala Gadwal Sarees" description="Read articles about sarees, fashion tips, styling guides, and more." canonicalPath="/blog" />
       <AnnouncementBar />
       <Navbar />
       <main className="container py-12">
