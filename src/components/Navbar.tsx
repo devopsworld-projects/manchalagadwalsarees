@@ -149,17 +149,22 @@ export function Navbar() {
       {/* ─── Top Utility Bar ─── */}
       <div className="bg-foreground text-background hidden md:block">
         <div className="container flex items-center justify-between h-8">
-          <nav className="flex items-center gap-6">
-            {topBarItems.map(item => (
-              <Link
-                key={item.id}
-                to={getItemUrl(item)}
-                className="text-[10px] tracking-[0.2em] font-display font-medium text-background/70 hover:text-accent transition-colors uppercase"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          <div className="flex items-center gap-5">
+            {/* Currency switcher — leftmost */}
+            <CurrencySelector variant="topbar" />
+            <span className="h-3 w-px bg-background/20" />
+            <nav className="flex items-center gap-6">
+              {topBarItems.map(item => (
+                <Link
+                  key={item.id}
+                  to={getItemUrl(item)}
+                  className="text-[10px] tracking-[0.2em] font-display font-medium text-background/70 hover:text-accent transition-colors uppercase"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
           <a
             href="https://wa.me/919494644998"
             target="_blank"
