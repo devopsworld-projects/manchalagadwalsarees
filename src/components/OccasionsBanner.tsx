@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom';
 import flatlay from '@/assets/saree-collection-flatlay.jpg';
 
 const occasions = [
-  { name: 'Weddings', emoji: '💍', filter: 'wedding-sarees', desc: 'Grand celebration pieces' },
-  { name: 'Festivals', emoji: '🪔', filter: 'best-sellers', desc: 'Vibrant festive drapes' },
-  { name: 'Daily Wear', emoji: '🌸', filter: 'south-cotton-sarees', desc: 'Elegant everyday sarees' },
-  { name: 'Gifting', emoji: '🎁', filter: 'new-arrivals', desc: 'Perfect for loved ones' },
+  { name: 'Weddings', emoji: '🪷', filter: 'wedding-sarees', desc: 'Sacred bridal silks' },
+  { name: 'Festivals', emoji: '🪔', filter: 'best-sellers', desc: 'Diwali, Pongal & more' },
+  { name: 'Daily Grace', emoji: '🌸', filter: 'south-cotton-sarees', desc: 'Everyday elegance' },
+  { name: 'Gifting', emoji: '🎁', filter: 'new-arrivals', desc: 'Blessings to loved ones' },
 ];
 
 export function OccasionsBanner() {
@@ -23,8 +23,8 @@ export function OccasionsBanner() {
         <div className="absolute inset-0 bg-foreground/85" />
       </div>
 
-      <div className="absolute top-0 left-0 right-0 ornate-line" />
-      <div className="absolute bottom-0 left-0 right-0 ornate-line" />
+      <div className="gopuram-band-inverted absolute top-0 left-0 right-0 opacity-90" />
+      <div className="gopuram-band absolute bottom-0 left-0 right-0 opacity-90" />
 
       {/* Decorative frame */}
       <div className="absolute inset-8 md:inset-16 pointer-events-none">
@@ -35,13 +35,16 @@ export function OccasionsBanner() {
       </div>
 
       <div className="relative container text-center z-10">
-        <span className="text-accent text-[8px] tracking-[0.5em]">◆&nbsp;&nbsp;◆&nbsp;&nbsp;◆</span>
-        <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold text-background mt-4 tracking-wide">
+        <div className="lotus-divider mb-6">
+          <span className="lotus" />
+        </div>
+        <p className="devanagari text-accent text-lg md:text-xl mb-3">सर्वेषाम् अवसराणाम्</p>
+        <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold text-background tracking-wide">
           A Saree for Every Occasion
         </h2>
         <div className="w-20 ornate-line mx-auto mt-5 mb-4" />
-        <p className="font-serif text-base md:text-lg text-background/45 max-w-xl mx-auto mb-14 italic">
-          From grand celebrations to quiet everyday elegance — find the perfect drape for your story.
+        <p className="font-serif text-base md:text-lg text-background/55 max-w-xl mx-auto mb-14 italic">
+          From sacred ceremonies to quiet everyday grace — a drape blessed for every moment of your story.
         </p>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5 max-w-4xl mx-auto">
