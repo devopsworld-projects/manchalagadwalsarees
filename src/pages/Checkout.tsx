@@ -75,9 +75,9 @@ export default function Checkout() {
     if (error || !data) { toast.error('Invalid coupon code'); return; }
     if (data.expires_at && new Date(data.expires_at) < new Date()) { toast.error('Coupon has expired'); return; }
     if (data.max_uses && data.usage_count >= data.max_uses) { toast.error('Coupon usage limit reached'); return; }
-    if (totalPrice < (data.min_order_amount || 0)) { toast.error(`Minimum order ₹${data.min_order_amount}`); return; }
+    if (totalPrice < (data.min_order_amount || 0)) { toast.error(`Minimum order ${format(data.min_order_amount)}`); return; }
     setAppliedCoupon(data);
-    toast.success(`Coupon applied! ${data.discount_type === 'percentage' ? `${data.discount_value}% off` : `₹${data.discount_value} off`}`);
+    toast.success(`Coupon applied! ${data.discount_type === 'percentage' ? `${data.discount_value}% off` : `${format(data.discount_value)} off`}`);
   };
 
   // Redirect to login if not authenticated
@@ -295,7 +295,7 @@ export default function Checkout() {
             </div>
 
             <Button type="submit" disabled={loading} className="w-full h-12 font-body tracking-wider uppercase text-xs">
-              {loading ? 'Placing Order...' : paymentMethod === 'cod' ? `Place Order — ₹${grandTotal.toLocaleString()}` : `Pay ₹${grandTotal.toLocaleString()}`}
+              {loading ? 'Placing Order...' : paymentMethod === 'cod' ? `Place Order — ${format(grandTotal)}` : `Pay ${format(grandTotal)}`}
             </Button>
 
             <p className="text-xs text-muted-foreground text-center font-body">
@@ -327,7 +327,7 @@ export default function Checkout() {
                       <p className="font-body text-xs text-muted-foreground">Qty: {quantity}</p>
                     </div>
                     <span className="font-body text-sm font-bold shrink-0">
-                      ₹{(product.price * quantity).toLocaleString()}
+                      {format(product.price * quantity)}
                     </span>
                   </div>
                 ))}
@@ -349,17 +349,17 @@ export default function Checkout() {
               <div className="space-y-2">
                 <div className="flex justify-between font-body text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>₹{totalPrice.toLocaleString()}</span>
+                  <span>{format(totalPrice)}</span>
                 </div>
-                {discount > 0 && <div className="flex justify-between font-body text-sm text-green-600"><span>Discount</span><span>-₹{discount.toLocaleString()}</span></div>}
+                {discount > 0 && <div className="flex justify-between font-body text-sm text-green-600"><span>Discount</span><span>-{format(discount)}</span></div>}
                 <div className="flex justify-between font-body text-sm">
                   <span className="text-muted-foreground">Shipping</span>
-                  <span className={shipping === 0 ? 'text-green-600' : ''}>{shipping === 0 ? 'Free' : `₹${shipping}`}</span>
+                  <span className={shipping === 0 ? 'text-green-600' : ''}>{shipping === 0 ? 'Free' : format(shipping)}</span>
                 </div>
-                {taxAmount > 0 && <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Tax ({taxRate}%)</span><span>₹{taxAmount.toLocaleString()}</span></div>}
+                {taxAmount > 0 && <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Tax ({taxRate}%)</span><span>{format(taxAmount)}</span></div>}
                 <div className="flex justify-between font-body font-bold text-lg pt-2 border-t border-border">
                   <span>Total</span>
-                  <span>₹{grandTotal.toLocaleString()}</span>
+                  <span>{format(grandTotal)}</span>
                 </div>
               </div>
             </div>
