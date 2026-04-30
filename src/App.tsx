@@ -54,6 +54,7 @@ import AdminReturns from "./pages/admin/AdminReturns.tsx";
 import AdminAuditLog from "./pages/admin/AdminAuditLog.tsx";
 import AdminPageSEO from "./pages/admin/AdminPageSEO.tsx";
 import AdminHeroSlides from "./pages/admin/AdminHeroSlides.tsx";
+import AdminSections from "./pages/admin/AdminSections.tsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 import Terms from "./pages/Terms.tsx";
 import ShippingPolicy from "./pages/ShippingPolicy.tsx";
