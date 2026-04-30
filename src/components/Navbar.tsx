@@ -182,14 +182,17 @@ export function Navbar() {
       {/* ─── Main Navigation ─── */}
       <div className="bg-background border-b border-border/60 relative">
         <div className="container flex items-center justify-between gap-4 py-3 md:py-4">
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden p-2 text-primary hover:text-accent transition-colors"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          {/* Mobile: menu button + currency on the left */}
+          <div className="flex items-center md:hidden">
+            <button
+              className="p-2 text-primary hover:text-accent transition-colors"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+            <CurrencySelector />
+          </div>
 
           {/* Desktop: split nav with centered wordmark */}
           <nav className="hidden md:flex flex-1 items-center justify-end gap-7">
