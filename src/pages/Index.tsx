@@ -43,7 +43,7 @@ const Index = () => {
         <CategoriesSection />
         <HeritageSection />
         <BannerSlider />
-        <FabricGuideSection />
+        
         <OccasionsBanner />
         <BestSellers />
         <TestimonialsSection />
