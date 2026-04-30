@@ -189,11 +189,11 @@ export function Navbar() {
           {/* Desktop: split nav with centered wordmark */}
           <nav className="hidden md:flex flex-1 items-center justify-end gap-7">
             {menuItems.slice(0, Math.ceil(menuItems.length / 2)).map(item => (
-              <DropdownNavItem
+              <MegaNavItem
                 key={item.id}
                 item={item}
                 isOpen={openDropdown === item.id}
-                onToggle={() => setOpenDropdown(openDropdown === item.id ? null : item.id)}
+                onOpen={() => setOpenDropdown(item.id)}
                 onClose={() => setOpenDropdown(null)}
               />
             ))}
@@ -216,11 +216,11 @@ export function Navbar() {
 
           <nav className="hidden md:flex flex-1 items-center justify-start gap-7">
             {menuItems.slice(Math.ceil(menuItems.length / 2)).map(item => (
-              <DropdownNavItem
+              <MegaNavItem
                 key={item.id}
                 item={item}
                 isOpen={openDropdown === item.id}
-                onToggle={() => setOpenDropdown(openDropdown === item.id ? null : item.id)}
+                onOpen={() => setOpenDropdown(item.id)}
                 onClose={() => setOpenDropdown(null)}
               />
             ))}
