@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, CreditCard, Smartphone, Building2, Wallet, CheckCircle2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useCurrency } from '@/context/CurrencyContext';
 
 interface RazorpayPaymentProps {
   amount: number;
@@ -18,6 +19,7 @@ const BANKS = ['SBI', 'HDFC', 'ICICI', 'Axis', 'Kotak', 'PNB'];
 const WALLETS = ['Paytm', 'PhonePe', 'Amazon Pay', 'Freecharge'];
 
 export function RazorpayPayment({ amount, customerName, customerEmail, customerPhone, onSuccess, onCancel }: RazorpayPaymentProps) {
+  const { format } = useCurrency();
   const [method, setMethod] = useState<PaymentMethod>('upi');
   const [processing, setProcessing] = useState(false);
   const [upiId, setUpiId] = useState('');
@@ -73,7 +75,7 @@ export function RazorpayPayment({ amount, customerName, customerEmail, customerP
             </div>
             <div className="bg-gray-50 rounded-lg p-3">
               <p className="text-xs text-gray-500">Amount</p>
-              <p className="text-2xl font-bold text-gray-900">₹{amount.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900">{format(amount)}</p>
             </div>
             <p className="text-xs text-gray-400 mt-4">🔒 Sandbox Mode — No real charge</p>
           </div>
@@ -106,7 +108,7 @@ export function RazorpayPayment({ amount, customerName, customerEmail, customerP
           {/* Amount */}
           <div className="bg-[#0b3a7d] text-white px-4 py-3 flex justify-between items-center">
             <span className="text-sm">Amount Payable</span>
-            <span className="text-xl font-bold">₹{amount.toLocaleString()}</span>
+            <span className="text-xl font-bold">{format(amount)}</span>
           </div>
 
           {/* Sandbox badge */}
@@ -226,7 +228,7 @@ export function RazorpayPayment({ amount, customerName, customerEmail, customerP
                 disabled={!canPay()}
                 className="w-full mt-6 bg-[#072654] hover:bg-[#0b3a7d] text-white h-11"
               >
-                Pay ₹{amount.toLocaleString()}
+                Pay {format(amount)}
               </Button>
             </div>
           </div>
