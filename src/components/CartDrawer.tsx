@@ -1,9 +1,11 @@
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useCurrency } from '@/context/CurrencyContext';
 import { Link } from 'react-router-dom';
 
 export function CartDrawer() {
   const { items, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, totalPrice, totalItems } = useCart();
+  const { format } = useCurrency();
 
   if (!isCartOpen) return null;
 
@@ -40,7 +42,7 @@ export function CartDrawer() {
                   <div className="flex-1">
                     <h3 className="font-display text-sm font-semibold">{product.name}</h3>
                     <p className="font-body text-sm text-muted-foreground">{product.id}</p>
-                    <p className="font-body font-bold mt-1">₹{product.price.toLocaleString()}</p>
+                    <p className="font-body font-bold mt-1">{format(product.price)}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <button onClick={() => updateQuantity(product.id, quantity - 1)} className="p-1 border border-border rounded hover:bg-muted">
                         <Minus className="h-3 w-3" />
@@ -61,7 +63,7 @@ export function CartDrawer() {
             <div className="p-4 pb-20 md:pb-4 border-t border-border space-y-3">
               <div className="flex justify-between font-body">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span className="font-bold text-lg">₹{totalPrice.toLocaleString()}</span>
+                <span className="font-bold text-lg">{format(totalPrice)}</span>
               </div>
               <Link
                 to="/checkout"
