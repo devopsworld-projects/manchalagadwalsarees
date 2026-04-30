@@ -1,6 +1,7 @@
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
 import { HeroSection } from '@/components/HeroSection';
+import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 import { NewCollections } from '@/components/NewCollections';
 import { BestSellers } from '@/components/BestSellers';
 import { CategoriesSection } from '@/components/CategoriesSection';
