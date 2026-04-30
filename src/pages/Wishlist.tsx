@@ -9,6 +9,7 @@ import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Heart, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart, CartProduct } from '@/context/CartContext';
+import { useCurrency } from '@/context/CurrencyContext';
 import { toast } from 'sonner';
 import { PageMeta } from '@/components/PageMeta';
 
@@ -17,6 +18,7 @@ export default function Wishlist() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { addToCart } = useCart();
+  const { format } = useCurrency();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -126,10 +128,10 @@ export default function Wishlist() {
                     </h3>
                   </Link>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="font-body font-bold text-sm">₹{product.price.toLocaleString()}</span>
+                    <span className="font-body font-bold text-sm">{format(product.price)}</span>
                     {product.original_price && (
                       <span className="font-body text-xs text-muted-foreground line-through">
-                        ₹{product.original_price.toLocaleString()}
+                        {format(product.original_price)}
                       </span>
                     )}
                   </div>

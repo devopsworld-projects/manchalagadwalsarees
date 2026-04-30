@@ -10,6 +10,7 @@ import { PageMeta } from '@/components/PageMeta';
 import { Badge } from '@/components/ui/badge';
 import { Package, ArrowLeft, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCurrency } from '@/context/CurrencyContext';
 
 const statusColors: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
@@ -20,6 +21,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function Orders() {
+  const { format } = useCurrency();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -103,11 +105,11 @@ export default function Orders() {
                         <div className="flex-1 min-w-0">
                           <p className="font-body text-sm truncate">{item.product_name}</p>
                           <p className="font-body text-xs text-muted-foreground">
-                            Qty: {item.quantity} × ₹{item.price.toLocaleString()}
+                            Qty: {item.quantity} × {format(item.price)}
                           </p>
                         </div>
                         <span className="font-body text-sm font-semibold shrink-0">
-                          ₹{(item.price * item.quantity).toLocaleString()}
+                          {format(item.price * item.quantity)}
                         </span>
                       </div>
                     ))}
@@ -120,7 +122,7 @@ export default function Orders() {
                       </p>
                     )}
                     <span className="font-display text-lg font-bold ml-auto">
-                      ₹{order.total.toLocaleString()}
+                      {format(order.total)}
                     </span>
                   </div>
                 </div>

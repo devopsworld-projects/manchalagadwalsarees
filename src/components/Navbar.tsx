@@ -149,17 +149,22 @@ export function Navbar() {
       {/* ─── Top Utility Bar ─── */}
       <div className="bg-foreground text-background hidden md:block">
         <div className="container flex items-center justify-between h-8">
-          <nav className="flex items-center gap-6">
-            {topBarItems.map(item => (
-              <Link
-                key={item.id}
-                to={getItemUrl(item)}
-                className="text-[10px] tracking-[0.2em] font-display font-medium text-background/70 hover:text-accent transition-colors uppercase"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          <div className="flex items-center gap-5">
+            {/* Currency switcher — leftmost */}
+            <CurrencySelector variant="topbar" />
+            <span className="h-3 w-px bg-background/20" />
+            <nav className="flex items-center gap-6">
+              {topBarItems.map(item => (
+                <Link
+                  key={item.id}
+                  to={getItemUrl(item)}
+                  className="text-[10px] tracking-[0.2em] font-display font-medium text-background/70 hover:text-accent transition-colors uppercase"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
           <a
             href="https://wa.me/919494644998"
             target="_blank"
@@ -177,14 +182,17 @@ export function Navbar() {
       {/* ─── Main Navigation ─── */}
       <div className="bg-background border-b border-border/60 relative">
         <div className="container flex items-center justify-between gap-4 py-3 md:py-4">
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden p-2 text-primary hover:text-accent transition-colors"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          {/* Mobile: menu button + currency on the left */}
+          <div className="flex items-center md:hidden">
+            <button
+              className="p-2 text-primary hover:text-accent transition-colors"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+            <CurrencySelector />
+          </div>
 
           {/* Desktop: split nav with centered wordmark */}
           <nav className="hidden md:flex flex-1 items-center justify-end gap-7">
@@ -294,9 +302,6 @@ export function Navbar() {
                 </span>
               )}
             </button>
-            <div className="hidden sm:block ml-1 pl-1 border-l border-border/60">
-              <CurrencySelector />
-            </div>
           </div>
         </div>
 

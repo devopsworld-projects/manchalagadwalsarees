@@ -3,6 +3,7 @@ import { Search, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
+import { useCurrency } from '@/context/CurrencyContext';
 
 type ProductResult = {
   id: string;
@@ -94,7 +95,7 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-medium truncate">{p.name}</p>
-                <p className="text-xs text-muted-foreground">₹{p.price.toLocaleString('en-IN')}</p>
+                <p className="text-xs text-muted-foreground">{useCurrency().format(p.price)}</p>
               </div>
             </Link>
           ))}

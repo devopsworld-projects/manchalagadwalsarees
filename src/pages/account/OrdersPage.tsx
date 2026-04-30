@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Package, ShoppingBag, Loader2 } from 'lucide-react';
+import { useCurrency } from '@/context/CurrencyContext';
 
 const statusColors: Record<string, string> = {
   pending: 'bg-amber-50 text-amber-700 border-amber-200',
@@ -14,6 +15,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function OrdersPage() {
+  const { format } = useCurrency();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -75,9 +77,9 @@ export default function OrdersPage() {
                       <Package className="h-3.5 w-3.5 text-accent/60 shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="font-body text-sm truncate">{item.product_name}</p>
-                        <p className="font-body text-xs text-muted-foreground">Qty: {item.quantity} × ₹{Number(item.price).toLocaleString()}</p>
+                        <p className="font-body text-xs text-muted-foreground">Qty: {item.quantity} × {format(Number(item.price))}</p>
                       </div>
-                      <span className="font-display text-sm font-bold shrink-0">₹{(Number(item.price) * item.quantity).toLocaleString()}</span>
+                      <span className="font-display text-sm font-bold shrink-0">{format(Number(item.price) * item.quantity)}</span>
                     </div>
                   ))}
                 </div>
@@ -86,7 +88,7 @@ export default function OrdersPage() {
                   {order.shipping_address && (
                     <p className="font-body text-xs text-muted-foreground truncate max-w-[60%]">📍 {order.shipping_address}</p>
                   )}
-                  <span className="font-display text-xl font-bold ml-auto text-accent">₹{Number(order.total).toLocaleString()}</span>
+                  <span className="font-display text-xl font-bold ml-auto text-accent">{format(Number(order.total))}</span>
                 </div>
               </div>
             );
