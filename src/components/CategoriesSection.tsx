@@ -69,17 +69,20 @@ export function CategoriesSection() {
   const displayed = showAll ? categories : categories.slice(0, 8);
 
   return (
-    <section className="py-24 md:py-32 relative">
+    <section className="py-24 md:py-32 relative kolam-texture">
       <div className="container">
         {/* Header */}
         <div className="text-center mb-16 md:mb-20">
-          <span className="text-accent text-[8px] tracking-[0.5em]">◆&nbsp;&nbsp;◆&nbsp;&nbsp;◆</span>
-          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mt-4 tracking-wide">
-            Our Collections
+          <div className="lotus-divider mb-5">
+            <span className="lotus" />
+          </div>
+          <p className="devanagari text-accent text-base md:text-lg mb-2">परम्परा संग्रहः</p>
+          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mt-2 tracking-wide">
+            Our Sacred Collections
           </h2>
           <div className="w-20 ornate-line mx-auto mt-5" />
           <p className="font-serif text-base md:text-lg text-muted-foreground mt-4 italic max-w-md mx-auto">
-            {categories.length} curated collections of India's finest handwoven traditions
+            {categories.length} curated traditions — woven across the looms of Bharat
           </p>
         </div>
 

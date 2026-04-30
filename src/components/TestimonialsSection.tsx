@@ -18,12 +18,15 @@ export function TestimonialsSection() {
   const rest = testimonials.slice(1, 4);
 
   return (
-    <section className="py-24 md:py-32 relative">
+    <section className="py-24 md:py-32 relative buti-pattern">
       <div className="container">
         {/* Header */}
         <div className="text-center mb-16">
-          <span className="text-accent text-[8px] tracking-[0.5em]">◆&nbsp;&nbsp;◆&nbsp;&nbsp;◆</span>
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mt-4 tracking-wide">
+          <div className="lotus-divider mb-5">
+            <span className="lotus" />
+          </div>
+          <p className="devanagari text-accent text-base md:text-lg mb-2">ग्राहकाणां वचनानि</p>
+          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mt-2 tracking-wide">
             Voices of Our Patrons
           </h2>
           <div className="w-20 ornate-line mx-auto mt-5" />

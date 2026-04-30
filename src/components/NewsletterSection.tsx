@@ -32,16 +32,19 @@ export function NewsletterSection() {
 
       <div className="container relative z-10">
         <div className="max-w-2xl mx-auto text-center">
-          <span className="text-accent text-[8px] tracking-[0.5em]">◆&nbsp;&nbsp;◆&nbsp;&nbsp;◆</span>
-          
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-background tracking-wide mt-4 mb-4">
+          <div className="lotus-divider mb-5">
+            <span className="lotus" />
+          </div>
+          <p className="devanagari text-accent text-base md:text-lg mb-3">सुस्वागतम् कुटुम्बे</p>
+
+          <h2 className="font-display text-3xl md:text-5xl font-bold text-background tracking-wide mt-2 mb-4">
             Join Our Family
           </h2>
 
           <div className="ornate-line w-20 mx-auto mb-6" />
 
-          <p className="font-serif text-base md:text-lg text-background/40 mb-12 italic leading-relaxed max-w-md mx-auto">
-            Be the first to know about new collections, exclusive offers, and styling inspirations.
+          <p className="font-serif text-base md:text-lg text-background/55 mb-12 italic leading-relaxed max-w-md mx-auto">
+            Receive blessings of new collections, festive offerings, and styling rituals — straight to your inbox.
           </p>
 
           <form
