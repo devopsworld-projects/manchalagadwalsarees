@@ -21,6 +21,7 @@ const storeItems = [
 ];
 
 const marketingItems = [
+  { title: 'Homepage Sections', url: '/admin/sections', icon: LayoutDashboard },
   { title: 'Hero Slides', url: '/admin/hero-slides', icon: SlidersHorizontal },
   { title: 'Coupons', url: '/admin/coupons', icon: Percent },
   { title: 'Banners', url: '/admin/banners', icon: Image },
