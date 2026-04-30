@@ -142,25 +142,47 @@ export function Navbar() {
       </div>
 
       {/* ─── Main Navigation ─── */}
-      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border/50 relative">
-        <div className="container flex items-center justify-between py-2 md:py-3">
+      <div className="bg-background border-b border-border/60 relative">
+        <div className="container flex items-center justify-between gap-4 py-3 md:py-4">
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-2 text-foreground/70 hover:text-accent transition-colors"
+            className="md:hidden p-2 text-primary hover:text-accent transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
-          {/* Logo — centered approach */}
-          <Link to="/" className="flex items-center">
-            <img src={logoSrc} alt="Manchala Gadwal Sarees" className="h-20 sm:h-24 md:h-24 w-auto" />
+          {/* Desktop: split nav with centered wordmark */}
+          <nav className="hidden md:flex flex-1 items-center justify-end gap-7">
+            {menuItems.slice(0, Math.ceil(menuItems.length / 2)).map(item => (
+              <DropdownNavItem
+                key={item.id}
+                item={item}
+                isOpen={openDropdown === item.id}
+                onToggle={() => setOpenDropdown(openDropdown === item.id ? null : item.id)}
+                onClose={() => setOpenDropdown(null)}
+              />
+            ))}
+          </nav>
+
+          {/* Wordmark logo (Kankatala-style) */}
+          <Link to="/" className="flex flex-col items-center shrink-0 px-2 md:px-6 group">
+            {/* Mobile shows image logo */}
+            <img src={logoSrc} alt="Manchala Gadwal Sarees" className="h-14 sm:h-16 w-auto md:hidden" />
+            {/* Desktop shows serif wordmark */}
+            <span className="hidden md:block font-display text-3xl lg:text-[34px] font-bold tracking-[0.08em] text-primary leading-none">
+              MANCHALA
+            </span>
+            <span className="hidden md:flex items-center gap-2 mt-1.5">
+              <span className="h-px w-6 bg-accent/60" />
+              <span className="font-body text-[9px] tracking-[0.4em] text-accent uppercase">Gadwal Sarees</span>
+              <span className="h-px w-6 bg-accent/60" />
+            </span>
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-8">
-            {menuItems.map(item => (
+          <nav className="hidden md:flex flex-1 items-center justify-start gap-7">
+            {menuItems.slice(Math.ceil(menuItems.length / 2)).map(item => (
               <DropdownNavItem
                 key={item.id}
                 item={item}
