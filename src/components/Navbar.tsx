@@ -302,9 +302,6 @@ export function Navbar() {
                 </span>
               )}
             </button>
-            <div className="hidden sm:block ml-1 pl-1 border-l border-border/60">
-              <CurrencySelector />
-            </div>
           </div>
         </div>
 
