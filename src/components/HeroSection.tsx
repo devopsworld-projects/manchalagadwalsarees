@@ -5,9 +5,9 @@ import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import heroSlide1 from '@/assets/hero-slide-1.jpg';
 import heroSlide2 from '@/assets/hero-slide-2.jpg';
 import heroSlide3 from '@/assets/hero-slide-3.jpg';
+import manchalaHero from '@/assets/manchala-hero.jpg';
 
 export function HeroSection() {
   const { data: settings } = useStoreSettings();
@@ -28,9 +28,9 @@ export function HeroSection() {
   });
 
   const fallbackSlides = [
-    { id: 'f1', title: 'Timeless Kanjivaram', subtitle: 'Pure Silk, Pure Elegance', image_url: heroSlide1, cta_text: 'Shop Now', cta_link: '/collections' },
-    { id: 'f2', title: 'Royal Banarasi Collection', subtitle: 'Heritage Woven in Gold', image_url: heroSlide2, cta_text: 'Explore', cta_link: '/collections' },
-    { id: 'f3', title: 'New Arrivals', subtitle: 'Pastel Dreams in Silk', image_url: heroSlide3, cta_text: 'Discover', cta_link: '/collections' },
+    { id: 'f1', title: 'Manchala Gadwal Sarees', subtitle: 'Handwoven Heritage from the Looms of Telangana', image_url: manchalaHero, cta_text: 'Shop Collection', cta_link: '/collections' },
+    { id: 'f2', title: 'Bridal & Festive Silks', subtitle: 'Pure Zari, Temple Borders, Timeless Grace', image_url: heroSlide2, cta_text: 'Explore Bridal', cta_link: '/collections?filter=bridal' },
+    { id: 'f3', title: 'New Arrivals', subtitle: 'Fresh Weaves in Royal Maroon & Gold', image_url: heroSlide3, cta_text: 'Discover', cta_link: '/collections?filter=new-arrivals' },
   ];
 
   const activeSlides = slides.length > 0 ? slides : fallbackSlides;
