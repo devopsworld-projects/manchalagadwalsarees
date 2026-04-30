@@ -16,11 +16,13 @@ import { toast } from 'sonner';
 import { ShoppingBag, ArrowLeft, CreditCard, Truck, Tag, X } from 'lucide-react';
 import { RazorpayPayment } from '@/components/RazorpayPayment';
 import { PageMeta } from '@/components/PageMeta';
+import { useCurrency } from '@/context/CurrencyContext';
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
+  const { format } = useCurrency();
   const [loading, setLoading] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay');
