@@ -6,6 +6,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { PageMeta } from '@/components/PageMeta';
 import { Lock, ArrowRight } from 'lucide-react';
 
 export default function ResetPassword() {
