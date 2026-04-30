@@ -2,6 +2,7 @@ import { Heart, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart, CartProduct } from '@/context/CartContext';
 import { useWishlist } from '@/hooks/useWishlist';
+import { useCurrency } from '@/context/CurrencyContext';
 import { toast } from 'sonner';
 
 export interface ProductData {
@@ -27,6 +28,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   const { isWishlisted, toggleWishlist, isLoggedIn } = useWishlist();
+  const { format } = useCurrency();
   const image = product.images?.[0] || '/placeholder.svg';
   const liked = isWishlisted(product.id);
   const outOfStock = product.stock !== null && product.stock !== undefined && product.stock <= 0;
@@ -148,11 +150,11 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="flex items-center justify-between gap-1">
             <div className="flex items-center gap-2">
               <span className="font-display font-bold text-foreground text-sm tracking-wide">
-                ₹{product.price.toLocaleString()}
+                {format(product.price)}
               </span>
               {product.original_price && (
                 <span className="font-body text-[11px] text-muted-foreground line-through">
-                  ₹{product.original_price.toLocaleString()}
+                  {format(product.original_price)}
                 </span>
               )}
             </div>
