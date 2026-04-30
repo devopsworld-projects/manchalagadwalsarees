@@ -4,6 +4,7 @@ import { Search, ShoppingBag, Menu, X, ChevronDown, Phone, Heart, User, LogOut, 
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { SearchOverlay } from '@/components/SearchOverlay';
+import { CurrencySelector } from '@/components/CurrencySelector';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useMenuItems, type MenuItem } from '@/hooks/useMenuItems';
 import logo from '@/assets/logo.png';
@@ -14,10 +15,10 @@ function getItemUrl(item: MenuItem) {
   return '/collections';
 }
 
-function DropdownNavItem({ item, isOpen, onToggle, onClose }: {
+function MegaNavItem({ item, isOpen, onOpen, onClose }: {
   item: MenuItem;
   isOpen: boolean;
-  onToggle: () => void;
+  onOpen: () => void;
   onClose: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -43,12 +44,25 @@ function DropdownNavItem({ item, isOpen, onToggle, onClose }: {
     );
   }
 
+  // Determine column count: 4 cols if >12, 3 cols if >6, else 2 cols
+  const colCount = children.length > 12 ? 4 : children.length > 6 ? 3 : 2;
+  const widthClass =
+    colCount === 4 ? 'w-[820px]' : colCount === 3 ? 'w-[640px]' : 'w-[440px]';
+  const gridClass =
+    colCount === 4 ? 'grid-cols-4' : colCount === 3 ? 'grid-cols-3' : 'grid-cols-2';
+
   return (
-    <div ref={ref} className="relative">
+    <div
+      ref={ref}
+      className="relative"
+      onMouseEnter={onOpen}
+      onMouseLeave={onClose}
+    >
       <button
-        onClick={onToggle}
-        onMouseEnter={onToggle}
+        onClick={onOpen}
         className="flex items-center gap-1 text-[13px] tracking-[0.02em] font-body font-medium text-primary hover:text-accent transition-colors py-2 capitalize"
+        aria-haspopup="true"
+        aria-expanded={isOpen}
       >
         {item.label}
         <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
@@ -56,31 +70,50 @@ function DropdownNavItem({ item, isOpen, onToggle, onClose }: {
 
       {isOpen && (
         <div
-          className="absolute top-full left-1/2 -translate-x-1/2 bg-background border border-border/70 shadow-xl min-w-[240px] py-3 z-50"
-          onMouseLeave={onClose}
+          className={`absolute top-full left-1/2 -translate-x-1/2 bg-background border border-border/70 shadow-2xl ${widthClass} max-w-[92vw] z-50`}
+          role="menu"
         >
-          {children.map(child => (
-            <Link
-              key={child.id}
-              to={getItemUrl(child)}
-              onClick={onClose}
-              className="block px-6 py-2 text-[13px] font-body text-primary/85 hover:text-accent hover:bg-secondary/50 transition-colors"
-            >
-              {child.label}
-            </Link>
-          ))}
-          {item.slug && (
-            <>
-              <div className="border-t border-border/60 mx-5 my-2" />
-              <Link
-                to={`/collections?filter=${item.slug}`}
-                onClick={onClose}
-                className="block px-6 py-2 text-[11px] tracking-[0.15em] font-body font-bold text-accent hover:text-primary transition-colors uppercase"
-              >
-                View All →
-              </Link>
-            </>
-          )}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-accent/40 via-accent to-accent/40" />
+          <div className="p-6">
+            {/* Heading */}
+            <div className="mb-4 pb-3 border-b border-border/60">
+              <h3 className="font-display text-[15px] tracking-[0.15em] uppercase text-primary">
+                {item.label}
+              </h3>
+              <p className="font-body text-[11px] text-muted-foreground tracking-wide mt-1">
+                Explore our handpicked {item.label.toLowerCase()} collection
+              </p>
+            </div>
+
+            {/* Columns */}
+            <div className={`grid ${gridClass} gap-x-6 gap-y-1.5`}>
+              {children.map(child => (
+                <Link
+                  key={child.id}
+                  to={getItemUrl(child)}
+                  onClick={onClose}
+                  role="menuitem"
+                  className="group flex items-center text-[13px] font-body text-primary/85 hover:text-accent transition-colors py-1.5 capitalize"
+                >
+                  <span className="w-1.5 h-1.5 bg-accent/0 group-hover:bg-accent transition-colors mr-2 rounded-full" />
+                  {child.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* View all */}
+            {item.slug && (
+              <div className="mt-5 pt-4 border-t border-border/60">
+                <Link
+                  to={`/collections?filter=${item.slug}`}
+                  onClick={onClose}
+                  className="inline-flex items-center gap-1 text-[11px] tracking-[0.2em] font-display font-bold text-accent hover:text-primary transition-colors uppercase"
+                >
+                  View All {item.label} →
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -156,11 +189,11 @@ export function Navbar() {
           {/* Desktop: split nav with centered wordmark */}
           <nav className="hidden md:flex flex-1 items-center justify-end gap-7">
             {menuItems.slice(0, Math.ceil(menuItems.length / 2)).map(item => (
-              <DropdownNavItem
+              <MegaNavItem
                 key={item.id}
                 item={item}
                 isOpen={openDropdown === item.id}
-                onToggle={() => setOpenDropdown(openDropdown === item.id ? null : item.id)}
+                onOpen={() => setOpenDropdown(item.id)}
                 onClose={() => setOpenDropdown(null)}
               />
             ))}
@@ -183,11 +216,11 @@ export function Navbar() {
 
           <nav className="hidden md:flex flex-1 items-center justify-start gap-7">
             {menuItems.slice(Math.ceil(menuItems.length / 2)).map(item => (
-              <DropdownNavItem
+              <MegaNavItem
                 key={item.id}
                 item={item}
                 isOpen={openDropdown === item.id}
-                onToggle={() => setOpenDropdown(openDropdown === item.id ? null : item.id)}
+                onOpen={() => setOpenDropdown(item.id)}
                 onClose={() => setOpenDropdown(null)}
               />
             ))}
@@ -261,6 +294,9 @@ export function Navbar() {
                 </span>
               )}
             </button>
+            <div className="hidden sm:block ml-1 pl-1 border-l border-border/60">
+              <CurrencySelector />
+            </div>
           </div>
         </div>
 

@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { CurrencyProvider } from "@/context/CurrencyContext";
 import { CartDrawer } from "@/components/CartDrawer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
@@ -83,6 +84,7 @@ const App = () => {
         <BrowserRouter>
           <AuthProvider>
             <ScrollToTop />
+            <CurrencyProvider>
             <CartProvider>
               <CartDrawer />
               <WhatsAppButton />
@@ -140,6 +142,7 @@ const App = () => {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </CartProvider>
+            </CurrencyProvider>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
