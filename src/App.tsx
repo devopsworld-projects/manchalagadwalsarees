@@ -65,12 +65,12 @@ const queryClient = new QueryClient();
 const App = () => {
   const [showSplash, setShowSplash] = useState(() => {
     // Only show once per session
-    if (sessionStorage.getItem('kavi-splash-shown')) return false;
+    if (sessionStorage.getItem('manchala-splash-shown')) return false;
     return true;
   });
 
   const handleSplashComplete = useCallback(() => {
-    sessionStorage.setItem('kavi-splash-shown', 'true');
+    sessionStorage.setItem('manchala-splash-shown', 'true');
     setShowSplash(false);
   }, []);
 
