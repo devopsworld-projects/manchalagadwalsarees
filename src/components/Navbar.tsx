@@ -196,19 +196,19 @@ export function Navbar() {
           {/* Right actions */}
           <div className="flex items-center gap-0.5 sm:gap-1">
             <button
-              className="p-2.5 text-foreground/80 hover:text-accent transition-colors"
+              className="p-2.5 text-primary/80 hover:text-accent transition-colors"
               aria-label="Search"
               onClick={() => setSearchOpen(true)}
             >
               <Search className="h-[18px] w-[18px]" />
             </button>
-            <Link to="/wishlist" className="p-2.5 text-foreground/80 hover:text-accent transition-colors hidden sm:block" aria-label="Wishlist">
+            <Link to="/wishlist" className="p-2.5 text-primary/80 hover:text-accent transition-colors hidden sm:block" aria-label="Wishlist">
               <Heart className="h-[18px] w-[18px]" />
             </Link>
             {user ? (
               <div ref={userMenuRef} className="relative hidden md:block">
                 <button
-                  className="p-2.5 text-foreground/80 hover:text-accent transition-colors"
+                  className="p-2.5 text-primary/80 hover:text-accent transition-colors"
                   aria-label="Account"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                 >
@@ -245,12 +245,12 @@ export function Navbar() {
                 )}
               </div>
             ) : (
-              <Link to="/login" className="p-2.5 text-foreground/80 hover:text-accent transition-colors hidden md:block" aria-label="Login">
+              <Link to="/login" className="p-2.5 text-primary/80 hover:text-accent transition-colors hidden md:block" aria-label="Login">
                 <User className="h-[18px] w-[18px]" />
               </Link>
             )}
             <button
-              className="p-2.5 text-foreground/80 hover:text-accent transition-colors relative"
+              className="p-2.5 text-primary/80 hover:text-accent transition-colors relative"
               onClick={() => setIsCartOpen(true)}
               aria-label="Cart"
             >
