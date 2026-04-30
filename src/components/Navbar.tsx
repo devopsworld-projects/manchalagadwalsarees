@@ -36,57 +36,48 @@ function DropdownNavItem({ item, isOpen, onToggle, onClose }: {
     return (
       <Link
         to={getItemUrl(item)}
-        className="relative text-[11px] tracking-[0.25em] font-display font-semibold text-foreground hover:text-accent transition-colors py-2 uppercase group"
+        className="relative text-[13px] tracking-[0.02em] font-body font-medium text-primary hover:text-accent transition-colors py-2 capitalize"
       >
         {item.label}
-        <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-accent scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
       </Link>
     );
   }
 
   return (
-    <div ref={ref} className="relative group">
+    <div ref={ref} className="relative">
       <button
         onClick={onToggle}
         onMouseEnter={onToggle}
-        className="relative flex items-center gap-1 text-[11px] tracking-[0.25em] font-display font-semibold text-foreground hover:text-accent transition-colors py-2 uppercase"
+        className="flex items-center gap-1 text-[13px] tracking-[0.02em] font-body font-medium text-primary hover:text-accent transition-colors py-2 capitalize"
       >
         {item.label}
-        <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
-        <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-accent scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+        <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
         <div
-          className="absolute top-full left-0 bg-background border border-border shadow-2xl min-w-[260px] py-4 z-50"
+          className="absolute top-full left-1/2 -translate-x-1/2 bg-background border border-border/70 shadow-xl min-w-[240px] py-3 z-50"
           onMouseLeave={onClose}
         >
-          {/* Top accent border */}
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-accent/60 via-accent to-accent/60" />
-          {/* Corner ornaments */}
-          <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-accent/30" />
-          <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-accent/30" />
-
           {children.map(child => (
             <Link
               key={child.id}
               to={getItemUrl(child)}
               onClick={onClose}
-              className="group/item flex items-center gap-3 px-6 py-2.5 text-[11px] tracking-[0.1em] font-body font-normal text-foreground/80 hover:text-accent transition-colors"
+              className="block px-6 py-2 text-[13px] font-body text-primary/85 hover:text-accent hover:bg-secondary/50 transition-colors"
             >
-              <span className="w-3 h-[1px] bg-accent/0 group-hover/item:bg-accent transition-colors" />
               {child.label}
             </Link>
           ))}
           {item.slug && (
             <>
-              <div className="ornate-line mx-5 my-2" />
+              <div className="border-t border-border/60 mx-5 my-2" />
               <Link
                 to={`/collections?filter=${item.slug}`}
                 onClick={onClose}
-                className="block px-6 py-2 text-[10px] tracking-[0.2em] font-display font-bold text-accent hover:text-primary transition-colors uppercase"
+                className="block px-6 py-2 text-[11px] tracking-[0.15em] font-body font-bold text-accent hover:text-primary transition-colors uppercase"
               >
-                View All {item.label} →
+                View All →
               </Link>
             </>
           )}
