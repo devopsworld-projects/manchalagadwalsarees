@@ -146,9 +146,43 @@ const Collections = () => {
   return (
     <div className="min-h-screen bg-background">
       <PageMeta
-        title={activeLabel}
-        description={`Shop ${activeLabel} — Premium handcrafted sarees with free shipping across India.`}
-        canonicalPath="/collections"
+        title={
+          activeFilter === 'all'
+            ? 'Shop All Sarees'
+            : `${activeLabel} Sarees`
+        }
+        description={
+          activeFilter === 'all'
+            ? 'Browse the complete Manchala Gadwal Sarees collection — handwoven silk, cotton, and bridal sarees crafted by master weavers of Telangana.'
+            : `Shop authentic ${activeLabel} sarees at Manchala Gadwal Sarees. Handwoven by master artisans with pure zari, premium fabrics, and free shipping across India.`
+        }
+        canonicalPath={activeFilter === 'all' ? '/collections' : `/collections?filter=${activeFilter}`}
+        ogType="website"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: activeFilter === 'all' ? 'All Sarees' : `${activeLabel} Sarees`,
+          description:
+            activeFilter === 'all'
+              ? 'Complete saree collection at Manchala Gadwal Sarees.'
+              : `${activeLabel} saree collection at Manchala Gadwal Sarees.`,
+          url: `https://manchalagadwalsarees.lovable.app/collections${activeFilter === 'all' ? '' : `?filter=${activeFilter}`}`,
+          isPartOf: {
+            '@type': 'WebSite',
+            name: 'Manchala Gadwal Sarees',
+            url: 'https://manchalagadwalsarees.lovable.app',
+          },
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: filteredAndSorted.length,
+            itemListElement: filteredAndSorted.slice(0, 10).map((p, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              name: p.name,
+              url: `https://manchalagadwalsarees.lovable.app/product/${p.id}`,
+            })),
+          },
+        }}
       />
       <AnnouncementBar />
       <Navbar />
