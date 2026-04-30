@@ -33,6 +33,7 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen">
+      <PageMeta title="Reset Password" description="Reset your Manchala Gadwal Sarees account password securely." canonicalPath="/reset-password" />
       <AnnouncementBar />
       <Navbar />
       <main className="relative min-h-[80vh] flex items-center justify-center py-16 px-4">

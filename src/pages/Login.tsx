@@ -45,6 +45,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen">
+      <PageMeta title="Sign In" description="Sign in to your Manchala Gadwal Sarees account to track orders and manage your wishlist." canonicalPath="/login" />
       <AnnouncementBar />
       <Navbar />
 

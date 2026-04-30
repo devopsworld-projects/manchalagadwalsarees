@@ -36,6 +36,7 @@ export default function Signup() {
 
   return (
     <div className="min-h-screen">
+      <PageMeta title="Create Account" description="Join Manchala Gadwal Sarees for personalised shopping, exclusive offers, and faster checkout." canonicalPath="/signup" />
       <AnnouncementBar />
       <Navbar />
 
