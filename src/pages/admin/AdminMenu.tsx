@@ -28,6 +28,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Badge } from '@/components/ui/badge';
 import { Plus, Pencil, Trash2, GripVertical, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
+import { MenuPreview } from '@/components/admin/MenuPreview';
 
 type MenuItem = {
   id: string;
@@ -260,49 +261,58 @@ export default function AdminMenu() {
 
         {['main', 'footer', 'mobile', 'topbar'].map(group => (
           <TabsContent key={group} value={group}>
-            {isLoading ? (
-              <div className="text-center py-12 text-muted-foreground">Loading...</div>
-            ) : topItems.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground border rounded-lg">
-                No menu items yet. Click "Add Item" to create one.
+            <div className="grid grid-cols-1 xl:grid-cols-[1fr_minmax(0,520px)] gap-6">
+              <div>
+                {isLoading ? (
+                  <div className="text-center py-12 text-muted-foreground">Loading...</div>
+                ) : topItems.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground border rounded-lg">
+                    No menu items yet. Click "Add Item" to create one.
+                  </div>
+                ) : (
+                  <div className="border rounded-lg overflow-hidden">
+                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e, topItems)}>
+                      <SortableContext items={topIds} strategy={verticalListSortingStrategy}>
+                        {topItems.map(item => {
+                          const children = getChildren(item.id);
+                          const childIds = children.map(c => c.id);
+                          return (
+                            <Fragment key={item.id}>
+                              <SortableRow
+                                item={item}
+                                onEdit={() => openEdit(item)}
+                                onDelete={() => setDeleteId(item.id)}
+                                onAddChild={() => openCreate(item.id)}
+                              />
+                              {children.length > 0 && (
+                                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e, children, item.id)}>
+                                  <SortableContext items={childIds} strategy={verticalListSortingStrategy}>
+                                    {children.map(child => (
+                                      <SortableRow
+                                        key={child.id}
+                                        item={child}
+                                        isChild
+                                        onEdit={() => openEdit(child)}
+                                        onDelete={() => setDeleteId(child.id)}
+                                      />
+                                    ))}
+                                  </SortableContext>
+                                </DndContext>
+                              )}
+                            </Fragment>
+                          );
+                        })}
+                      </SortableContext>
+                    </DndContext>
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="border rounded-lg overflow-hidden">
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e, topItems)}>
-                  <SortableContext items={topIds} strategy={verticalListSortingStrategy}>
-                    {topItems.map(item => {
-                      const children = getChildren(item.id);
-                      const childIds = children.map(c => c.id);
-                      return (
-                        <Fragment key={item.id}>
-                          <SortableRow
-                            item={item}
-                            onEdit={() => openEdit(item)}
-                            onDelete={() => setDeleteId(item.id)}
-                            onAddChild={() => openCreate(item.id)}
-                          />
-                          {children.length > 0 && (
-                            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e, children, item.id)}>
-                              <SortableContext items={childIds} strategy={verticalListSortingStrategy}>
-                                {children.map(child => (
-                                  <SortableRow
-                                    key={child.id}
-                                    item={child}
-                                    isChild
-                                    onEdit={() => openEdit(child)}
-                                    onDelete={() => setDeleteId(child.id)}
-                                  />
-                                ))}
-                              </SortableContext>
-                            </DndContext>
-                          )}
-                        </Fragment>
-                      );
-                    })}
-                  </SortableContext>
-                </DndContext>
+
+              {/* Live Preview */}
+              <div className="xl:sticky xl:top-4 xl:self-start">
+                <MenuPreview items={items} group={group} />
               </div>
-            )}
+            </div>
           </TabsContent>
         ))}
       </Tabs>
