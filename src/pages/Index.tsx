@@ -11,7 +11,7 @@ import { NewsletterSection } from '@/components/NewsletterSection';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 import { HeritageSection } from '@/components/HeritageSection';
-import { FabricGuideSection } from '@/components/FabricGuideSection';
+
 import { OccasionsBanner } from '@/components/OccasionsBanner';
 
 
