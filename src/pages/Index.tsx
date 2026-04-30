@@ -13,6 +13,7 @@ import { PageMeta } from '@/components/PageMeta';
 import { HeritageSection } from '@/components/HeritageSection';
 
 import { OccasionsBanner } from '@/components/OccasionsBanner';
+import { HomepageSection } from '@/components/HomepageSection';
 
 
 const jsonLd = {
@@ -37,17 +38,16 @@ const Index = () => {
       <AnnouncementBar />
       <Navbar />
       <main>
-        <HeroSection />
-        <FeaturedCarousel />
-        <NewCollections />
-        <CategoriesSection />
-        <HeritageSection />
-        <BannerSlider />
-        
-        <OccasionsBanner />
-        <BestSellers />
-        <TestimonialsSection />
-        <NewsletterSection />
+        <HomepageSection sectionKey="hero"><HeroSection /></HomepageSection>
+        <HomepageSection sectionKey="featured"><FeaturedCarousel /></HomepageSection>
+        <HomepageSection sectionKey="new_arrivals"><NewCollections /></HomepageSection>
+        <HomepageSection sectionKey="categories"><CategoriesSection /></HomepageSection>
+        <HomepageSection sectionKey="heritage"><HeritageSection /></HomepageSection>
+        <HomepageSection sectionKey="banner"><BannerSlider /></HomepageSection>
+        <HomepageSection sectionKey="occasions"><OccasionsBanner /></HomepageSection>
+        <HomepageSection sectionKey="best_sellers"><BestSellers /></HomepageSection>
+        <HomepageSection sectionKey="testimonials"><TestimonialsSection /></HomepageSection>
+        <HomepageSection sectionKey="newsletter"><NewsletterSection /></HomepageSection>
       </main>
       <Footer />
     </div>
