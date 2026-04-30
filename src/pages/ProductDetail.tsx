@@ -12,6 +12,7 @@ import { RelatedProducts } from '@/components/RelatedProducts';
 import { WhatsAppIcon } from '@/components/WhatsAppIcon';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useCart } from '@/context/CartContext';
+import { useCurrency } from '@/context/CurrencyContext';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { toast } from 'sonner';
 import {
@@ -86,6 +87,7 @@ function ImageMagnifier({ src, alt }: { src: string; alt: string }) {
 function ProductDetail() {
   const { id } = useParams();
   const { addToCart } = useCart();
+  const { format: formatPrice } = useCurrency();
   const { isWishlisted, toggleWishlist, isLoggedIn } = useWishlist();
   const { data: settings } = useStoreSettings();
   const phone = settings?.whatsapp_number || '919494644998';
@@ -237,7 +239,7 @@ function ProductDetail() {
   const nextImage = () => setCurrentImage(i => (i === images.length - 1 ? 0 : i + 1));
 
   const productUrl = window.location.href;
-  const shareText = `Check out ${product.name} at ₹${Number(displayPrice).toLocaleString()}`;
+  const shareText = `Check out ${product.name} at ${formatPrice(Number(displayPrice))}`;
 
   const handleInstagramShare = async () => {
     try { await navigator.clipboard.writeText(productUrl); toast.success('Link copied. Paste it in Instagram.'); } catch { toast.error('Copy the link manually.'); }
@@ -272,8 +274,8 @@ function ProductDetail() {
     return <button key={link.label} type="button" onClick={link.onClick} className={cls}>{content}</button>;
   };
 
-  const whatsappEnquiry = encodeURIComponent(`Hi, I'm interested in ${product.name} (SKU: ${selectedVariant?.sku || product.sku}) priced at ₹${Number(displayPrice).toLocaleString()}. Please share more details.`);
-  const whatsappConfirm = encodeURIComponent(`Hi, I'd like to confirm my order for ${product.name} (SKU: ${selectedVariant?.sku || product.sku}) at ₹${Number(displayPrice).toLocaleString()}.`);
+  const whatsappEnquiry = encodeURIComponent(`Hi, I'm interested in ${product.name} (SKU: ${selectedVariant?.sku || product.sku}) priced at ${formatPrice(Number(displayPrice))}. Please share more details.`);
+  const whatsappConfirm = encodeURIComponent(`Hi, I'd like to confirm my order for ${product.name} (SKU: ${selectedVariant?.sku || product.sku}) at ${formatPrice(Number(displayPrice))}.`);
 
   const cartProduct = {
     id: selectedVariant?.sku || product.sku,
@@ -328,7 +330,7 @@ function ProductDetail() {
     <div className="min-h-screen pb-16 md:pb-0">
       <PageMeta
         title={product.name}
-        description={product.description || `Buy ${product.name} at ₹${product.price.toLocaleString()}`}
+        description={product.description || `Buy ${product.name} at ${formatPrice(product.price)}`}
         canonicalPath={`/product/${product.sku}`} ogImage={images[0]} ogType="product" jsonLd={productJsonLd}
       />
       <AnnouncementBar /><Navbar />
@@ -435,9 +437,9 @@ function ProductDetail() {
 
               {/* Price block */}
               <div className="flex items-baseline gap-4">
-                <span className="font-display text-3xl md:text-4xl font-bold">₹{Number(displayPrice).toLocaleString()}</span>
+                <span className="font-display text-3xl md:text-4xl font-bold">{formatPrice(Number(displayPrice))}</span>
                 {displayOriginalPrice && (
-                  <span className="font-body text-base text-muted-foreground line-through">₹{Number(displayOriginalPrice).toLocaleString()}</span>
+                  <span className="font-body text-base text-muted-foreground line-through">{formatPrice(Number(displayOriginalPrice))}</span>
                 )}
               </div>
 
