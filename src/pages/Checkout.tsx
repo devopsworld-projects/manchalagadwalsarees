@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { ShoppingBag, ArrowLeft, CreditCard, Truck, Tag, X } from 'lucide-react';
 import { RazorpayPayment } from '@/components/RazorpayPayment';
+import { PageMeta } from '@/components/PageMeta';
 
 export default function Checkout() {
   const navigate = useNavigate();
