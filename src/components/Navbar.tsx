@@ -150,9 +150,6 @@ export function Navbar() {
       <div className="bg-foreground text-background hidden md:block">
         <div className="container flex items-center justify-between h-8">
           <div className="flex items-center gap-5">
-            {/* Currency switcher — leftmost */}
-            <CurrencySelector variant="topbar" />
-            <span className="h-3 w-px bg-background/20" />
             <nav className="flex items-center gap-6">
               {topBarItems.map(item => (
                 <Link
@@ -196,6 +193,8 @@ export function Navbar() {
 
           {/* Desktop: split nav with centered wordmark */}
           <nav className="hidden md:flex flex-1 items-center justify-end gap-7">
+            <CurrencySelector />
+            <span className="h-4 w-px bg-border" />
             {menuItems.slice(0, Math.ceil(menuItems.length / 2)).map(item => (
               <MegaNavItem
                 key={item.id}
