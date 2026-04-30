@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lato:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lato:wght@400;700;900&family=Tiro+Devanagari+Sanskrit:ital@0;1&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -276,4 +276,89 @@
     radial-gradient(circle at 25% 25%, hsl(var(--gold) / 0.03) 1px, transparent 1px),
     radial-gradient(circle at 75% 75%, hsl(var(--gold) / 0.03) 1px, transparent 1px);
   background-size: 40px 40px;
+}
+
+/* ─── Richer Indian Traditional Motifs ─── */
+
+/* Mandala radial dot field — denser, more devotional */
+.mandala-bg {
+  background-image:
+    radial-gradient(circle at 50% 50%, hsl(var(--gold) / 0.06) 1px, transparent 1.5px),
+    radial-gradient(circle at 0% 0%, hsl(var(--primary) / 0.04) 1px, transparent 1.5px);
+  background-size: 28px 28px, 56px 56px;
+  background-position: 0 0, 14px 14px;
+}
+
+/* Paisley/Buti repeating motif via SVG data-uri */
+.buti-pattern {
+  background-color: hsl(var(--cream));
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'><g fill='none' stroke='%23B8893A' stroke-width='0.6' opacity='0.35'><path d='M30 12c-6 6-6 14 0 20 6-6 6-14 0-20z'/><circle cx='30' cy='42' r='1.5' fill='%23B8893A'/><circle cx='10' cy='30' r='1' fill='%23B8893A'/><circle cx='50' cy='30' r='1' fill='%23B8893A'/></g></svg>");
+}
+
+/* Temple gopuram silhouette band */
+.gopuram-band {
+  height: 18px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='18' viewBox='0 0 40 18'><polygon points='0,18 8,18 8,8 12,8 12,4 16,0 24,0 28,4 28,8 32,8 32,18 40,18 40,18 0,18' fill='%237A1F2B' opacity='0.85'/><polygon points='16,12 20,8 24,12 24,18 16,18' fill='%23B8893A'/></svg>");
+  background-repeat: repeat-x;
+  background-size: 40px 18px;
+}
+.gopuram-band-inverted {
+  height: 18px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='18' viewBox='0 0 40 18'><polygon points='0,0 8,0 8,10 12,10 12,14 16,18 24,18 28,14 28,10 32,10 32,0 40,0 40,0 0,0' fill='%237A1F2B' opacity='0.85'/></svg>");
+  background-repeat: repeat-x;
+  background-size: 40px 18px;
+}
+
+/* Lotus divider — central blossom with side strokes */
+.lotus-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.lotus-divider::before,
+.lotus-divider::after {
+  content: '';
+  flex: 1;
+  max-width: 120px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, hsl(var(--gold) / 0.6), transparent);
+}
+.lotus-divider .lotus {
+  width: 28px;
+  height: 28px;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><g fill='none' stroke='%23B8893A' stroke-width='1.2' stroke-linecap='round'><path d='M16 28c-4-3-7-7-7-12 0 5 3 9 7 12z'/><path d='M16 28c4-3 7-7 7-12 0 5-3 9-7 12z'/><path d='M16 28c-2-4-3-9-3-14 0 5 1 10 3 14z'/><path d='M16 28c2-4 3-9 3-14 0 5-1 10-3 14z'/><path d='M16 28V14'/><circle cx='16' cy='28' r='1.5' fill='%23B8893A'/></g></svg>") center/contain no-repeat;
+}
+
+/* Sanskrit-style devanagari accent (rendered via Tiro Devanagari font fallback) */
+.devanagari {
+  font-family: 'Tiro Devanagari Sanskrit', 'Cormorant Garamond', serif;
+  font-style: italic;
+}
+
+/* Zari weave hairline — gold-over-gold subtle texture */
+.zari-weave {
+  background-image:
+    repeating-linear-gradient(45deg, hsl(var(--gold) / 0.08) 0 2px, transparent 2px 6px),
+    repeating-linear-gradient(-45deg, hsl(var(--gold) / 0.06) 0 2px, transparent 2px 6px);
+}
+
+/* Diya glow — warm flame radial */
+.diya-glow {
+  background: radial-gradient(circle at 50% 60%, hsl(var(--gold-light) / 0.55) 0%, hsl(var(--gold) / 0.2) 30%, transparent 70%);
+  filter: blur(2px);
+}
+
+/* Cusped arch (mehraab) clip-path */
+.mehraab {
+  clip-path: path('M 0 100 L 0 40 Q 0 0, 50 0 Q 100 0, 100 40 L 100 100 Z');
+}
+
+/* Slow rotate for mandalas */
+@keyframes slow-spin {
+  from { transform: rotate(0); }
+  to { transform: rotate(360deg); }
+}
+.animate-slow-spin {
+  animation: slow-spin 60s linear infinite;
 }

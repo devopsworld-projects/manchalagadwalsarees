@@ -14,7 +14,7 @@ import { HeritageSection } from '@/components/HeritageSection';
 
 import { OccasionsBanner } from '@/components/OccasionsBanner';
 import { HomepageSection } from '@/components/HomepageSection';
-
+import { ShlokaSection } from '@/components/ShlokaSection';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -43,6 +43,7 @@ const Index = () => {
         <HomepageSection sectionKey="new_arrivals"><NewCollections /></HomepageSection>
         <HomepageSection sectionKey="categories"><CategoriesSection /></HomepageSection>
         <HomepageSection sectionKey="heritage"><HeritageSection /></HomepageSection>
+        <HomepageSection sectionKey="shloka"><ShlokaSection /></HomepageSection>
         <HomepageSection sectionKey="banner"><BannerSlider /></HomepageSection>
         <HomepageSection sectionKey="occasions"><OccasionsBanner /></HomepageSection>
         <HomepageSection sectionKey="best_sellers"><BestSellers /></HomepageSection>
