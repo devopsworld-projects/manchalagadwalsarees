@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { ShoppingBag, ArrowLeft, CreditCard, Truck, Tag, X } from 'lucide-react';
 import { RazorpayPayment } from '@/components/RazorpayPayment';
+import { PageMeta } from '@/components/PageMeta';
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -187,6 +188,7 @@ export default function Checkout() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen">
+        <PageMeta title="Checkout" description="Securely complete your Manchala Gadwal Sarees order. Free shipping across India." canonicalPath="/checkout" />
         <AnnouncementBar />
         <Navbar />
         <main className="container max-w-lg py-20 text-center">
@@ -204,6 +206,7 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen">
+      <PageMeta title="Secure Checkout" description="Complete your Manchala Gadwal Sarees order securely. Pay online via Razorpay or choose Cash on Delivery." canonicalPath="/checkout" />
       <AnnouncementBar />
       <Navbar />
       <main className="container py-10">
@@ -214,7 +217,11 @@ export default function Checkout() {
           <ArrowLeft className="h-4 w-4" /> Back
         </button>
 
-        <h1 className="font-display text-3xl font-bold mb-8">Checkout</h1>
+        <div className="mb-8">
+          <span className="text-accent text-[8px] tracking-[0.5em]">◆&nbsp;&nbsp;MANCHALA GADWAL SAREES&nbsp;&nbsp;◆</span>
+          <h1 className="font-display text-3xl md:text-4xl font-bold text-primary mt-2">Secure Checkout</h1>
+          <div className="w-16 ornate-line mt-3" />
+        </div>
 
         <div className="grid lg:grid-cols-5 gap-6 md:gap-8">
           {/* Shipping form */}

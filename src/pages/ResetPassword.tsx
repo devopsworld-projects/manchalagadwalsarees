@@ -6,6 +6,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { PageMeta } from '@/components/PageMeta';
 import { Lock, ArrowRight } from 'lucide-react';
 
 export default function ResetPassword() {
@@ -32,6 +33,7 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen">
+      <PageMeta title="Reset Password" description="Reset your Manchala Gadwal Sarees account password securely." canonicalPath="/reset-password" />
       <AnnouncementBar />
       <Navbar />
       <main className="relative min-h-[80vh] flex items-center justify-center py-16 px-4">

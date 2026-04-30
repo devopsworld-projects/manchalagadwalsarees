@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Heart, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart, CartProduct } from '@/context/CartContext';
 import { toast } from 'sonner';
+import { PageMeta } from '@/components/PageMeta';
 
 export default function Wishlist() {
   const { user, loading: authLoading } = useAuth();
@@ -67,6 +68,7 @@ export default function Wishlist() {
   if (!user) {
     return (
       <div className="min-h-screen">
+        <PageMeta title="Wishlist" description="Save and revisit your favourite Manchala Gadwal silk sarees." canonicalPath="/wishlist" />
         <AnnouncementBar />
         <Navbar />
         <main className="container py-20 text-center">
@@ -85,6 +87,7 @@ export default function Wishlist() {
 
   return (
     <div className="min-h-screen">
+      <PageMeta title="Wishlist" description="Your saved Manchala Gadwal silk sarees, ready when you are." canonicalPath="/wishlist" />
       <AnnouncementBar />
       <Navbar />
       <main className="container py-10">

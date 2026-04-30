@@ -6,6 +6,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { PageMeta } from '@/components/PageMeta';
 import { Mail, Lock, User, ArrowRight } from 'lucide-react';
 
 export default function Signup() {
@@ -35,6 +36,7 @@ export default function Signup() {
 
   return (
     <div className="min-h-screen">
+      <PageMeta title="Create Account" description="Join Manchala Gadwal Sarees for personalised shopping, exclusive offers, and faster checkout." canonicalPath="/signup" />
       <AnnouncementBar />
       <Navbar />
 
