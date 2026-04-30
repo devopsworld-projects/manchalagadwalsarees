@@ -4,6 +4,7 @@ import { Search, ShoppingBag, Menu, X, ChevronDown, Phone, Heart, User, LogOut, 
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { SearchOverlay } from '@/components/SearchOverlay';
+import { CurrencySelector } from '@/components/CurrencySelector';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useMenuItems, type MenuItem } from '@/hooks/useMenuItems';
 import logo from '@/assets/logo.png';
