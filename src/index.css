@@ -6,41 +6,43 @@
 
 @layer base {
   :root {
-    --background: 35 30% 96%;
-    --foreground: 15 20% 12%;
+    /* Kankatala-inspired clean white & deep maroon palette */
+    --background: 0 0% 100%;
+    --foreground: 350 60% 20%;
 
-    --card: 38 28% 98%;
-    --card-foreground: 15 20% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 350 60% 20%;
 
-    --popover: 38 28% 98%;
-    --popover-foreground: 15 20% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 350 60% 20%;
 
-    --primary: 350 65% 22%;
-    --primary-foreground: 38 30% 96%;
+    /* Deep brand maroon — Kankatala-style #7A1F2B */
+    --primary: 350 60% 30%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 35 30% 91%;
-    --secondary-foreground: 15 20% 12%;
+    --secondary: 35 25% 96%;
+    --secondary-foreground: 350 60% 20%;
 
-    --muted: 35 18% 93%;
-    --muted-foreground: 15 12% 45%;
+    --muted: 30 15% 96%;
+    --muted-foreground: 30 8% 42%;
 
-    --accent: 38 68% 46%;
-    --accent-foreground: 15 30% 8%;
+    --accent: 38 65% 48%;
+    --accent-foreground: 350 60% 18%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 32 22% 85%;
-    --input: 32 22% 85%;
-    --ring: 350 65% 22%;
+    --border: 30 15% 90%;
+    --input: 30 15% 90%;
+    --ring: 350 60% 30%;
 
     --radius: 0.2rem;
 
-    --gold: 38 68% 46%;
+    --gold: 38 65% 48%;
     --gold-light: 40 60% 62%;
     --gold-dark: 36 78% 34%;
-    --burgundy: 350 65% 22%;
-    --burgundy-light: 350 50% 36%;
+    --burgundy: 350 60% 30%;
+    --burgundy-light: 350 50% 42%;
     --cream: 35 30% 96%;
     --cream-dark: 35 22% 88%;
     --temple-red: 0 60% 35%;
