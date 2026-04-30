@@ -55,12 +55,12 @@ const PrivacyPolicy = () => (
 
         <section className="space-y-3">
           <h2 className="font-display text-xl font-semibold text-foreground">6. Your Rights</h2>
-          <p>You have the right to access, correct, or delete your personal data. Contact us at <strong>info@kaviwomensworld.com</strong> for any privacy-related requests.</p>
+          <p>You have the right to access, correct, or delete your personal data. Contact us at <strong>info@manchalagadwalsarees.com</strong> for any privacy-related requests.</p>
         </section>
 
         <section className="space-y-3">
           <h2 className="font-display text-xl font-semibold text-foreground">7. Contact</h2>
-          <p>For privacy concerns, reach us at <strong>info@kaviwomensworld.com</strong> or call <strong>+91 94946 44998</strong>.</p>
+          <p>For privacy concerns, reach us at <strong>info@manchalagadwalsarees.com</strong> or call <strong>+91 94946 44998</strong>.</p>
         </section>
       </div>
     </main>

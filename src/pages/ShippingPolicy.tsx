@@ -40,7 +40,7 @@ const ShippingPolicy = () => (
 
         <section className="space-y-3">
           <h2 className="font-display text-xl font-semibold text-foreground">Delivery Issues</h2>
-          <p>If your order is delayed beyond the estimated timeframe, or if you receive a damaged package, please contact us immediately at <strong>info@kaviwomensworld.com</strong> or call <strong>+91 94946 44998</strong>.</p>
+          <p>If your order is delayed beyond the estimated timeframe, or if you receive a damaged package, please contact us immediately at <strong>info@manchalagadwalsarees.com</strong> or call <strong>+91 94946 44998</strong>.</p>
         </section>
       </div>
     </main>

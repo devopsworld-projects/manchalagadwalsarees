@@ -19,7 +19,7 @@ const jsonLd = {
   '@type': 'Store',
   name: "Manchala Gadwal Sarees",
   description: 'Premium handcrafted sarees — Kanjivaram, Banarasi, Silk & Cotton collections with free shipping across India.',
-  url: 'https://kaviwomensworld.lovable.app',
+  url: 'https://manchalagadwalsarees.lovable.app',
   telephone: '+919494644998',
   priceRange: '₹₹',
 };

@@ -292,7 +292,7 @@ function ProductDetail() {
     offers: {
       '@type': 'Offer', price: displayPrice, priceCurrency: 'INR',
       availability: isInStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      url: `https://kaviwomensworld.lovable.app/product/${product.sku}`,
+      url: `https://manchalagadwalsarees.lovable.app/product/${product.sku}`,
     },
   };
 

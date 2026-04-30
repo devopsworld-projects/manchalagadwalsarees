@@ -70,9 +70,9 @@ export function TempleSplash({ onComplete }: { onComplete: () => void }) {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="font-display text-2xl sm:text-3xl font-bold tracking-[0.15em] text-[hsl(35,30%,90%)]"
+            className="font-display text-xl sm:text-2xl font-bold tracking-[0.15em] text-[hsl(35,30%,90%)]"
           >
-            KAVI
+            MANCHALA
           </motion.h1>
 
           <motion.p
@@ -81,7 +81,7 @@ export function TempleSplash({ onComplete }: { onComplete: () => void }) {
             transition={{ duration: 0.8, delay: 1.0 }}
             className="font-display text-[10px] tracking-[0.4em] text-[hsl(36,72%,48%)] mt-1 uppercase"
           >
-            Women's World
+            Gadwal Sarees
           </motion.p>
 
           <motion.div
