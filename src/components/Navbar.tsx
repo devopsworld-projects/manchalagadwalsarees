@@ -321,6 +321,9 @@ export function Navbar() {
             {/* Maroon header with centered wordmark */}
             <div className="relative bg-primary text-primary-foreground px-5 pt-5 pb-6">
               <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-accent/50 via-accent to-accent/50" />
+              <div data-testid="currency-drawer" className="absolute left-3 top-3 [&_button]:text-primary-foreground/80 [&_button:hover]:text-accent">
+                <CurrencySelector />
+              </div>
               <button
                 onClick={() => setMobileOpen(false)}
                 className="absolute right-3 top-3 p-2 text-primary-foreground/80 hover:text-accent transition-colors"
