@@ -304,22 +304,35 @@ export function Navbar() {
         <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
       </div>
 
-      {/* ─── Mobile Nav Drawer ─── */}
+      {/* ─── Mobile Nav Drawer (full-screen) ─── */}
       {mobileOpen && (
         <>
           <div className="fixed inset-0 bg-foreground/40 backdrop-blur-sm z-40 md:hidden" onClick={() => setMobileOpen(false)} />
-          <nav className="fixed top-0 left-0 bottom-0 w-[85vw] max-w-sm bg-background z-50 md:hidden flex flex-col shadow-2xl">
-            {/* Header */}
-            <div className="relative p-5 border-b border-border">
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-accent/50 via-accent to-accent/50" />
-              <div className="flex items-center justify-between">
-                <Link to="/" onClick={() => setMobileOpen(false)}>
-                  <img src={logoSrc} alt="Manchala Gadwal Sarees" className="h-16 w-auto" />
-                </Link>
-                <button onClick={() => setMobileOpen(false)} className="p-2 text-foreground/60 hover:text-accent transition-colors">
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
+          <nav className="fixed inset-0 bg-background z-50 md:hidden flex flex-col shadow-2xl animate-in slide-in-from-left duration-300">
+            {/* Maroon header with centered wordmark */}
+            <div className="relative bg-primary text-primary-foreground px-5 pt-5 pb-6">
+              <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-accent/50 via-accent to-accent/50" />
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="absolute right-3 top-3 p-2 text-primary-foreground/80 hover:text-accent transition-colors"
+                aria-label="Close menu"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <Link to="/" onClick={() => setMobileOpen(false)} className="flex flex-col items-center mt-1">
+                {/* Image logo on very narrow phones; wordmark when space allows */}
+                <img src={logoSrc} alt="Manchala Gadwal Sarees" className="h-14 w-auto block xs:hidden" />
+                <span className="hidden xs:block font-display text-2xl sm:text-3xl font-bold tracking-[0.1em] leading-none">
+                  MANCHALA
+                </span>
+                <span className="hidden xs:flex items-center gap-2 mt-2">
+                  <span className="h-px w-6 bg-accent/70" />
+                  <span className="font-body text-[9px] tracking-[0.4em] text-accent uppercase">
+                    Gadwal Sarees
+                  </span>
+                  <span className="h-px w-6 bg-accent/70" />
+                </span>
+              </Link>
             </div>
 
             {/* Menu items */}
