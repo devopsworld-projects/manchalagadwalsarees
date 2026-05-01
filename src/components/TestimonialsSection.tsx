@@ -25,7 +25,7 @@ export function TestimonialsSection() {
           <div className="lotus-divider mb-5">
             <span className="lotus" />
           </div>
-          <p className="devanagari text-accent text-base md:text-lg mb-2">ग्राहकाणां वचनानि</p>
+          
           <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mt-2 tracking-wide">
             Voices of Our Patrons
           </h2>

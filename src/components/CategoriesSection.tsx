@@ -76,7 +76,7 @@ export function CategoriesSection() {
           <div className="lotus-divider mb-5">
             <span className="lotus" />
           </div>
-          <p className="devanagari text-accent text-base md:text-lg mb-2">परम्परा संग्रहः</p>
+          
           <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mt-2 tracking-wide">
             Our Sacred Collections
           </h2>
