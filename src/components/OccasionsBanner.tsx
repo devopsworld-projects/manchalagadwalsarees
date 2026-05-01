@@ -38,7 +38,7 @@ export function OccasionsBanner() {
         <div className="lotus-divider mb-6">
           <span className="lotus" />
         </div>
-        <p className="devanagari text-accent text-lg md:text-xl mb-3">सर्वेषाम् अवसराणाम्</p>
+        
         <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold text-background tracking-wide">
           A Saree for Every Occasion
         </h2>

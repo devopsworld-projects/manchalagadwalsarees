@@ -37,7 +37,7 @@ export function HeritageSection() {
               <div className="flex items-center gap-3 mb-5">
                 <span className="text-accent text-[7px]">◆</span>
                 <div className="w-10 h-[1px] bg-accent/40" />
-                <span className="font-body text-[10px] tracking-[0.4em] uppercase text-accent/80">परम्परा · Our Heritage</span>
+                <span className="font-body text-[10px] tracking-[0.4em] uppercase text-accent/80">Our Heritage</span>
               </div>
 
               <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-background tracking-wide leading-[1.05] mb-6">
@@ -45,10 +45,6 @@ export function HeritageSection() {
                 <br />
                 <span className="gold-shimmer">Devotion</span>
               </h2>
-
-              <p className="devanagari text-accent/80 text-lg italic mb-6">
-                हस्तकलायाः परम्परा — आत्मनः अभिव्यक्तिः
-              </p>
 
               <div className="space-y-4 mb-10">
                 <p className="font-serif text-base md:text-lg text-background/50 leading-relaxed italic">
