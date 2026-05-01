@@ -35,7 +35,7 @@ export function NewsletterSection() {
           <div className="lotus-divider mb-5">
             <span className="lotus" />
           </div>
-          <p className="devanagari text-accent text-base md:text-lg mb-3">सुस्वागतम् कुटुम्बे</p>
+          
 
           <h2 className="font-display text-3xl md:text-5xl font-bold text-background tracking-wide mt-2 mb-4">
             Join Our Family
