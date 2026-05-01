@@ -17,27 +17,28 @@ export function CurrencySelector({ variant = 'header' }: { variant?: 'header' | 
 
   const triggerCls =
     variant === 'topbar'
-      ? 'flex items-center gap-1 text-[10px] tracking-[0.15em] font-display text-background/70 hover:text-accent transition-colors uppercase'
-      : 'flex items-center gap-1 px-2 py-2 text-[12px] font-body font-medium text-primary/80 hover:text-accent transition-colors';
+      ? 'flex items-center gap-1 text-[10px] tracking-[0.15em] font-display text-background/70 hover:text-accent transition-colors uppercase min-h-[44px] px-1'
+      : 'flex items-center gap-1.5 px-2 min-h-[44px] text-[12px] font-body font-semibold text-primary/80 hover:text-accent transition-colors';
 
   return (
     <div ref={ref} className="relative">
       <button
+        type="button"
         onClick={() => setOpen(o => !o)}
         className={triggerCls}
         aria-label="Select currency"
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <span>{currency.symbol}</span>
-        <span className="hidden sm:inline">{currency.code}</span>
+        <span className="text-[13px] leading-none">{currency.symbol}</span>
+        <span className="text-[11px] leading-none">{currency.code}</span>
         <ChevronDown className={`h-3 w-3 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
         <div
           role="listbox"
-          className="absolute right-0 top-full mt-1 w-56 bg-background border border-border shadow-xl z-50 py-1"
+          className="fixed sm:absolute left-2 right-2 sm:left-0 sm:right-auto sm:top-full top-[64px] sm:mt-1 sm:w-56 max-w-[calc(100vw-1rem)] bg-background border border-border shadow-xl z-[60] py-1"
         >
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-accent/40 via-accent to-accent/40" />
           {Object.values(CURRENCIES).map(c => {
