@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
   ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, X, Copy, Check,
-  Facebook, Twitter, Mail,
+  Facebook, Twitter, Mail, Zap,
 } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
@@ -86,6 +86,7 @@ function ImageMagnifier({ src, alt }: { src: string; alt: string }) {
 
 function ProductDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { addToCart } = useCart();
   const { format: formatPrice } = useCurrency();
   const { isWishlisted, toggleWishlist, isLoggedIn } = useWishlist();
@@ -550,6 +551,19 @@ function ProductDetail() {
                 >
                   <ShoppingBag className="h-4 w-4" />
                   {hasVariants && !allAttributesSelected ? 'Select Options Above' : !isInStock ? 'Out of Stock' : colors.length > 0 && selectedColor === null ? 'Select Color Above' : 'Add to Cart'}
+                </button>
+                <button
+                  onClick={() => {
+                    if (!canAddToCart) return;
+                    if (!isLoggedIn) { toast.error('Please login for express checkout'); navigate('/login'); return; }
+                    navigate('/checkout', { state: { buyNow: { product: cartProduct, quantity: 1 } } });
+                  }}
+                  disabled={!canAddToCart}
+                  className={`w-full py-4 text-[11px] tracking-[0.25em] font-display font-bold flex items-center justify-center gap-3 transition-colors uppercase ${
+                    canAddToCart ? 'bg-accent text-accent-foreground hover:bg-accent/90' : 'bg-muted text-muted-foreground cursor-not-allowed'
+                  }`}
+                >
+                  <Zap className="h-4 w-4 fill-current" /> Buy Now — Express
                 </button>
                 <a
                   href={`https://wa.me/${phone}?text=${whatsappEnquiry}`}
