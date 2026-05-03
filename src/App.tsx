@@ -146,6 +146,7 @@ const App = () => {
                   <Route path="faq" element={<AdminFAQ />} />
                   <Route path="blog" element={<AdminBlog />} />
                   <Route path="testimonials" element={<AdminTestimonials />} />
+                  <Route path="google-reviews" element={<AdminGoogleReviews />} />
                   <Route path="newsletter" element={<AdminNewsletter />} />
                   <Route path="returns" element={<AdminReturns />} />
                   <Route path="audit-log" element={<AdminAuditLog />} />
