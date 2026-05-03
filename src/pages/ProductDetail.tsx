@@ -117,6 +117,10 @@ function ProductDetail() {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const shareRef = useRef<HTMLDivElement>(null);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [ogImageUrl, setOgImageUrl] = useState<string | null>(null);
+  const [pincode, setPincode] = useState('');
+  const [pincodeStatus, setPincodeStatus] = useState<null | { ok: boolean; eta: string; cod: boolean; city?: string; message: string }>(null);
+  const [pincodeChecking, setPincodeChecking] = useState(false);
   const desktopShareMenuRef = useRef<HTMLDivElement>(null);
   const mobileShareMenuRef = useRef<HTMLDivElement>(null);
 
