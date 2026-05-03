@@ -20,7 +20,7 @@ import { ensureProductOgImage } from '@/lib/ogImage';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
   ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, X, Copy, Check,
-  Facebook, Twitter, Mail, Zap, Plus, Minus,
+  Facebook, Twitter, Mail, Zap, Plus, Minus, Loader2, AlertCircle, Clock, CalendarCheck, Sparkles,
 } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
@@ -346,15 +346,52 @@ function ProductDetail() {
   const canAddToCart = isInStock && allAttributesSelected;
 
   // Build "Specific Information" entries — saree-specific fields from product.specifications
-  const SPEC_FIELDS = [
-    'Pattern', 'Occasion', 'Fabric', 'Material', 'Color Family',
-    'Base Color', 'Border Type', 'Border Size', 'Secondary Color',
-  ] as const;
   const productSpecs = ((product as any).specifications || {}) as Record<string, string>;
-  const specInfoEntries: [string, string][] = SPEC_FIELDS
+  const STRUCTURED_FIELDS = [
+    'Pattern', 'Occasion', 'Fabric', 'Material',
+    'Saree Length', 'Blouse Piece', 'Border Type', 'Border Size',
+    'Color Family', 'Base Color', 'Secondary Color', 'Wash Care',
+  ] as const;
+  const structuredEntries: [string, string][] = STRUCTURED_FIELDS
     .map(k => [k, productSpecs[k]] as [string, string])
     .filter(([, v]) => !!v && String(v).trim() !== '');
-  if (categoryName) specInfoEntries.push(['Category', categoryName]);
+  if (colors.length > 0) {
+    structuredEntries.push(['Colors', colors.map(c => getColorName(c)).join(', ')]);
+  }
+  if (categoryName) structuredEntries.push(['Category', categoryName]);
+
+  // Highlights — short curated chips from description + top specs
+  const descSentence = (product.description || '').split(/(?<=[.!?])\s+/).find(s => s.trim().length > 20)?.trim();
+  const highlights: { icon: string; title: string; text: string }[] = [];
+  if (productSpecs['Fabric'] || productSpecs['Material']) {
+    highlights.push({ icon: '🧵', title: 'Fabric & Material', text: [productSpecs['Material'], productSpecs['Fabric']].filter(Boolean).join(' · ') });
+  }
+  if (productSpecs['Pattern']) highlights.push({ icon: '✨', title: 'Pattern', text: productSpecs['Pattern'] });
+  if (productSpecs['Occasion']) highlights.push({ icon: '🎉', title: 'Occasion', text: productSpecs['Occasion'] });
+  if (productSpecs['Border Type']) highlights.push({ icon: '🪡', title: 'Border', text: [productSpecs['Border Type'], productSpecs['Border Size']].filter(Boolean).join(' · ') });
+  if (productSpecs['Saree Length'] || productSpecs['Blouse Piece']) {
+    highlights.push({ icon: '📏', title: 'Length', text: [productSpecs['Saree Length'], productSpecs['Blouse Piece']].filter(Boolean).join(' + ') });
+  }
+  if (descSentence) highlights.push({ icon: '💎', title: 'Crafted with care', text: descSentence.length > 90 ? descSentence.slice(0, 87) + '…' : descSentence });
+
+  // Shipping cutoff (2 PM IST). If now is before cutoff, ships today; else next business day.
+  const cutoffInfo = (() => {
+    const now = new Date();
+    // IST = UTC+5:30
+    const istNow = new Date(now.getTime() + (now.getTimezoneOffset() + 330) * 60000);
+    const cutoff = new Date(istNow);
+    cutoff.setHours(14, 0, 0, 0);
+    const beforeCutoff = istNow < cutoff;
+    const dispatchDate = new Date(istNow);
+    if (!beforeCutoff) dispatchDate.setDate(dispatchDate.getDate() + 1);
+    // Skip Sunday
+    if (dispatchDate.getDay() === 0) dispatchDate.setDate(dispatchDate.getDate() + 1);
+    const msToCutoff = cutoff.getTime() - istNow.getTime();
+    const hoursLeft = Math.max(0, Math.floor(msToCutoff / 3600000));
+    const minsLeft = Math.max(0, Math.floor((msToCutoff % 3600000) / 60000));
+    return { beforeCutoff, dispatchDate, hoursLeft, minsLeft };
+  })();
+  const fmtDate = (d: Date) => d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
 
   const mobileShareSheet = showShareMenu && typeof document !== 'undefined'
     ? createPortal(
@@ -604,6 +641,28 @@ function ProductDetail() {
                 ))}
               </div>
 
+              {/* Highlights — horizontal scroll carousel */}
+              {highlights.length > 0 && (
+                <div className="pt-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="h-3.5 w-3.5 text-accent" />
+                    <h3 className="font-display text-[11px] font-bold tracking-[0.15em] uppercase">Highlights</h3>
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory [scrollbar-width:thin]">
+                    {highlights.map(h => (
+                      <div
+                        key={h.title}
+                        className="snap-start shrink-0 w-[200px] border border-border bg-muted/30 p-3 flex flex-col gap-1"
+                      >
+                        <span className="text-base leading-none">{h.icon}</span>
+                        <p className="font-display text-[10px] font-bold tracking-wider text-primary uppercase">{h.title}</p>
+                        <p className="font-body text-[12px] text-foreground/80 leading-snug">{h.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Delivery & Availability */}
               <CollapsibleSection title="Delivery & Availability" defaultOpen>
                 <div className="space-y-4">
@@ -658,26 +717,52 @@ function ProductDetail() {
                     <button
                       type="submit"
                       disabled={pincodeChecking || pincode.length !== 6}
-                      className="min-h-[44px] px-4 text-[11px] tracking-[0.2em] font-display font-bold uppercase border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="min-h-[44px] px-4 text-[11px] tracking-[0.2em] font-display font-bold uppercase border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
                     >
-                      {pincodeChecking ? 'Checking…' : 'Check'}
+                      {pincodeChecking ? (<><Loader2 className="h-3.5 w-3.5 animate-spin" />Checking</>) : 'Check'}
                     </button>
                   </form>
 
-                  {pincodeStatus && !pincodeStatus.ok && (
-                    <p className="font-body text-[13px] text-red-600">{pincodeStatus.message}</p>
+                  {pincodeChecking && (
+                    <div className="flex items-center gap-2 text-[13px] font-body text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Verifying serviceability…
+                    </div>
                   )}
 
-                  {pincodeStatus?.ok && (
-                    <div className="flex items-start gap-2 p-3 border border-emerald-600/30 bg-emerald-50 dark:bg-emerald-950/20">
-                      <Check className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                  {pincodeStatus && !pincodeStatus.ok && !pincodeChecking && (
+                    <div className="flex items-start gap-2 p-3 border border-red-300 bg-red-50 dark:bg-red-950/20" role="alert">
+                      <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 shrink-0" />
                       <div className="font-body text-[13px]">
-                        <p className="font-semibold text-emerald-700 dark:text-emerald-400">
-                          Delivery available to {pincodeStatus.city}
-                        </p>
-                        <p className="text-muted-foreground text-[12px] mt-0.5">
-                          Arrives by {pincodeStatus.eta} · {pincodeStatus.cod ? 'COD available' : 'Prepaid only'}
-                        </p>
+                        <p className="font-semibold text-red-700 dark:text-red-400">Delivery not available</p>
+                        <p className="text-red-700/80 dark:text-red-400/80 text-[12px] mt-0.5">{pincodeStatus.message}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {pincodeStatus?.ok && !pincodeChecking && (
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2 p-3 border border-emerald-600/30 bg-emerald-50 dark:bg-emerald-950/20">
+                        <Check className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                        <div className="font-body text-[13px]">
+                          <p className="font-semibold text-emerald-700 dark:text-emerald-400">
+                            Delivery available to {pincodeStatus.city}
+                          </p>
+                          <p className="text-muted-foreground text-[12px] mt-0.5">
+                            Estimated arrival {pincodeStatus.eta} · {pincodeStatus.cod ? 'COD available' : 'Prepaid only'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2 p-3 border border-border bg-muted/30">
+                        <CalendarCheck className="h-4 w-4 text-accent mt-0.5 shrink-0" />
+                        <div className="font-body text-[13px]">
+                          <p className="font-semibold text-foreground">Dispatches {fmtDate(cutoffInfo.dispatchDate)}</p>
+                          <p className="text-muted-foreground text-[12px] mt-0.5 inline-flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {cutoffInfo.beforeCutoff
+                              ? `Order in ${cutoffInfo.hoursLeft}h ${cutoffInfo.minsLeft}m to ship today (cutoff 2:00 PM IST)`
+                              : 'Today\'s cutoff (2:00 PM IST) has passed — ships next business day'}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -739,17 +824,21 @@ function ProductDetail() {
                 </CollapsibleSection>
               )}
 
-              {/* Specific Information */}
-              {specInfoEntries.length > 0 && (
+              {/* Specific Information — structured details table */}
+              {structuredEntries.length > 0 && (
                 <CollapsibleSection title="Specific Information" defaultOpen>
-                  <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-                    {specInfoEntries.map(([k, v]) => (
-                      <div key={k} className="flex items-baseline justify-between gap-3 border-b border-border/40 pb-2">
-                        <dt className="font-display text-[12px] font-bold text-primary tracking-wide">{k}:</dt>
-                        <dd className="font-body text-sm text-foreground/80 text-right">{v}</dd>
-                      </div>
-                    ))}
-                  </dl>
+                  <div className="overflow-hidden border border-border/60">
+                    <table className="w-full text-left">
+                      <tbody className="divide-y divide-border/40">
+                        {structuredEntries.map(([k, v], idx) => (
+                          <tr key={k} className={idx % 2 === 0 ? 'bg-muted/30' : 'bg-background'}>
+                            <th scope="row" className="font-display text-[11px] font-bold tracking-wider text-primary uppercase px-3 py-2.5 w-2/5 align-top">{k}</th>
+                            <td className="font-body text-[13px] text-foreground/85 px-3 py-2.5">{v}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </CollapsibleSection>
               )}
 
