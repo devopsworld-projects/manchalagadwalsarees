@@ -296,6 +296,48 @@ export type Database = {
         }
         Relationships: []
       }
+      google_reviews: {
+        Row: {
+          author_initial: string | null
+          author_name: string
+          created_at: string
+          id: string
+          is_active: boolean
+          profile_photo_url: string | null
+          rating: number
+          review_date: string | null
+          review_text: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          author_initial?: string | null
+          author_name: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          profile_photo_url?: string | null
+          rating?: number
+          review_date?: string | null
+          review_text: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          author_initial?: string | null
+          author_name?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          profile_photo_url?: string | null
+          rating?: number
+          review_date?: string | null
+          review_text?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hero_slides: {
         Row: {
           created_at: string
