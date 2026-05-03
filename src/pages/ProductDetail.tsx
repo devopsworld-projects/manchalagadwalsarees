@@ -695,26 +695,52 @@ function ProductDetail() {
                     <button
                       type="submit"
                       disabled={pincodeChecking || pincode.length !== 6}
-                      className="min-h-[44px] px-4 text-[11px] tracking-[0.2em] font-display font-bold uppercase border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="min-h-[44px] px-4 text-[11px] tracking-[0.2em] font-display font-bold uppercase border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
                     >
-                      {pincodeChecking ? 'Checking…' : 'Check'}
+                      {pincodeChecking ? (<><Loader2 className="h-3.5 w-3.5 animate-spin" />Checking</>) : 'Check'}
                     </button>
                   </form>
 
-                  {pincodeStatus && !pincodeStatus.ok && (
-                    <p className="font-body text-[13px] text-red-600">{pincodeStatus.message}</p>
+                  {pincodeChecking && (
+                    <div className="flex items-center gap-2 text-[13px] font-body text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Verifying serviceability…
+                    </div>
                   )}
 
-                  {pincodeStatus?.ok && (
-                    <div className="flex items-start gap-2 p-3 border border-emerald-600/30 bg-emerald-50 dark:bg-emerald-950/20">
-                      <Check className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                  {pincodeStatus && !pincodeStatus.ok && !pincodeChecking && (
+                    <div className="flex items-start gap-2 p-3 border border-red-300 bg-red-50 dark:bg-red-950/20" role="alert">
+                      <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 shrink-0" />
                       <div className="font-body text-[13px]">
-                        <p className="font-semibold text-emerald-700 dark:text-emerald-400">
-                          Delivery available to {pincodeStatus.city}
-                        </p>
-                        <p className="text-muted-foreground text-[12px] mt-0.5">
-                          Arrives by {pincodeStatus.eta} · {pincodeStatus.cod ? 'COD available' : 'Prepaid only'}
-                        </p>
+                        <p className="font-semibold text-red-700 dark:text-red-400">Delivery not available</p>
+                        <p className="text-red-700/80 dark:text-red-400/80 text-[12px] mt-0.5">{pincodeStatus.message}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {pincodeStatus?.ok && !pincodeChecking && (
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2 p-3 border border-emerald-600/30 bg-emerald-50 dark:bg-emerald-950/20">
+                        <Check className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                        <div className="font-body text-[13px]">
+                          <p className="font-semibold text-emerald-700 dark:text-emerald-400">
+                            Delivery available to {pincodeStatus.city}
+                          </p>
+                          <p className="text-muted-foreground text-[12px] mt-0.5">
+                            Estimated arrival {pincodeStatus.eta} · {pincodeStatus.cod ? 'COD available' : 'Prepaid only'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2 p-3 border border-border bg-muted/30">
+                        <CalendarCheck className="h-4 w-4 text-accent mt-0.5 shrink-0" />
+                        <div className="font-body text-[13px]">
+                          <p className="font-semibold text-foreground">Dispatches {fmtDate(cutoffInfo.dispatchDate)}</p>
+                          <p className="text-muted-foreground text-[12px] mt-0.5 inline-flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {cutoffInfo.beforeCutoff
+                              ? `Order in ${cutoffInfo.hoursLeft}h ${cutoffInfo.minsLeft}m to ship today (cutoff 2:00 PM IST)`
+                              : 'Today\'s cutoff (2:00 PM IST) has passed — ships next business day'}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )}
