@@ -11,14 +11,43 @@ export function NewsletterSection() {
 
   const subscribe = useMutation({
     mutationFn: async (emailAddr: string) => {
-      const { error } = await supabase.from('newsletter_subscribers').insert({ email: emailAddr });
+      const normalized = emailAddr.trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
+        throw new Error('INVALID_EMAIL');
+      }
+      const { data: existing } = await supabase
+        .from('newsletter_subscribers')
+        .select('id')
+        .ilike('email', normalized)
+        .maybeSingle();
+      if (existing) throw new Error('ALREADY_SUBSCRIBED');
+
+      const { error } = await supabase.from('newsletter_subscribers').insert({ email: normalized });
       if (error) {
-        if (error.code === '23505') throw new Error('Already subscribed!');
+        if (error.code === '23505') throw new Error('ALREADY_SUBSCRIBED');
         throw error;
       }
     },
-    onSuccess: () => { toast.success('Subscribed successfully!'); setEmail(''); },
-    onError: (e: any) => toast.error(e.message),
+    onSuccess: () => {
+      toast.success('Welcome to the family ✨', {
+        description: "You're now subscribed — watch your inbox for exclusive previews.",
+      });
+      setEmail('');
+    },
+    onError: (e: any) => {
+      if (e.message === 'ALREADY_SUBSCRIBED') {
+        toast.info("You're already on our list", {
+          description: 'This email is already subscribed to our newsletter.',
+        });
+        setEmail('');
+      } else if (e.message === 'INVALID_EMAIL') {
+        toast.error('Invalid email', { description: 'Please enter a valid email address.' });
+      } else {
+        toast.error('Subscription failed', {
+          description: e.message || 'Something went wrong. Please try again.',
+        });
+      }
+    },
   });
 
   return (
