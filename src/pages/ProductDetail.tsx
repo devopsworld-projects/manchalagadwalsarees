@@ -932,24 +932,26 @@ function ProductDetail() {
 
               </CollapsibleSection>
 
-              {/* Collapsible Description */}
+              {/* Product Description — always open */}
               {product.description && (
-                <CollapsibleSection title="Product Description" defaultOpen>
+                <section className="border-t border-border/60 pt-4">
+                  <h2 className="font-display text-sm font-bold text-primary tracking-wide uppercase mb-3">Product Description</h2>
                   <div className="font-body text-sm text-foreground/80 leading-relaxed whitespace-pre-line space-y-3">
                     {product.description.split(/\n{2,}/).map((para, i) => (
                       <p key={i}>{para}</p>
                     ))}
                   </div>
-                </CollapsibleSection>
+                </section>
               )}
 
-              {/* Specific Information — structured details table */}
+              {/* Specific Information — always open, show first 4, "see more" toggle */}
               {structuredEntries.length > 0 && (
-                <CollapsibleSection title="Specific Information" defaultOpen>
+                <section className="border-t border-border/60 pt-4">
+                  <h2 className="font-display text-sm font-bold text-primary tracking-wide uppercase mb-3">Specific Information</h2>
                   <div className="overflow-hidden border border-border/60">
                     <table className="w-full text-left">
                       <tbody className="divide-y divide-border/40">
-                        {structuredEntries.map(([k, v], idx) => (
+                        {(specsExpanded ? structuredEntries : structuredEntries.slice(0, 4)).map(([k, v], idx) => (
                           <tr key={k} className={idx % 2 === 0 ? 'bg-muted/30' : 'bg-background'}>
                             <th scope="row" className="font-display text-[11px] font-bold tracking-wider text-primary uppercase px-3 py-2.5 w-2/5 align-top">{k}</th>
                             <td className="font-body text-[13px] text-foreground/85 px-3 py-2.5">{v}</td>
@@ -958,28 +960,49 @@ function ProductDetail() {
                       </tbody>
                     </table>
                   </div>
-                </CollapsibleSection>
+                  {structuredEntries.length > 4 && (
+                    <button
+                      type="button"
+                      onClick={() => setSpecsExpanded(s => !s)}
+                      aria-expanded={specsExpanded}
+                      className="mt-3 inline-flex items-center gap-1.5 font-display text-[11px] font-bold tracking-[0.15em] uppercase text-primary hover:underline"
+                    >
+                      {specsExpanded ? <>See Less <Minus className="h-3 w-3" /></> : <>See More ({structuredEntries.length - 4}) <Plus className="h-3 w-3" /></>}
+                    </button>
+                  )}
+                </section>
               )}
 
-              {/* Care Information */}
-              <CollapsibleSection title="Care Information" defaultOpen={false}>
-                <div className="space-y-3">
-                  {[
-                    { icon: '🧼', title: 'Dry Clean Only', desc: 'Professional dry cleaning recommended.' },
-                    { icon: '👜', title: 'Proper Storage', desc: 'Store in cotton bag. Zari reacts to weather.' },
-                    { icon: '🚫', title: 'Avoid Perfume', desc: 'Do not spray directly on the garment.' },
-                    { icon: '🌬️', title: 'Air Regularly', desc: 'Air sarees every few months.' },
-                  ].map(({ icon, title, desc }) => (
-                    <div key={title} className="flex items-start gap-3">
-                      <span className="text-sm mt-0.5 shrink-0">{icon}</span>
-                      <div>
-                        <p className="font-display text-[10px] font-bold tracking-wider text-foreground uppercase">{title}</p>
-                        <p className="font-body text-[11px] text-muted-foreground leading-relaxed">{desc}</p>
+              {/* Care Information — state persists per product */}
+              <div className="border-t border-border/60 pt-4">
+                <button
+                  type="button"
+                  onClick={() => handleCareToggle(!careOpen)}
+                  className="flex items-center justify-between w-full text-left group min-h-[44px]"
+                  aria-expanded={careOpen}
+                >
+                  <span className="font-display text-sm font-bold text-primary tracking-wide uppercase">Care Information</span>
+                  {careOpen ? <Minus className="h-4 w-4 text-primary" /> : <Plus className="h-4 w-4 text-primary" />}
+                </button>
+                {careOpen && (
+                  <div className="pt-4 space-y-3">
+                    {[
+                      { icon: '🧼', title: 'Dry Clean Only', desc: 'Professional dry cleaning recommended.' },
+                      { icon: '👜', title: 'Proper Storage', desc: 'Store in cotton bag. Zari reacts to weather.' },
+                      { icon: '🚫', title: 'Avoid Perfume', desc: 'Do not spray directly on the garment.' },
+                      { icon: '🌬️', title: 'Air Regularly', desc: 'Air sarees every few months.' },
+                    ].map(({ icon, title, desc }) => (
+                      <div key={title} className="flex items-start gap-3">
+                        <span className="text-sm mt-0.5 shrink-0">{icon}</span>
+                        <div>
+                          <p className="font-display text-[10px] font-bold tracking-wider text-foreground uppercase">{title}</p>
+                          <p className="font-body text-[11px] text-muted-foreground leading-relaxed">{desc}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </CollapsibleSection>
+                    ))}
+                  </div>
+                )}
+              </div>
 
             </motion.div>
           </div>
