@@ -13,6 +13,7 @@ import { NewsletterSection } from '@/components/NewsletterSection';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 import { HeritageSection } from '@/components/HeritageSection';
+import { EditorialMarquee } from '@/components/EditorialMarquee';
 
 import { OccasionsBanner } from '@/components/OccasionsBanner';
 import { HomepageSection } from '@/components/HomepageSection';
