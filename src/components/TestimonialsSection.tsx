@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Star } from 'lucide-react';
-import { SectionHeader } from './SectionHeader';
+import { Star, Quote } from 'lucide-react';
 
 export function TestimonialsSection() {
   const { data: testimonials = [] } = useQuery({
@@ -15,67 +14,97 @@ export function TestimonialsSection() {
 
   if (testimonials.length === 0) return null;
 
-  return (
-    <section className="py-28 md:py-40 bg-foreground relative overflow-hidden">
-      {/* subtle radial */}
-      <div className="absolute inset-0 opacity-[0.06]" style={{
-        backgroundImage: 'radial-gradient(circle at 50% 30%, hsl(var(--accent)) 0%, transparent 60%)',
-      }} />
+  const featured = testimonials[0];
+  const rest = testimonials.slice(1, 4);
 
-      <div className="container relative">
-        <div className="text-center mb-16 md:mb-20 max-w-3xl mx-auto">
-          <div className="flex items-baseline justify-center gap-5 mb-6">
-            <span className="font-display text-[42px] md:text-[64px] leading-none font-light text-accent/40">
-              IV.
-            </span>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-px bg-accent" />
-              <span className="font-body text-[10px] tracking-luxe uppercase text-accent">
-                Voices of Our Patrons
-              </span>
-            </div>
+  return (
+    <section className="py-24 md:py-32 relative buti-pattern">
+      <div className="container">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <div className="lotus-divider mb-5">
+            <span className="lotus" />
           </div>
-          <h2 className="font-display text-[40px] sm:text-[56px] md:text-[72px] leading-[0.95] font-medium tracking-[-0.01em] text-background">
-            Words from those
-            <br />
-            <span className="italic font-serif font-normal text-accent">who wear us.</span>
+          
+          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mt-2 tracking-wide">
+            Voices of Our Patrons
           </h2>
+          <div className="w-20 ornate-line mx-auto mt-5" />
         </div>
 
-        {/* Editorial grid of pull-quotes */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-background/10">
-          {testimonials.slice(0, 6).map((t: any, i: number) => (
-            <div
-              key={t.id}
-              className="bg-foreground p-8 md:p-10 lg:p-12 flex flex-col"
-            >
-              <span className="font-display text-5xl text-accent leading-none mb-4">"</span>
-              <p className="font-serif text-lg md:text-xl text-background/85 leading-snug italic mb-8 flex-1">
-                {t.content}
+        {/* Featured + stacked layout */}
+        <div className="grid md:grid-cols-5 gap-5 md:gap-6">
+          {/* Featured — large */}
+          {featured && (
+            <div className="md:col-span-3 bg-foreground text-background p-8 md:p-12 lg:p-14 relative">
+              <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-accent/30" />
+              <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-accent/30" />
+              
+              <Quote className="h-8 w-8 text-accent/20 mb-6" />
+
+              <div className="flex gap-0.5 mb-6">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className={`h-4 w-4 ${i < (featured as any).rating ? 'fill-accent text-accent' : 'text-background/15'}`} />
+                ))}
+              </div>
+              <p className="font-serif text-lg md:text-xl lg:text-2xl text-background/70 leading-relaxed italic mb-10">
+                "{(featured as any).content}"
               </p>
-              <div className="flex items-center justify-between pt-6 border-t border-background/10">
-                <div className="flex items-center gap-3">
-                  {t.image_url && (
-                    <img src={t.image_url} alt={t.name} className="h-10 w-10 rounded-full object-cover border border-accent/30" />
-                  )}
-                  <div>
-                    <p className="font-display text-[11px] font-medium tracking-luxe uppercase text-background">
-                      {t.name}
-                    </p>
-                    <p className="font-body text-[9px] tracking-refined text-background/40 mt-1">
-                      Verified Patron · {String(i + 1).padStart(2, '0')}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-0.5">
-                  {Array.from({ length: 5 }).map((_, j) => (
-                    <Star key={j} className={`h-3 w-3 ${j < t.rating ? 'fill-accent text-accent' : 'text-background/15'}`} />
-                  ))}
+              <div className="flex items-center gap-4">
+                {(featured as any).image_url && (
+                  <img src={(featured as any).image_url} alt={(featured as any).name} className="h-12 w-12 rounded-full object-cover border-2 border-accent/30" />
+                )}
+                <div>
+                  <p className="font-display text-sm font-bold tracking-[0.15em] uppercase text-background">{(featured as any).name}</p>
+                  <div className="w-8 h-[1px] bg-accent/40 mt-2" />
                 </div>
               </div>
             </div>
-          ))}
+          )}
+
+          {/* Smaller testimonials */}
+          <div className="md:col-span-2 flex flex-col gap-5">
+            {rest.map((t: any) => (
+              <div key={t.id} className="flex-1 bg-card border border-border p-6 md:p-8 relative">
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-accent/40 via-accent to-accent/40" />
+                <div className="flex gap-0.5 mb-4">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className={`h-3 w-3 ${i < t.rating ? 'fill-accent text-accent' : 'text-muted'}`} />
+                  ))}
+                </div>
+                <p className="font-serif text-sm text-foreground/70 leading-relaxed italic mb-5">
+                  "{t.content}"
+                </p>
+                <div className="flex items-center gap-3">
+                  {t.image_url && (
+                    <img src={t.image_url} alt={t.name} className="h-9 w-9 rounded-full object-cover border border-accent/20" />
+                  )}
+                  <p className="font-display text-[11px] font-bold tracking-[0.15em] uppercase">{t.name}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+
+        {/* Extra testimonials row */}
+        {testimonials.length > 4 && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
+            {testimonials.slice(4).map((t: any) => (
+              <div key={t.id} className="bg-card border border-border p-6 relative">
+                <div className="flex gap-0.5 mb-3">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className={`h-3 w-3 ${i < t.rating ? 'fill-accent text-accent' : 'text-muted'}`} />
+                  ))}
+                </div>
+                <p className="font-serif text-sm text-foreground/70 leading-relaxed italic mb-4">"{t.content}"</p>
+                <div className="flex items-center gap-3">
+                  {t.image_url && <img src={t.image_url} alt={t.name} className="h-8 w-8 rounded-full object-cover border border-accent/20" />}
+                  <p className="font-display text-[10px] font-bold tracking-[0.15em] uppercase">{t.name}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

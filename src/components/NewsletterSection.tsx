@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Send } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function NewsletterSection() {
@@ -21,32 +22,29 @@ export function NewsletterSection() {
   });
 
   return (
-    <section className="relative py-28 md:py-40 bg-background border-t border-border overflow-hidden">
-      {/* Oversized watermark display word */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center select-none">
-        <span className="font-display italic text-[28vw] md:text-[20vw] leading-none text-accent/[0.07] font-medium tracking-tighter whitespace-nowrap">
-          atelier
-        </span>
+    <section className="relative py-28 md:py-36 overflow-hidden bg-foreground">
+      {/* Subtle mandala bg */}
+      <div className="absolute inset-0 opacity-[0.03]">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border border-accent rounded-full" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] border border-accent rounded-full" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] border border-accent rounded-full" />
       </div>
 
       <div className="container relative z-10">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-3 mb-8">
-            <div className="w-10 h-px bg-accent" />
-            <span className="font-body text-[10px] tracking-luxe uppercase text-accent">
-              The Atelier Letter
-            </span>
-            <div className="w-10 h-px bg-accent" />
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="lotus-divider mb-5">
+            <span className="lotus" />
           </div>
+          
 
-          <h2 className="font-display text-[44px] sm:text-[60px] md:text-[80px] lg:text-[96px] leading-[0.95] font-medium tracking-[-0.015em] text-foreground mb-6">
-            Be first to
-            <br />
-            <span className="italic font-serif font-normal text-accent">unveil.</span>
+          <h2 className="font-display text-3xl md:text-5xl font-bold text-background tracking-wide mt-2 mb-4">
+            Join Our Family
           </h2>
 
-          <p className="font-serif text-base md:text-lg text-muted-foreground italic mb-12 max-w-md mx-auto leading-relaxed">
-            New collections, festive offerings, private previews — delivered to you with quiet care.
+          <div className="ornate-line w-20 mx-auto mb-6" />
+
+          <p className="font-serif text-base md:text-lg text-background/55 mb-12 italic leading-relaxed max-w-md mx-auto">
+            Receive blessings of new collections, festive offerings, and styling rituals — straight to your inbox.
           </p>
 
           <form
@@ -54,29 +52,40 @@ export function NewsletterSection() {
               e.preventDefault();
               if (email.trim()) subscribe.mutate(email.trim());
             }}
-            className="flex flex-col sm:flex-row gap-0 max-w-xl mx-auto border-b border-foreground/30 focus-within:border-accent transition-colors"
+            className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto"
           >
             <Input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder="your@email.com"
+              placeholder="Your email address"
               required
-              className="flex-1 bg-transparent border-0 rounded-none text-foreground placeholder:text-muted-foreground/50 font-serif italic text-base h-14 px-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="flex-1 bg-background/10 border-background/15 text-background placeholder:text-background/25 font-body tracking-wider h-13 text-sm"
             />
             <Button
               type="submit"
               disabled={subscribe.isPending}
-              className="btn-luxe rounded-none bg-transparent hover:bg-foreground hover:text-background text-foreground font-display tracking-luxe text-[10px] uppercase h-14 px-8 border-0 shadow-none"
+              className="bg-accent text-accent-foreground hover:bg-accent/90 font-display tracking-[0.2em] text-[11px] uppercase px-10 h-13"
             >
-              {subscribe.isPending ? '...' : 'Subscribe →'}
+              <Send className="h-3.5 w-3.5 mr-2" />
+              {subscribe.isPending ? '...' : 'Subscribe'}
             </Button>
           </form>
 
-          <p className="font-body text-[9px] tracking-refined text-muted-foreground/60 mt-6 uppercase">
-            No spam · Unsubscribe anytime
+          <p className="font-body text-[10px] text-background/20 mt-6 tracking-wider">
+            No spam, ever. Unsubscribe anytime.
           </p>
         </div>
+      </div>
+
+      {/* Decorative diamonds */}
+      <div className="absolute right-16 top-1/2 -translate-y-1/2 hidden lg:block">
+        <div className="w-24 h-24 border border-accent/15 rotate-45" />
+        <div className="w-16 h-16 border border-accent/10 rotate-45 absolute top-4 left-4" />
+      </div>
+      <div className="absolute left-16 top-1/2 -translate-y-1/2 hidden lg:block">
+        <div className="w-24 h-24 border border-accent/15 rotate-45" />
+        <div className="w-16 h-16 border border-accent/10 rotate-45 absolute top-4 left-4" />
       </div>
     </section>
   );
