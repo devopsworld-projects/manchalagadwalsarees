@@ -108,7 +108,12 @@
 @layer base {
   * { @apply border-border; }
 
-  html, body { overflow-x: hidden; }
+  html, body {
+    max-width: 100%;
+    overflow-x: clip;
+    overscroll-behavior-x: none;
+  }
+  body { position: relative; -webkit-overflow-scrolling: touch; }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Lato', sans-serif;
