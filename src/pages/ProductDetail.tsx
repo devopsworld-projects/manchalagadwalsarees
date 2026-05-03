@@ -19,7 +19,7 @@ import { toast } from 'sonner';
 import { ensureProductOgImage } from '@/lib/ogImage';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
-  ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, X, Copy, Check,
+  ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Maximize2, ArrowLeft, X, Copy, Check,
   Facebook, Twitter, Mail, Zap, Plus, Minus, Loader2, AlertCircle, Clock, CalendarCheck, Sparkles,
 } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
