@@ -7,6 +7,7 @@ import { BestSellers } from '@/components/BestSellers';
 import { CategoriesSection } from '@/components/CategoriesSection';
 import { BannerSlider } from '@/components/BannerSlider';
 import { TestimonialsSection } from '@/components/TestimonialsSection';
+import { GoogleReviewsSection } from '@/components/GoogleReviewsSection';
 import { NewsletterSection } from '@/components/NewsletterSection';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
