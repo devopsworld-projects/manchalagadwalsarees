@@ -84,6 +84,24 @@ function ImageMagnifier({ src, alt }: { src: string; alt: string }) {
   );
 }
 
+function CollapsibleSection({ title, defaultOpen = false, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-t border-border/60 pt-4">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center justify-between w-full text-left group min-h-[44px]"
+        aria-expanded={open}
+      >
+        <span className="font-display text-sm font-bold text-primary tracking-wide uppercase">{title}</span>
+        {open ? <Minus className="h-4 w-4 text-primary" /> : <Plus className="h-4 w-4 text-primary" />}
+      </button>
+      {open && <div className="pt-4">{children}</div>}
+    </div>
+  );
+}
+
 function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
