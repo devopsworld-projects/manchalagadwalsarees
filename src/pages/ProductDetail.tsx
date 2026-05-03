@@ -392,7 +392,7 @@ function ProductDetail() {
           (product.description ? product.description.replace(/\s+/g, ' ').slice(0, 140) + '… ' : '') +
           `Shop ${product.name}${categoryName ? ` from our ${categoryName} collection` : ''} at ${formatPrice(Number(displayPrice))}. Free shipping across India.`
         }
-        canonicalPath={`/product/${product.sku}`} ogImage={images[0]} ogType="product" jsonLd={productJsonLd}
+        canonicalPath={`/product/${product.sku}`} ogImage={ogImageUrl || images[0]} ogType="product" jsonLd={productJsonLd}
       />
       <AnnouncementBar /><Navbar />
 
