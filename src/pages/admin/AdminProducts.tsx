@@ -373,6 +373,21 @@ const AdminProducts = () => {
                 </div>
               </div>
               <div>
+                <label className="font-body text-sm font-semibold block mb-2">Specifications (Saree Details)</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-3 border border-border rounded-sm bg-muted/20">
+                  {SPEC_FIELDS.map(field => (
+                    <div key={field}>
+                      <label className="font-body text-xs text-muted-foreground block mb-1">{field}</label>
+                      <input
+                        value={form.specifications[field] || ''}
+                        onChange={e => setForm(f => ({ ...f, specifications: { ...f.specifications, [field]: e.target.value } }))}
+                        className="w-full border border-border px-2 py-1.5 text-sm font-body rounded-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
                 <label className="font-body text-sm font-semibold block mb-1">Category</label>
                 <select value={form.category_id} onChange={e => setForm(f => ({ ...f, category_id: e.target.value }))} className="w-full border border-border px-3 py-2 text-sm font-body rounded-sm focus:outline-none focus:ring-1 focus:ring-primary">
                   <option value="">Select category</option>
