@@ -863,6 +863,26 @@ function ProductDetail() {
                 </CollapsibleSection>
               )}
 
+              {/* Care Information */}
+              <CollapsibleSection title="Care Information" defaultOpen={false}>
+                <div className="space-y-3">
+                  {[
+                    { icon: '🧼', title: 'Dry Clean Only', desc: 'Professional dry cleaning recommended.' },
+                    { icon: '👜', title: 'Proper Storage', desc: 'Store in cotton bag. Zari reacts to weather.' },
+                    { icon: '🚫', title: 'Avoid Perfume', desc: 'Do not spray directly on the garment.' },
+                    { icon: '🌬️', title: 'Air Regularly', desc: 'Air sarees every few months.' },
+                  ].map(({ icon, title, desc }) => (
+                    <div key={title} className="flex items-start gap-3">
+                      <span className="text-sm mt-0.5 shrink-0">{icon}</span>
+                      <div>
+                        <p className="font-display text-[10px] font-bold tracking-wider text-foreground uppercase">{title}</p>
+                        <p className="font-body text-[11px] text-muted-foreground leading-relaxed">{desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CollapsibleSection>
+
             </motion.div>
           </div>
         </div>
