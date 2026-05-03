@@ -509,39 +509,44 @@ function ProductDetail() {
               ))}
 
 
-              {/* CTAs */}
+              {/* CTAs — Add to Cart only (Kankatala-style) */}
               <div className="space-y-3 pt-2">
                 <button
                   onClick={() => { if (canAddToCart) addToCart(cartProduct); }}
                   disabled={!canAddToCart}
-                  className={`w-full py-4 text-[11px] tracking-[0.25em] font-display font-bold flex items-center justify-center gap-3 transition-colors uppercase ${
-                    canAddToCart ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-muted text-muted-foreground cursor-not-allowed'
+                  className={`w-full py-4 text-[11px] tracking-[0.25em] font-display font-bold flex items-center justify-center gap-3 transition-colors uppercase border-2 ${
+                    canAddToCart ? 'border-primary text-primary hover:bg-primary hover:text-primary-foreground bg-background' : 'border-muted text-muted-foreground cursor-not-allowed bg-background'
                   }`}
                 >
                   <ShoppingBag className="h-4 w-4" />
-                  {hasVariants && !allAttributesSelected ? 'Select Options Above' : !isInStock ? 'Out of Stock' : colors.length > 0 && selectedColor === null ? 'Select Color Above' : 'Add to Cart'}
+                  {hasVariants && !allAttributesSelected ? 'Select Options Above' : !isInStock ? 'Out of Stock' : colors.length > 0 && selectedColor === null ? 'Select Color Above' : 'Add To Cart'}
                 </button>
-                <button
-                  onClick={() => {
-                    if (!canAddToCart) return;
-                    if (!isLoggedIn) { toast.error('Please login for express checkout'); navigate('/login'); return; }
-                    navigate('/checkout', { state: { buyNow: { product: cartProduct, quantity: 1 } } });
-                  }}
-                  disabled={!canAddToCart}
-                  className={`w-full py-4 text-[11px] tracking-[0.25em] font-display font-bold flex items-center justify-center gap-3 transition-colors uppercase ${
-                    canAddToCart ? 'bg-accent text-accent-foreground hover:bg-accent/90' : 'bg-muted text-muted-foreground cursor-not-allowed'
-                  }`}
-                >
-                  <Zap className="h-4 w-4 fill-current" /> Buy Now — Express
-                </button>
-                <a
-                  href={`https://wa.me/${phone}?text=${whatsappEnquiry}`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="w-full py-4 text-[11px] tracking-[0.2em] font-display font-bold flex items-center justify-center gap-3 bg-[#25D366] text-white hover:bg-[#1ebe57] transition-colors uppercase"
-                >
-                  <WhatsAppIcon className="h-4 w-4" /> Order on WhatsApp
-                </a>
               </div>
+
+              {/* Collapsible Description */}
+              {product.description && (
+                <CollapsibleSection title="Product Description" defaultOpen>
+                  <div className="font-body text-sm text-foreground/80 leading-relaxed whitespace-pre-line space-y-3">
+                    {product.description.split(/\n{2,}/).map((para, i) => (
+                      <p key={i}>{para}</p>
+                    ))}
+                  </div>
+                </CollapsibleSection>
+              )}
+
+              {/* Specific Information */}
+              {specInfoEntries.length > 0 && (
+                <CollapsibleSection title="Specific Information" defaultOpen>
+                  <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                    {specInfoEntries.map(([k, v]) => (
+                      <div key={k} className="flex items-baseline justify-between gap-3 border-b border-border/40 pb-2">
+                        <dt className="font-display text-[12px] font-bold text-primary tracking-wide">{k}:</dt>
+                        <dd className="font-body text-sm text-foreground/80 text-right">{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </CollapsibleSection>
+              )}
 
 
 
