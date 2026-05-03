@@ -69,7 +69,7 @@ export function CategoriesSection() {
   const displayed = showAll ? categories : categories.slice(0, 8);
 
   return (
-    <section className="py-24 md:py-32 relative kolam-texture">
+    <section className="pt-6 md:pt-8 pb-24 md:pb-32 relative kolam-texture">
       <div className="container">
         {/* Header */}
         <div className="text-center mb-16 md:mb-20">
