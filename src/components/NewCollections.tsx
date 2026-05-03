@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ProductCard } from './ProductCard';
 import { Link } from 'react-router-dom';
+import { SectionHeader } from './SectionHeader';
+import { ScrollReveal } from './ScrollReveal';
 
 export function NewCollections() {
   const scrollRef = useRef<HTMLDivElement>(null);
