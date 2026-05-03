@@ -145,7 +145,12 @@
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
 @media (max-width: 767px) {
-  main { padding-bottom: 4rem; }
+  /* Reserve space for the fixed mobile bottom navigation */
+  footer { padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px)); }
+  /* Larger tap targets, native-app feel */
+  a, button { -webkit-tap-highlight-color: transparent; }
+  /* Disable iOS text size auto-adjust */
+  html { -webkit-text-size-adjust: 100%; }
 }
 
 @layer utilities {
