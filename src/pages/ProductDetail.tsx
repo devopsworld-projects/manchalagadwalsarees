@@ -320,6 +320,19 @@ function ProductDetail() {
   const discountPercent = displayOriginalPrice ? Math.round((1 - Number(displayPrice) / Number(displayOriginalPrice)) * 100) : 0;
   const canAddToCart = isInStock && (colors.length === 0 || selectedColor !== null) && allAttributesSelected;
 
+  // Build "Specific Information" entries from variant attributes + product fields
+  const specInfoMap: Record<string, string> = {};
+  if (selectedVariant?.attributes) {
+    Object.entries(selectedVariant.attributes as Record<string, string>).forEach(([k, v]) => {
+      if (v) specInfoMap[k] = String(v);
+    });
+  }
+  if (categoryName && !specInfoMap['Category']) specInfoMap['Category'] = categoryName;
+  if (colors.length > 0 && !specInfoMap['Color']) {
+    specInfoMap['Color'] = colors.map(getColorName).join(', ');
+  }
+  const specInfoEntries = Object.entries(specInfoMap);
+
   const mobileShareSheet = showShareMenu && typeof document !== 'undefined'
     ? createPortal(
         <>
