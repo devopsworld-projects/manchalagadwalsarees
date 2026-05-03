@@ -689,17 +689,57 @@ function ProductDetail() {
               {/* Variants */}
               {hasVariants && variantAttrKeys.map(key => (
                 <div key={key}>
-                  <h3 className="font-display text-[11px] font-bold tracking-[0.15em] uppercase mb-3">{key} <span className="text-accent">*</span></h3>
-                  <div className="flex flex-wrap gap-2">
-                    {attrOptions[key]?.map(val => (
-                      <button key={val} onClick={() => setSelectedAttributes(prev => ({ ...prev, [key]: val }))}
-                        className={`px-4 py-2 text-[11px] font-display tracking-[0.1em] border transition-all ${
-                          selectedAttributes[key] === val ? 'border-primary bg-primary/10 text-primary font-bold' : 'border-border text-muted-foreground hover:border-primary/50'
-                        }`}>
-                        {val}
-                      </button>
-                    ))}
+                  <div className="flex items-baseline justify-between mb-3">
+                    <h3 className="font-display text-[11px] font-bold tracking-[0.15em] uppercase">{key} <span className="text-accent">*</span></h3>
+                    {selectedAttributes[key] && (
+                      <span className="font-body text-[11px] text-muted-foreground">
+                        Selected: <span className="text-foreground font-medium">{selectedAttributes[key]}</span>
+                      </span>
+                    )}
                   </div>
+                  <div className="flex flex-wrap gap-2">
+                    {attrOptions[key]?.map(val => {
+                      // Check if any variant matching this option (combined with currently chosen others) is in stock
+                      const candidateVariants = variants!.filter(v => {
+                        const a = (v.attributes as Record<string, string>) || {};
+                        if (a[key] !== val) return false;
+                        return Object.entries(selectedAttributes).every(([k2, v2]) => k2 === key || !v2 || a[k2] === v2);
+                      });
+                      const optionStock = candidateVariants.reduce((sum, v) => sum + (v.stock || 0), 0);
+                      const optionInStock = optionStock > 0;
+                      const isSelected = selectedAttributes[key] === val;
+                      return (
+                        <button
+                          key={val}
+                          onClick={() => setSelectedAttributes(prev => ({ ...prev, [key]: val }))}
+                          aria-pressed={isSelected}
+                          className={`relative px-4 py-2 text-[11px] font-display tracking-[0.1em] border transition-all ${
+                            isSelected ? 'border-primary bg-primary/10 text-primary font-bold' :
+                            optionInStock ? 'border-border text-muted-foreground hover:border-primary/50' :
+                            'border-border/60 text-muted-foreground/60 line-through'
+                          }`}
+                        >
+                          {val}
+                          {!optionInStock && <span className="ml-1.5 text-[9px] font-body normal-case no-underline">(Out)</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {selectedAttributes[key] && (() => {
+                    const matching = variants!.filter(v => {
+                      const a = (v.attributes as Record<string, string>) || {};
+                      return Object.entries(selectedAttributes).every(([k2, v2]) => !v2 || a[k2] === v2);
+                    });
+                    const stockSum = matching.reduce((s, v) => s + (v.stock || 0), 0);
+                    if (matching.length === 0) return null;
+                    return (
+                      <p className={`mt-2 font-body text-[11px] ${stockSum > 0 ? 'text-emerald-700' : 'text-red-700'}`}>
+                        {stockSum > 0
+                          ? `In stock${stockSum <= 5 ? ` — only ${stockSum} left` : ''}`
+                          : 'Out of stock for this combination'}
+                      </p>
+                    );
+                  })()}
                 </div>
               ))}
 
