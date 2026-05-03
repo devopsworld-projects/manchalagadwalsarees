@@ -163,15 +163,25 @@ export function Navbar() {
               ))}
             </nav>
           </div>
-          <a
-            href="https://wa.me/919885879188"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-[10px] tracking-[0.1em] font-body font-normal text-background/70 hover:text-accent transition-colors"
-          >
-            <Phone className="h-3 w-3 text-accent/70" />
-            +91 98858 79188
-          </a>
+          <div className="flex items-center gap-5">
+            <a
+              href="tel:+919885879188"
+              className="flex items-center gap-2 text-[10px] tracking-[0.1em] font-body font-normal text-background/70 hover:text-accent transition-colors"
+            >
+              <Phone className="h-3 w-3 text-accent/70" />
+              +91 98858 79188
+            </a>
+            <a
+              href={`https://wa.me/${settings?.whatsapp_number || '919885879188'}?text=Hi%2C%20I%27m%20interested%20in%20your%20sarees!`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-[10px] tracking-[0.1em] font-body font-normal text-background/70 hover:text-[#25D366] transition-colors"
+              aria-label="Chat on WhatsApp"
+            >
+              <WhatsAppIcon className="h-3.5 w-3.5 text-[#25D366]" />
+              WhatsApp
+            </a>
+          </div>
         </div>
         {/* Bottom gold accent */}
         <div className="h-[1px] bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
