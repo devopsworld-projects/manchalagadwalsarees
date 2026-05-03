@@ -361,8 +361,11 @@ function ProductDetail() {
   return (
     <div className="min-h-screen pb-16 md:pb-0">
       <PageMeta
-        title={product.name}
-        description={product.description || `Buy ${product.name} at ${formatPrice(product.price)}`}
+        title={`${product.name}${categoryName ? ` | ${categoryName}` : ''} – ${formatPrice(Number(displayPrice))}`}
+        description={
+          (product.description ? product.description.replace(/\s+/g, ' ').slice(0, 140) + '… ' : '') +
+          `Shop ${product.name}${categoryName ? ` from our ${categoryName} collection` : ''} at ${formatPrice(Number(displayPrice))}. Free shipping across India.`
+        }
         canonicalPath={`/product/${product.sku}`} ogImage={images[0]} ogType="product" jsonLd={productJsonLd}
       />
       <AnnouncementBar /><Navbar />
