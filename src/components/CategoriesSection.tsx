@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useState } from 'react';
+import { SectionHeader } from './SectionHeader';
+import { ScrollReveal } from './ScrollReveal';
 
 
 import kanjivaramImg from '@/assets/categories/kanjivaram.jpg';
