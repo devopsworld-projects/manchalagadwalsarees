@@ -128,11 +128,6 @@ export default function Checkout() {
     if (items.length === 0) navigate('/collections', { replace: true });
   }, [items.length, navigate, user]);
 
-  const [form, setForm] = useState({
-    name: '', email: user?.email || '', phone: '',
-    address: '', city: '', state: '', pincode: '', notes: '',
-  });
-  const update = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
 
   // When an address is selected, prefill form
   useEffect(() => {
