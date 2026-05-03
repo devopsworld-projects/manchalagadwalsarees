@@ -121,8 +121,49 @@ function ProductDetail() {
   const [pincode, setPincode] = useState('');
   const [pincodeStatus, setPincodeStatus] = useState<null | { ok: boolean; eta: string; cod: boolean; city?: string; message: string }>(null);
   const [pincodeChecking, setPincodeChecking] = useState(false);
+  const [specsExpanded, setSpecsExpanded] = useState(false);
+  const [careOpen, setCareOpen] = useState(false);
+  const [lightboxScale, setLightboxScale] = useState(1);
+  const [lightboxOffset, setLightboxOffset] = useState({ x: 0, y: 0 });
+  const thumbsContainerRef = useRef<HTMLDivElement>(null);
   const desktopShareMenuRef = useRef<HTMLDivElement>(null);
   const mobileShareMenuRef = useRef<HTMLDivElement>(null);
+
+  // Care Information: persist open state per product; default open on first view
+  useEffect(() => {
+    if (!id) return;
+    const key = `care-open:${id}`;
+    const stored = typeof window !== 'undefined' ? localStorage.getItem(key) : null;
+    if (stored === null) {
+      setCareOpen(true); // first view default open
+      try { localStorage.setItem(key, '1'); } catch {}
+    } else {
+      setCareOpen(stored === '1');
+    }
+  }, [id]);
+  const handleCareToggle = (open: boolean) => {
+    setCareOpen(open);
+    if (id) { try { localStorage.setItem(`care-open:${id}`, open ? '1' : '0'); } catch {} }
+  };
+
+  // Reset lightbox zoom when image changes or closes
+  useEffect(() => { setLightboxScale(1); setLightboxOffset({ x: 0, y: 0 }); }, [currentImage, showZoom]);
+
+  // Lightbox keyboard controls
+  useEffect(() => {
+    if (!showZoom) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowZoom(false);
+      else if (e.key === 'ArrowLeft') setCurrentImage(i => (i === 0 ? images.length - 1 : i - 1));
+      else if (e.key === 'ArrowRight') setCurrentImage(i => (i === images.length - 1 ? 0 : i + 1));
+      else if (e.key === '+' || e.key === '=') setLightboxScale(s => Math.min(4, s + 0.5));
+      else if (e.key === '-') setLightboxScale(s => Math.max(1, s - 0.5));
+      else if (e.key === '0') { setLightboxScale(1); setLightboxOffset({ x: 0, y: 0 }); }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showZoom]);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ['storefront-product', id],
