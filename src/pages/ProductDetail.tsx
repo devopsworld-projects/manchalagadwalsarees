@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
   ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, X, Copy, Check,
-  Facebook, Twitter, Mail, Zap, Plus, Minus,
+  Facebook, Twitter, Mail, Zap, Plus, Minus, Ruler,
 } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
@@ -116,6 +116,7 @@ function ProductDetail() {
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
   const [showShareMenu, setShowShareMenu] = useState(false);
   const shareRef = useRef<HTMLDivElement>(null);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
   const desktopShareMenuRef = useRef<HTMLDivElement>(null);
   const mobileShareMenuRef = useRef<HTMLDivElement>(null);
 
@@ -361,8 +362,11 @@ function ProductDetail() {
   return (
     <div className="min-h-screen pb-16 md:pb-0">
       <PageMeta
-        title={product.name}
-        description={product.description || `Buy ${product.name} at ${formatPrice(product.price)}`}
+        title={`${product.name}${categoryName ? ` | ${categoryName}` : ''} – ${formatPrice(Number(displayPrice))}`}
+        description={
+          (product.description ? product.description.replace(/\s+/g, ' ').slice(0, 140) + '… ' : '') +
+          `Shop ${product.name}${categoryName ? ` from our ${categoryName} collection` : ''} at ${formatPrice(Number(displayPrice))}. Free shipping across India.`
+        }
         canonicalPath={`/product/${product.sku}`} ogImage={images[0]} ogType="product" jsonLd={productJsonLd}
       />
       <AnnouncementBar /><Navbar />
@@ -552,7 +556,54 @@ function ProductDetail() {
                   <ShoppingBag className="h-4 w-4" />
                   {hasVariants && !allAttributesSelected ? 'Select Options Above' : !isInStock ? 'Out of Stock' : colors.length > 0 && selectedColor === null ? 'Select Color Above' : 'Add To Cart'}
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setShowSizeGuide(true)}
+                  className="w-full py-3 text-[11px] tracking-[0.2em] font-display font-bold flex items-center justify-center gap-2 transition-colors uppercase text-primary hover:text-accent"
+                >
+                  <Ruler className="h-4 w-4" /> Size Guide
+                </button>
               </div>
+
+              {/* Delivery & Availability */}
+              <CollapsibleSection title="Delivery & Availability" defaultOpen>
+                <ul className="space-y-3 font-body text-sm text-foreground/80">
+                  <li className="flex items-start gap-3">
+                    <Truck className="h-4 w-4 text-accent mt-0.5 shrink-0" />
+                    <div>
+                      <p className="font-medium text-foreground">Estimated delivery</p>
+                      <p className="text-muted-foreground text-[13px]">
+                        {(() => {
+                          const min = new Date(); min.setDate(min.getDate() + 4);
+                          const max = new Date(); max.setDate(max.getDate() + 7);
+                          const fmt = (d: Date) => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                          return `${fmt(min)} – ${fmt(max)} (3–7 business days, pan-India)`;
+                        })()}
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="font-medium text-foreground">Cash on Delivery available</p>
+                      <p className="text-muted-foreground text-[13px]">For orders below ₹20,000. Verify pincode at checkout.</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Shield className={`h-4 w-4 mt-0.5 shrink-0 ${isInStock ? 'text-emerald-600' : 'text-red-600'}`} />
+                    <div>
+                      <p className="font-medium text-foreground">
+                        {hasVariants && !allAttributesSelected
+                          ? 'Select options to see availability'
+                          : isInStock
+                          ? `In stock${displayStock <= 5 ? ` — only ${displayStock} left` : ''}`
+                          : 'Currently out of stock'}
+                      </p>
+                      <p className="text-muted-foreground text-[13px]">Ships from Hyderabad, Telangana.</p>
+                    </div>
+                  </li>
+                </ul>
+              </CollapsibleSection>
 
               {/* Collapsible Description */}
               {product.description && (
@@ -654,6 +705,101 @@ function ProductDetail() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Size Guide modal */}
+      {showSizeGuide && (
+        <div
+          className="fixed inset-0 z-[80] bg-foreground/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4"
+          onClick={() => setShowSizeGuide(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="size-guide-title"
+        >
+          <div
+            className="bg-background w-full md:max-w-2xl max-h-[90vh] overflow-y-auto md:rounded-sm shadow-2xl border border-border"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="sticky top-0 bg-foreground text-background px-5 py-4 flex items-center justify-between">
+              <h2 id="size-guide-title" className="font-display text-sm font-bold tracking-[0.2em] uppercase flex items-center gap-2">
+                <Ruler className="h-4 w-4 text-accent" /> Saree Size Guide
+              </h2>
+              <button onClick={() => setShowSizeGuide(false)} aria-label="Close" className="p-2 hover:text-accent">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="p-5 md:p-6 space-y-6">
+              <div>
+                <h3 className="font-display text-[11px] font-bold tracking-[0.2em] text-primary uppercase mb-3">Standard Measurements</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm font-body border border-border">
+                    <thead className="bg-muted">
+                      <tr>
+                        <th className="text-left p-3 font-display text-[11px] tracking-wider uppercase">Component</th>
+                        <th className="text-left p-3 font-display text-[11px] tracking-wider uppercase">Length</th>
+                        <th className="text-left p-3 font-display text-[11px] tracking-wider uppercase">Width</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        ['Saree (with blouse piece)', '5.5 m / 6.3 yd', '1.10 – 1.20 m'],
+                        ['Saree only', '5.0 m / 5.5 yd', '1.10 – 1.20 m'],
+                        ['Blouse piece (unstitched)', '0.8 – 1.0 m', '1.10 m'],
+                        ['Pallu length', '~1.0 m', '—'],
+                      ].map(([c, l, w]) => (
+                        <tr key={c} className="border-t border-border">
+                          <td className="p-3">{c}</td>
+                          <td className="p-3 text-foreground/80">{l}</td>
+                          <td className="p-3 text-foreground/80">{w}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div>
+                <h3 className="font-display text-[11px] font-bold tracking-[0.2em] text-primary uppercase mb-3">Blouse Stitching Guide</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm font-body border border-border">
+                    <thead className="bg-muted">
+                      <tr>
+                        <th className="text-left p-3 font-display text-[11px] tracking-wider uppercase">Size</th>
+                        <th className="text-left p-3 font-display text-[11px] tracking-wider uppercase">Bust</th>
+                        <th className="text-left p-3 font-display text-[11px] tracking-wider uppercase">Waist</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        ['XS', '32"', '26"'],
+                        ['S', '34"', '28"'],
+                        ['M', '36"', '30"'],
+                        ['L', '38"', '32"'],
+                        ['XL', '40"', '34"'],
+                        ['XXL', '42"', '36"'],
+                      ].map(([s, b, w]) => (
+                        <tr key={s} className="border-t border-border">
+                          <td className="p-3 font-medium">{s}</td>
+                          <td className="p-3 text-foreground/80">{b}</td>
+                          <td className="p-3 text-foreground/80">{w}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div>
+                <h3 className="font-display text-[11px] font-bold tracking-[0.2em] text-primary uppercase mb-3">Tips for the Perfect Drape</h3>
+                <ul className="list-disc pl-5 space-y-2 font-body text-sm text-foreground/80">
+                  <li>Measure with a soft tape, snug but not tight, over your usual blouse.</li>
+                  <li>For a Nivi drape, you'll need 5–7 pleats; allow extra fabric at the pallu.</li>
+                  <li>Petticoat should sit at the natural waist for an elegant fall.</li>
+                  <li>Pure silk Gadwal sarees may shrink slightly after the first dry clean.</li>
+                  <li>For fall &amp; pico finishing, please specify at checkout.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
