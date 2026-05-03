@@ -13,6 +13,7 @@ import { NewsletterSection } from '@/components/NewsletterSection';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 import { HeritageSection } from '@/components/HeritageSection';
+import { EditorialMarquee } from '@/components/EditorialMarquee';
 
 import { OccasionsBanner } from '@/components/OccasionsBanner';
 import { HomepageSection } from '@/components/HomepageSection';
@@ -43,6 +44,8 @@ const Index = () => {
         <HomepageSection sectionKey="hero"><HeroSection /></HomepageSection>
         <HomepageSection sectionKey="featured"><FeaturedCarousel /></HomepageSection>
         <HomepageSection sectionKey="new_arrivals"><NewCollections /></HomepageSection>
+        <EditorialMarquee />
+
         <HomepageSection sectionKey="categories"><CategoriesSection /></HomepageSection>
         <HomepageSection sectionKey="heritage"><HeritageSection /></HomepageSection>
         <HomepageSection sectionKey="banner"><BannerSlider /></HomepageSection>
