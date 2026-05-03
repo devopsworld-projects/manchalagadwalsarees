@@ -992,6 +992,72 @@ export type Database = {
         }
         Relationships: []
       }
+      store_locations: {
+        Row: {
+          address: string
+          city: string | null
+          created_at: string
+          directions_url: string | null
+          hours: string | null
+          id: string
+          is_active: boolean
+          latitude: number | null
+          longitude: number | null
+          map_url: string | null
+          name: string
+          phone: string | null
+          photo_url: string | null
+          pincode: string | null
+          rating: number | null
+          reviews_count: number | null
+          sort_order: number
+          state: string | null
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          city?: string | null
+          created_at?: string
+          directions_url?: string | null
+          hours?: string | null
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          map_url?: string | null
+          name: string
+          phone?: string | null
+          photo_url?: string | null
+          pincode?: string | null
+          rating?: number | null
+          reviews_count?: number | null
+          sort_order?: number
+          state?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          city?: string | null
+          created_at?: string
+          directions_url?: string | null
+          hours?: string | null
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          map_url?: string | null
+          name?: string
+          phone?: string | null
+          photo_url?: string | null
+          pincode?: string | null
+          rating?: number | null
+          reviews_count?: number | null
+          sort_order?: number
+          state?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       store_settings: {
         Row: {
           created_at: string
