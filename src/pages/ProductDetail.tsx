@@ -668,6 +668,20 @@ function ProductDetail() {
                     <p className="font-body text-[13px] text-red-600">{pincodeStatus.message}</p>
                   )}
 
+                  {pincodeStatus?.ok && (
+                    <div className="flex items-start gap-2 p-3 border border-emerald-600/30 bg-emerald-50 dark:bg-emerald-950/20">
+                      <Check className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                      <div className="font-body text-[13px]">
+                        <p className="font-semibold text-emerald-700 dark:text-emerald-400">
+                          Delivery available to {pincodeStatus.city}
+                        </p>
+                        <p className="text-muted-foreground text-[12px] mt-0.5">
+                          Arrives by {pincodeStatus.eta} · {pincodeStatus.cod ? 'COD available' : 'Prepaid only'}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                   <ul className="space-y-3 font-body text-sm text-foreground/80">
                     <li className="flex items-start gap-3">
                       <Truck className="h-4 w-4 text-accent mt-0.5 shrink-0" />
