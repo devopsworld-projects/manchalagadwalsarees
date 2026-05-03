@@ -346,15 +346,52 @@ function ProductDetail() {
   const canAddToCart = isInStock && allAttributesSelected;
 
   // Build "Specific Information" entries — saree-specific fields from product.specifications
-  const SPEC_FIELDS = [
-    'Pattern', 'Occasion', 'Fabric', 'Material', 'Color Family',
-    'Base Color', 'Border Type', 'Border Size', 'Secondary Color',
-  ] as const;
   const productSpecs = ((product as any).specifications || {}) as Record<string, string>;
-  const specInfoEntries: [string, string][] = SPEC_FIELDS
+  const STRUCTURED_FIELDS = [
+    'Pattern', 'Occasion', 'Fabric', 'Material',
+    'Saree Length', 'Blouse Piece', 'Border Type', 'Border Size',
+    'Color Family', 'Base Color', 'Secondary Color', 'Wash Care',
+  ] as const;
+  const structuredEntries: [string, string][] = STRUCTURED_FIELDS
     .map(k => [k, productSpecs[k]] as [string, string])
     .filter(([, v]) => !!v && String(v).trim() !== '');
-  if (categoryName) specInfoEntries.push(['Category', categoryName]);
+  if (colors.length > 0) {
+    structuredEntries.push(['Colors', colors.map(c => getColorName(c)).join(', ')]);
+  }
+  if (categoryName) structuredEntries.push(['Category', categoryName]);
+
+  // Highlights — short curated chips from description + top specs
+  const descSentence = (product.description || '').split(/(?<=[.!?])\s+/).find(s => s.trim().length > 20)?.trim();
+  const highlights: { icon: string; title: string; text: string }[] = [];
+  if (productSpecs['Fabric'] || productSpecs['Material']) {
+    highlights.push({ icon: '🧵', title: 'Fabric & Material', text: [productSpecs['Material'], productSpecs['Fabric']].filter(Boolean).join(' · ') });
+  }
+  if (productSpecs['Pattern']) highlights.push({ icon: '✨', title: 'Pattern', text: productSpecs['Pattern'] });
+  if (productSpecs['Occasion']) highlights.push({ icon: '🎉', title: 'Occasion', text: productSpecs['Occasion'] });
+  if (productSpecs['Border Type']) highlights.push({ icon: '🪡', title: 'Border', text: [productSpecs['Border Type'], productSpecs['Border Size']].filter(Boolean).join(' · ') });
+  if (productSpecs['Saree Length'] || productSpecs['Blouse Piece']) {
+    highlights.push({ icon: '📏', title: 'Length', text: [productSpecs['Saree Length'], productSpecs['Blouse Piece']].filter(Boolean).join(' + ') });
+  }
+  if (descSentence) highlights.push({ icon: '💎', title: 'Crafted with care', text: descSentence.length > 90 ? descSentence.slice(0, 87) + '…' : descSentence });
+
+  // Shipping cutoff (2 PM IST). If now is before cutoff, ships today; else next business day.
+  const cutoffInfo = (() => {
+    const now = new Date();
+    // IST = UTC+5:30
+    const istNow = new Date(now.getTime() + (now.getTimezoneOffset() + 330) * 60000);
+    const cutoff = new Date(istNow);
+    cutoff.setHours(14, 0, 0, 0);
+    const beforeCutoff = istNow < cutoff;
+    const dispatchDate = new Date(istNow);
+    if (!beforeCutoff) dispatchDate.setDate(dispatchDate.getDate() + 1);
+    // Skip Sunday
+    if (dispatchDate.getDay() === 0) dispatchDate.setDate(dispatchDate.getDate() + 1);
+    const msToCutoff = cutoff.getTime() - istNow.getTime();
+    const hoursLeft = Math.max(0, Math.floor(msToCutoff / 3600000));
+    const minsLeft = Math.max(0, Math.floor((msToCutoff % 3600000) / 60000));
+    return { beforeCutoff, dispatchDate, hoursLeft, minsLeft };
+  })();
+  const fmtDate = (d: Date) => d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
 
   const mobileShareSheet = showShareMenu && typeof document !== 'undefined'
     ? createPortal(
