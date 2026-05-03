@@ -84,6 +84,12 @@ export default function Checkout() {
     return { enabled, min, max, mode, pincodes };
   }, [settings]);
 
+  const [form, setForm] = useState({
+    name: '', email: user?.email || '', phone: '',
+    address: '', city: '', state: '', pincode: '', notes: '',
+  });
+  const update = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
+
   const codCheck = useMemo(() => {
     if (!codConfig.enabled) return { ok: false, reason: 'Cash on Delivery is unavailable.' };
     if (codConfig.min > 0 && grandTotal < codConfig.min) return { ok: false, reason: `COD requires minimum order of ${format(codConfig.min)}` };
@@ -122,11 +128,6 @@ export default function Checkout() {
     if (items.length === 0) navigate('/collections', { replace: true });
   }, [items.length, navigate, user]);
 
-  const [form, setForm] = useState({
-    name: '', email: user?.email || '', phone: '',
-    address: '', city: '', state: '', pincode: '', notes: '',
-  });
-  const update = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
 
   // When an address is selected, prefill form
   useEffect(() => {
