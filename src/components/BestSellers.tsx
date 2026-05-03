@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ProductCard } from './ProductCard';
 import { Link } from 'react-router-dom';
+import { SectionHeader } from './SectionHeader';
 
 export function BestSellers() {
   const { data: bestSellers = [] } = useQuery({
@@ -22,7 +23,7 @@ export function BestSellers() {
   if (bestSellers.length === 0) return null;
 
   return (
-    <section className="py-24 md:py-32 relative overflow-hidden">
+    <section className="pt-20 md:pt-32 pb-20 md:pb-32 relative overflow-hidden">
       {/* Two-tone background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-secondary/30" />
@@ -31,17 +32,11 @@ export function BestSellers() {
       <div className="absolute top-0 left-0 right-0 ornate-line" />
 
       <div className="container relative z-10">
-        {/* Centered header */}
-        <div className="text-center mb-16">
-          <span className="text-accent text-[8px] tracking-[0.5em]">◆&nbsp;&nbsp;◆&nbsp;&nbsp;◆</span>
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mt-4 tracking-wide">
-            Best Sellers
-          </h2>
-          <div className="w-20 ornate-line mx-auto mt-5" />
-          <p className="font-serif text-muted-foreground mt-4 text-base md:text-lg italic">
-            Most loved by our patrons — timeless pieces that define elegance
-          </p>
-        </div>
+        <SectionHeader
+          eyebrow="Customer Favourites"
+          title="Best Sellers"
+          subtitle="Most loved by our patrons — timeless pieces that define elegance"
+        />
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {bestSellers.map(product => (
