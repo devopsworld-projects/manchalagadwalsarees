@@ -48,6 +48,7 @@ const Index = () => {
         <HomepageSection sectionKey="occasions"><OccasionsBanner /></HomepageSection>
         <HomepageSection sectionKey="best_sellers"><BestSellers /></HomepageSection>
         <HomepageSection sectionKey="testimonials"><TestimonialsSection /></HomepageSection>
+        <HomepageSection sectionKey="google_reviews"><GoogleReviewsSection /></HomepageSection>
         <HomepageSection sectionKey="instagram"><InstagramSection /></HomepageSection>
         <HomepageSection sectionKey="newsletter"><NewsletterSection /></HomepageSection>
       </main>
