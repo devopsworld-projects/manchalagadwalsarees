@@ -641,6 +641,28 @@ function ProductDetail() {
                 ))}
               </div>
 
+              {/* Highlights — horizontal scroll carousel */}
+              {highlights.length > 0 && (
+                <div className="pt-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="h-3.5 w-3.5 text-accent" />
+                    <h3 className="font-display text-[11px] font-bold tracking-[0.15em] uppercase">Highlights</h3>
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory [scrollbar-width:thin]">
+                    {highlights.map(h => (
+                      <div
+                        key={h.title}
+                        className="snap-start shrink-0 w-[200px] border border-border bg-muted/30 p-3 flex flex-col gap-1"
+                      >
+                        <span className="text-base leading-none">{h.icon}</span>
+                        <p className="font-display text-[10px] font-bold tracking-wider text-primary uppercase">{h.title}</p>
+                        <p className="font-body text-[12px] text-foreground/80 leading-snug">{h.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Delivery & Availability */}
               <CollapsibleSection title="Delivery & Availability" defaultOpen>
                 <div className="space-y-4">
