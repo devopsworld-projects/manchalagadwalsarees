@@ -21,10 +21,6 @@ export function ScrollReveal({ children, className, delay = 0, direction = 'up' 
 
   return (
     <motion.div
-      // Contain transforms so they never cause horizontal overflow on mobile
-      // and never inflate the document height (which made anchor scrolls land
-      // far past the intended section).
-      style={{ overflow: 'hidden' }}
       className={className}
       initial={{ opacity: 0, ...offset }}
       whileInView={{ opacity: 1, x: 0, y: 0 }}
