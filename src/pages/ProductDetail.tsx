@@ -495,17 +495,34 @@ function ProductDetail() {
             <div className="lg:sticky lg:top-24">
               <div className="flex gap-3">
                 {/* Vertical thumbnail strip — desktop only */}
-                <div className="hidden lg:flex flex-col gap-2 w-20 shrink-0 max-h-[calc(100vh-8rem)] overflow-y-auto pr-1 [scrollbar-width:thin]">
+                <div
+                  ref={thumbsContainerRef}
+                  role="listbox"
+                  aria-label="Product image thumbnails"
+                  aria-orientation="vertical"
+                  className="hidden lg:flex flex-col gap-2 w-20 shrink-0 max-h-[calc(100vh-8rem)] overflow-y-auto pr-1 [scrollbar-width:thin]"
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowDown') { e.preventDefault(); setCurrentImage(i => (i === images.length - 1 ? 0 : i + 1)); }
+                    else if (e.key === 'ArrowUp') { e.preventDefault(); setCurrentImage(i => (i === 0 ? images.length - 1 : i - 1)); }
+                    else if (e.key === 'Home') { e.preventDefault(); setCurrentImage(0); }
+                    else if (e.key === 'End') { e.preventDefault(); setCurrentImage(images.length - 1); }
+                    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowZoom(true); }
+                  }}
+                >
                   {images.map((src, i) => (
                     <button
                       key={i}
                       type="button"
+                      role="option"
+                      aria-selected={i === currentImage}
+                      tabIndex={i === currentImage ? 0 : -1}
                       onClick={() => setCurrentImage(i)}
                       onMouseEnter={() => setCurrentImage(i)}
-                      className={`relative aspect-[3/4] overflow-hidden bg-muted transition-all border-2 ${
+                      onFocus={() => setCurrentImage(i)}
+                      className={`relative aspect-[3/4] overflow-hidden bg-muted transition-all border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                         i === currentImage ? 'border-primary' : 'border-transparent opacity-70 hover:opacity-100'
                       }`}
-                      aria-label={`View image ${i + 1}`}
+                      aria-label={`View image ${i + 1} of ${images.length}`}
                     >
                       <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
                     </button>
