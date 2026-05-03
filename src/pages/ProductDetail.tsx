@@ -467,11 +467,6 @@ function ProductDetail() {
                 </div>
               </div>
 
-              {/* Description */}
-              {product.description && (
-                <p className="font-serif text-sm text-muted-foreground leading-relaxed italic">{product.description}</p>
-              )}
-
               <div className="ornate-line" />
 
               {/* Colors */}
