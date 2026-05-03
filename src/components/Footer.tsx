@@ -140,6 +140,19 @@ className="group/link flex items-center gap-2 text-sm font-body font-normal text
                 </a>
               </li>
               <li>
+                <a
+                  href={`https://wa.me/${whatsappNumber}?text=Hi%2C%20I%27m%20interested%20in%20your%20sarees!`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-sm font-body font-normal text-background/70 hover:text-[#25D366] transition-colors"
+                >
+                  <span className="w-8 h-8 border border-accent/20 flex items-center justify-center shrink-0">
+                    <WhatsAppIcon className="h-3.5 w-3.5 text-[#25D366]" />
+                  </span>
+                  Chat on WhatsApp
+                </a>
+              </li>
+              <li>
                 <a href={`mailto:${email}`} className="flex items-start gap-3 text-sm font-body font-normal text-background/70 hover:text-accent transition-colors">
                   <span className="w-8 h-8 border border-accent/20 flex items-center justify-center shrink-0">
                     <Mail className="h-3.5 w-3.5 text-accent" />
