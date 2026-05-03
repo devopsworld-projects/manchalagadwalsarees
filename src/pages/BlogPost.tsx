@@ -6,6 +6,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 import { ArrowLeft } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -26,7 +27,17 @@ export default function BlogPost() {
       <Navbar />
       <main className="container max-w-3xl py-12">
         <Link to="/blog" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6"><ArrowLeft className="h-4 w-4" /> Back to Blog</Link>
-        {isLoading ? <p className="text-center text-muted-foreground">Loading...</p> : !post ? (
+        {isLoading ? (
+          <div className="space-y-4">
+            <Skeleton className="w-full h-64 rounded-lg" />
+            <Skeleton className="h-3 w-48" />
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-5/6" />
+            <Skeleton className="h-3 w-4/6" />
+          </div>
+        ) : !post ? (
           <div className="text-center"><h1 className="font-display text-2xl mb-4">Post not found</h1><Link to="/blog" className="text-primary underline">Back to Blog</Link></div>
         ) : (
           <article>
