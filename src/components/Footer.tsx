@@ -35,8 +35,26 @@ export function Footer() {
     if (!email) return;
     setSubmitting(true);
     try {
-      const { error } = await supabase.from('newsletter_subscribers').insert({ email });
-      if (error) throw error;
+      const normalized = email.trim().toLowerCase();
+      const { data: existing } = await supabase
+        .from('newsletter_subscribers')
+        .select('id')
+        .ilike('email', normalized)
+        .maybeSingle();
+      if (existing) {
+        toast({ title: 'Already subscribed', description: 'This email is already on our list.' });
+        setEmail('');
+        return;
+      }
+      const { error } = await supabase.from('newsletter_subscribers').insert({ email: normalized });
+      if (error) {
+        if ((error as any).code === '23505') {
+          toast({ title: 'Already subscribed', description: 'This email is already on our list.' });
+          setEmail('');
+          return;
+        }
+        throw error;
+      }
       toast({ title: 'Welcome to the family', description: 'You will hear from us soon.' });
       setEmail('');
     } catch (err: any) {
