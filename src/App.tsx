@@ -52,6 +52,7 @@ const AdminReviews = lazy(() => import("./pages/admin/AdminReviews.tsx"));
 const AdminFAQ = lazy(() => import("./pages/admin/AdminFAQ.tsx"));
 const AdminBlog = lazy(() => import("./pages/admin/AdminBlog.tsx"));
 const AdminTestimonials = lazy(() => import("./pages/admin/AdminTestimonials.tsx"));
+const AdminGoogleReviews = lazy(() => import("./pages/admin/AdminGoogleReviews.tsx"));
 const AdminNewsletter = lazy(() => import("./pages/admin/AdminNewsletter.tsx"));
 const AdminReturns = lazy(() => import("./pages/admin/AdminReturns.tsx"));
 const AdminAuditLog = lazy(() => import("./pages/admin/AdminAuditLog.tsx"));
@@ -145,6 +146,7 @@ const App = () => {
                   <Route path="faq" element={<AdminFAQ />} />
                   <Route path="blog" element={<AdminBlog />} />
                   <Route path="testimonials" element={<AdminTestimonials />} />
+                  <Route path="google-reviews" element={<AdminGoogleReviews />} />
                   <Route path="newsletter" element={<AdminNewsletter />} />
                   <Route path="returns" element={<AdminReturns />} />
                   <Route path="audit-log" element={<AdminAuditLog />} />

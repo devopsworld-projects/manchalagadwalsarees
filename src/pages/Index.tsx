@@ -7,6 +7,7 @@ import { BestSellers } from '@/components/BestSellers';
 import { CategoriesSection } from '@/components/CategoriesSection';
 import { BannerSlider } from '@/components/BannerSlider';
 import { TestimonialsSection } from '@/components/TestimonialsSection';
+import { GoogleReviewsSection } from '@/components/GoogleReviewsSection';
 import { NewsletterSection } from '@/components/NewsletterSection';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
@@ -47,6 +48,7 @@ const Index = () => {
         <HomepageSection sectionKey="occasions"><OccasionsBanner /></HomepageSection>
         <HomepageSection sectionKey="best_sellers"><BestSellers /></HomepageSection>
         <HomepageSection sectionKey="testimonials"><TestimonialsSection /></HomepageSection>
+        <HomepageSection sectionKey="google_reviews"><GoogleReviewsSection /></HomepageSection>
         <HomepageSection sectionKey="instagram"><InstagramSection /></HomepageSection>
         <HomepageSection sectionKey="newsletter"><NewsletterSection /></HomepageSection>
       </main>
