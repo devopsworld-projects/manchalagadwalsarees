@@ -491,6 +491,21 @@ function ProductDetail() {
                 })}
               </div>
 
+              {/* Trust badges — below image gallery */}
+              <div className="grid grid-cols-3 gap-2 mt-4">
+                {[
+                  { icon: Truck, label: 'Free Shipping', sub: 'Pan India' },
+                  { icon: Shield, label: 'Secure Payment', sub: '100% Safe' },
+                  { icon: RotateCcw, label: 'Easy Returns', sub: '7-day Policy' },
+                ].map(({ icon: Icon, label, sub }) => (
+                  <div key={label} className="text-center p-3 border border-border">
+                    <Icon className="h-5 w-5 mx-auto mb-1.5 text-accent" />
+                    <p className="font-display text-[9px] font-bold tracking-wider text-foreground uppercase">{label}</p>
+                    <p className="font-body text-[9px] text-muted-foreground">{sub}</p>
+                  </div>
+                ))}
+              </div>
+
               {/* Care Information — collapsible, below gallery */}
               <div className="mt-4">
                 <CollapsibleSection title="Care Information" defaultOpen={false}>
@@ -626,20 +641,7 @@ function ProductDetail() {
                 </button>
               </div>
 
-              {/* Trust badges — directly below Add to Cart */}
-              <div className="grid grid-cols-3 gap-2 pt-1">
-                {[
-                  { icon: Truck, label: 'Free Shipping', sub: 'Pan India' },
-                  { icon: Shield, label: 'Secure Payment', sub: '100% Safe' },
-                  { icon: RotateCcw, label: 'Easy Returns', sub: '7-day Policy' },
-                ].map(({ icon: Icon, label, sub }) => (
-                  <div key={label} className="text-center p-3 border border-border">
-                    <Icon className="h-5 w-5 mx-auto mb-1.5 text-accent" />
-                    <p className="font-display text-[9px] font-bold tracking-wider text-foreground uppercase">{label}</p>
-                    <p className="font-body text-[9px] text-muted-foreground">{sub}</p>
-                  </div>
-                ))}
-              </div>
+
 
               {/* Highlights — horizontal scroll carousel */}
               {highlights.length > 0 && (
