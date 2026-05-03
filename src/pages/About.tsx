@@ -1,5 +1,6 @@
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 import aboutHero from '@/assets/about-hero.jpg';
@@ -13,7 +14,7 @@ const About = () => {
         canonicalPath="/about"
       />
       <AnnouncementBar />
-      <Navbar />
+      <Navbar /><Breadcrumbs />
       <main>
         {/* Hero */}
         <section className="relative h-[40vh] flex items-center justify-center overflow-hidden">

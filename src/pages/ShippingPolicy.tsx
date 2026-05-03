@@ -1,5 +1,6 @@
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 
@@ -7,7 +8,7 @@ const ShippingPolicy = () => (
   <div className="min-h-screen">
     <PageMeta title="Shipping Policy" description="Shipping and delivery policy for Manchala Gadwal Sarees orders." canonicalPath="/shipping-policy" />
     <AnnouncementBar />
-    <Navbar />
+    <Navbar /><Breadcrumbs />
     <main className="container max-w-3xl py-12 md:py-16">
       <h1 className="font-display text-3xl md:text-4xl font-bold mb-8">Shipping Policy</h1>
       <div className="prose prose-sm max-w-none font-body text-muted-foreground space-y-6">

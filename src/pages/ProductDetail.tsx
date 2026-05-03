@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PageMeta } from '@/components/PageMeta';
@@ -391,9 +392,18 @@ function ProductDetail() {
         canonicalPath={`/product/${product.sku}`} ogImage={ogImageUrl || images[0]} ogType="product" jsonLd={productJsonLd}
       />
       <AnnouncementBar /><Navbar />
+      <Breadcrumbs
+        items={[
+          { label: 'Collections', to: '/collections' },
+          ...(categoryName
+            ? [{ label: categoryName, to: `/collections?category=${encodeURIComponent(categoryName)}` }]
+            : []),
+          { label: product.name },
+        ]}
+      />
 
       <main>
-        {/* Breadcrumb */}
+        {/* Back link */}
         <div className="container px-4 md:px-6 pt-4 md:pt-6">
           <Link to="/collections" className="inline-flex items-center gap-2 font-display text-[10px] tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors uppercase">
             <ArrowLeft className="h-3 w-3" /> Back to Collections

@@ -1,6 +1,7 @@
 import { useSearchParams, Link } from 'react-router-dom';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 import { CheckCircle, Package, ArrowRight } from 'lucide-react';
@@ -20,7 +21,7 @@ export default function OrderConfirmation() {
         canonicalPath="/order-confirmation"
       />
       <AnnouncementBar />
-      <Navbar />
+      <Navbar /><Breadcrumbs />
       <main className="container max-w-xl py-14 md:py-20">
         {/* Branded header */}
         <div className="text-center mb-8">

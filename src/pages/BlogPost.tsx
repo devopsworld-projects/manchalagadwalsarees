@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useParams, Link } from 'react-router-dom';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 import { ArrowLeft } from 'lucide-react';
@@ -24,7 +25,7 @@ export default function BlogPost() {
     <div className="min-h-screen">
       <PageMeta title={post?.title || 'Blog'} description={post?.excerpt || ''} canonicalPath={`/blog/${slug}`} ogImage={post?.image_url} />
       <AnnouncementBar />
-      <Navbar />
+      <Navbar /><Breadcrumbs />
       <main className="container max-w-3xl py-12">
         <Link to="/blog" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6"><ArrowLeft className="h-4 w-4" /> Back to Blog</Link>
         {isLoading ? (

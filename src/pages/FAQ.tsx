@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -22,7 +23,7 @@ export default function FAQ() {
     <div className="min-h-screen">
       <PageMeta title="FAQ — Manchala Gadwal Sarees" description="Frequently asked questions about our products, shipping, returns and more." canonicalPath="/faq" />
       <AnnouncementBar />
-      <Navbar />
+      <Navbar /><Breadcrumbs />
       <main className="container max-w-3xl py-12">
         <h1 className="font-display text-3xl font-bold text-center mb-8">Frequently Asked Questions</h1>
         {categories.map(cat => (
