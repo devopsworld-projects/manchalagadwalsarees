@@ -443,6 +443,30 @@ function ProductDetail() {
                   );
                 })}
               </div>
+
+              {/* Care Information — below gallery */}
+              <div className="mt-4 border border-border overflow-hidden">
+                <div className="bg-foreground px-5 py-3 flex items-center gap-2">
+                  <span className="text-accent text-[7px]">◆</span>
+                  <h3 className="font-display text-[11px] font-bold tracking-[0.2em] text-background uppercase">Care Information</h3>
+                </div>
+                <div className="px-5 py-4 space-y-3">
+                  {[
+                    { icon: '🧼', title: 'Dry Clean Only', desc: 'Professional dry cleaning recommended.' },
+                    { icon: '👜', title: 'Proper Storage', desc: 'Store in cotton bag. Zari reacts to weather.' },
+                    { icon: '🚫', title: 'Avoid Perfume', desc: 'Do not spray directly on the garment.' },
+                    { icon: '🌬️', title: 'Air Regularly', desc: 'Air sarees every few months.' },
+                  ].map(({ icon, title, desc }) => (
+                    <div key={title} className="flex items-start gap-3">
+                      <span className="text-sm mt-0.5 shrink-0">{icon}</span>
+                      <div>
+                        <p className="font-display text-[10px] font-bold tracking-wider text-foreground uppercase">{title}</p>
+                        <p className="font-body text-[11px] text-muted-foreground leading-relaxed">{desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* ── Product Details ── */}
@@ -707,31 +731,6 @@ function ProductDetail() {
                 </CollapsibleSection>
               )}
 
-
-
-              {/* Care Information */}
-              <div className="border border-border overflow-hidden">
-                <div className="bg-foreground px-5 py-3 flex items-center gap-2">
-                  <span className="text-accent text-[7px]">◆</span>
-                  <h3 className="font-display text-[11px] font-bold tracking-[0.2em] text-background uppercase">Care Information</h3>
-                </div>
-                <div className="px-5 py-4 space-y-3">
-                  {[
-                    { icon: '🧼', title: 'Dry Clean Only', desc: 'Professional dry cleaning recommended.' },
-                    { icon: '👜', title: 'Proper Storage', desc: 'Store in cotton bag. Zari reacts to weather.' },
-                    { icon: '🚫', title: 'Avoid Perfume', desc: 'Do not spray directly on the garment.' },
-                    { icon: '🌬️', title: 'Air Regularly', desc: 'Air sarees every few months.' },
-                  ].map(({ icon, title, desc }) => (
-                    <div key={title} className="flex items-start gap-3">
-                      <span className="text-sm mt-0.5 shrink-0">{icon}</span>
-                      <div>
-                        <p className="font-display text-[10px] font-bold tracking-wider text-foreground uppercase">{title}</p>
-                        <p className="font-body text-[11px] text-muted-foreground leading-relaxed">{desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </motion.div>
           </div>
         </div>
