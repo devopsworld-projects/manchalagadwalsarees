@@ -574,20 +574,7 @@ function ProductDetail() {
                 </a>
               </div>
 
-              {/* WhatsApp confirmation */}
-              <div className="bg-emerald-50 border border-emerald-200 p-4">
-                <div className="flex items-start gap-3">
-                  <div className="shrink-0 bg-[#25D366] text-white p-1.5 mt-0.5"><Check className="h-3 w-3" /></div>
-                  <div>
-                    <p className="font-display text-[11px] font-bold tracking-wider text-emerald-900 uppercase">WhatsApp us before checkout!</p>
-                    <p className="font-body text-[11px] text-emerald-700 mt-1 leading-relaxed">Confirm availability and get styling advice.</p>
-                    <a href={`https://wa.me/${phone}?text=${whatsappConfirm}`} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 mt-2 font-display text-[10px] font-bold text-[#25D366] tracking-wider hover:underline uppercase">
-                      <WhatsAppIcon className="h-3 w-3" /> Chat to confirm
-                    </a>
-                  </div>
-                </div>
-              </div>
+
 
               {/* Trust badges — horizontal */}
               <div className="grid grid-cols-3 gap-2 pt-3">
