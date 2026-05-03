@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 import { ScrollReveal } from '@/components/ScrollReveal';
@@ -125,7 +126,7 @@ export default function ColorMatchingTool() {
         canonicalPath="/color-matching"
       />
       <AnnouncementBar />
-      <Navbar />
+      <Navbar /><Breadcrumbs />
 
       <main className="py-12 md:py-20">
         <div className="container max-w-5xl">

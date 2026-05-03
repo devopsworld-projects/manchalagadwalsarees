@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -47,7 +48,7 @@ export default function Login() {
     <div className="min-h-screen">
       <PageMeta title="Sign In" description="Sign in to your Manchala Gadwal Sarees account to track orders and manage your wishlist." canonicalPath="/login" />
       <AnnouncementBar />
-      <Navbar />
+      <Navbar /><Breadcrumbs />
 
       <main className="relative min-h-[80vh] flex items-center justify-center py-16 px-4">
         {/* Subtle background pattern */}

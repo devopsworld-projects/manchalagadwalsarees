@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { ProductCard } from '@/components/ProductCard';
 import { PageMeta } from '@/components/PageMeta';
@@ -185,7 +186,7 @@ const Collections = () => {
         }}
       />
       <AnnouncementBar />
-      <Navbar />
+      <Navbar /><Breadcrumbs />
 
       {/* ─── Ornate Heritage Banner ─── */}
       <section className="relative bg-foreground overflow-hidden">

@@ -3,6 +3,7 @@ import { useNavigate, Link, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 import { User, MapPin, Package, Heart, LogOut } from 'lucide-react';
@@ -30,7 +31,7 @@ export default function Account() {
     <div className="min-h-screen">
       <PageMeta title="My Account" description="Manage your account settings, addresses and orders." canonicalPath="/account" />
       <AnnouncementBar />
-      <Navbar />
+      <Navbar /><Breadcrumbs />
 
       <main className="container py-8 md:py-14">
         {/* Page header */}

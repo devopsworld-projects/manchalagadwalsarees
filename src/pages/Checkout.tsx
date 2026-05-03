@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -203,7 +204,7 @@ export default function Checkout() {
     return (
       <div className="min-h-screen">
         <PageMeta title="Checkout" description="Securely complete your Manchala Gadwal Sarees order. Free shipping across India." canonicalPath="/checkout" />
-        <AnnouncementBar /><Navbar />
+        <AnnouncementBar /><Navbar /><Breadcrumbs />
         <main className="container max-w-lg py-20 text-center">
           <ShoppingBag className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
           <h1 className="font-display text-3xl font-bold mb-2">Your cart is empty</h1>
@@ -220,7 +221,7 @@ export default function Checkout() {
   return (
     <div className="min-h-screen">
       <PageMeta title={isExpress ? 'Express Checkout' : 'Secure Checkout'} description="Complete your Manchala Gadwal Sarees order securely." canonicalPath="/checkout" />
-      <AnnouncementBar /><Navbar />
+      <AnnouncementBar /><Navbar /><Breadcrumbs />
       <main className="container py-10">
         <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground font-body mb-6">
           <ArrowLeft className="h-4 w-4" /> Back

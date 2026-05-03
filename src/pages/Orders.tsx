@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 import { Badge } from '@/components/ui/badge';
@@ -53,7 +54,7 @@ export default function Orders() {
         canonicalPath="/orders"
       />
       <AnnouncementBar />
-      <Navbar />
+      <Navbar /><Breadcrumbs />
       <main className="container py-10 max-w-3xl">
         <Link
           to="/"

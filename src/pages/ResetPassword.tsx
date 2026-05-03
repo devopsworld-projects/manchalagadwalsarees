@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -35,7 +36,7 @@ export default function ResetPassword() {
     <div className="min-h-screen">
       <PageMeta title="Reset Password" description="Reset your Manchala Gadwal Sarees account password securely." canonicalPath="/reset-password" />
       <AnnouncementBar />
-      <Navbar />
+      <Navbar /><Breadcrumbs />
       <main className="relative min-h-[80vh] flex items-center justify-center py-16 px-4">
         <div className="relative w-full max-w-sm">
           <div className="text-center mb-8">

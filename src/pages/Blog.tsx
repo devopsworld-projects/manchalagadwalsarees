@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useParams, Link } from 'react-router-dom';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 
@@ -20,7 +21,7 @@ export default function Blog() {
     <div className="min-h-screen">
       <PageMeta title="Blog — Manchala Gadwal Sarees" description="Read articles about sarees, fashion tips, styling guides, and more." canonicalPath="/blog" />
       <AnnouncementBar />
-      <Navbar />
+      <Navbar /><Breadcrumbs />
       <main className="container py-12">
         <h1 className="font-display text-3xl font-bold text-center mb-8">Our Blog</h1>
         {posts.length === 0 ? (

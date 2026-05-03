@@ -1,5 +1,6 @@
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 import { Phone, Mail, MapPin, MessageCircle, Loader2 } from 'lucide-react';
@@ -46,7 +47,7 @@ const Contact = () => {
         canonicalPath="/contact"
       />
       <AnnouncementBar />
-      <Navbar />
+      <Navbar /><Breadcrumbs />
       <main className="container py-12 md:py-16">
         <h1 className="font-display text-3xl md:text-4xl font-bold text-center mb-2">Contact Us</h1>
         <p className="text-center text-muted-foreground font-body mb-12">We'd love to hear from you</p>

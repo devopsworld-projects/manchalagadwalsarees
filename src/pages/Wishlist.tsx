@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Heart, Trash2, ShoppingBag } from 'lucide-react';
@@ -73,7 +74,7 @@ export default function Wishlist() {
       <div className="min-h-screen">
         <PageMeta title="Wishlist" description="Save and revisit your favourite Manchala Gadwal silk sarees." canonicalPath="/wishlist" />
         <AnnouncementBar />
-        <Navbar />
+        <Navbar /><Breadcrumbs />
         <main className="container py-20 text-center">
           <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
           <h1 className="font-display text-3xl font-bold mb-2">Your Wishlist</h1>
@@ -92,7 +93,7 @@ export default function Wishlist() {
     <div className="min-h-screen">
       <PageMeta title="Wishlist" description="Your saved Manchala Gadwal silk sarees, ready when you are." canonicalPath="/wishlist" />
       <AnnouncementBar />
-      <Navbar />
+      <Navbar /><Breadcrumbs />
       <main className="container py-10">
         <h1 className="font-display text-3xl md:text-4xl font-bold text-center mb-2">Your Wishlist</h1>
         <p className="text-center text-muted-foreground font-body mb-10">
