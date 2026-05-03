@@ -15,6 +15,7 @@ import { useCart } from '@/context/CartContext';
 import { useCurrency } from '@/context/CurrencyContext';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { toast } from 'sonner';
+import { ensureProductOgImage } from '@/lib/ogImage';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
   ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, X, Copy, Check,
