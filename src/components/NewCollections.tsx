@@ -42,6 +42,7 @@ export function NewCollections() {
       <div className="container relative z-10">
         <ScrollReveal>
           <SectionHeader
+            align="left"
             eyebrow="Just Arrived"
             title="New Arrivals"
             subtitle="Freshly curated — the latest additions to our collection"
