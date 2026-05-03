@@ -143,40 +143,6 @@ export function Footer() {
         backgroundImage: 'radial-gradient(circle at 20% 0%, hsl(var(--accent)) 0%, transparent 40%), radial-gradient(circle at 80% 100%, hsl(var(--accent)) 0%, transparent 40%)',
       }} />
 
-      {/* ─── Newsletter band ─── */}
-      <div className="relative border-b border-background/10">
-        <div className="container py-12 md:py-14">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <p className="font-display text-[10px] tracking-[0.35em] text-accent uppercase mb-3">Join Our Heritage</p>
-              <h3 className="font-serif text-2xl md:text-3xl text-background italic leading-tight">
-                Receive exclusive previews, weaver stories &amp; private offers.
-              </h3>
-            </div>
-            <form onSubmit={handleNewsletterSubmit} className="flex w-full md:justify-end">
-              <div className="flex w-full md:max-w-md group/input">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="flex-1 bg-background/5 border border-background/15 px-4 py-3 text-sm font-body text-background placeholder:text-background/40 focus:outline-none focus:border-accent transition-colors"
-                />
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="bg-accent text-foreground px-5 py-3 font-display text-[11px] tracking-[0.2em] uppercase hover:bg-accent/90 transition-colors flex items-center gap-2 disabled:opacity-60"
-                >
-                  <Send className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Subscribe</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
       {/* ─── Main Footer Content ─── */}
       <div className="relative container py-16 md:py-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-12">
