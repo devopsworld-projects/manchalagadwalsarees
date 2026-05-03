@@ -24,7 +24,13 @@ const AdminProducts = () => {
     sku: '', name: '', description: '', price: '', original_price: '',
     category_id: '', colors: '', is_new: false, is_best_seller: false,
     is_active: true, stock: '0', images: '' as string,
+    specifications: {} as Record<string, string>,
   });
+
+  const SPEC_FIELDS = [
+    'Pattern', 'Occasion', 'Fabric', 'Material', 'Color Family',
+    'Base Color', 'Border Type', 'Border Size', 'Secondary Color',
+  ];
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['admin-products'],
@@ -125,7 +131,7 @@ const AdminProducts = () => {
   });
 
   const resetForm = () => {
-    setForm({ sku: '', name: '', description: '', price: '', original_price: '', category_id: '', colors: '', is_new: false, is_best_seller: false, is_active: true, stock: '0', images: '' });
+    setForm({ sku: '', name: '', description: '', price: '', original_price: '', category_id: '', colors: '', is_new: false, is_best_seller: false, is_active: true, stock: '0', images: '', specifications: {} });
     setVariants([]);
     setEditingProduct(null);
     setShowForm(false);
@@ -140,6 +146,7 @@ const AdminProducts = () => {
       is_new: p.is_new || false, is_best_seller: p.is_best_seller || false,
       is_active: p.is_active !== false, stock: String(p.stock || 0),
       images: (p.images || []).join(', '),
+      specifications: ((p as any).specifications as Record<string, string>) || {},
     });
     const { data: existingVariants } = await supabase
       .from('product_variants').select('*').eq('product_id', p.id);
@@ -164,6 +171,7 @@ const AdminProducts = () => {
       images: form.images ? form.images.split(',').map(i => i.trim()).filter(Boolean) : [],
       is_new: form.is_new, is_best_seller: form.is_best_seller,
       is_active: form.is_active, stock: Number(form.stock),
+      specifications: form.specifications as any,
     });
   };
 
@@ -362,6 +370,21 @@ const AdminProducts = () => {
                 <div>
                   <label className="font-body text-sm font-semibold block mb-1">Stock</label>
                   <input type="number" value={form.stock} onChange={e => setForm(f => ({ ...f, stock: e.target.value }))} className="w-full border border-border px-3 py-2 text-sm font-body rounded-sm focus:outline-none focus:ring-1 focus:ring-primary" />
+                </div>
+              </div>
+              <div>
+                <label className="font-body text-sm font-semibold block mb-2">Specifications (Saree Details)</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-3 border border-border rounded-sm bg-muted/20">
+                  {SPEC_FIELDS.map(field => (
+                    <div key={field}>
+                      <label className="font-body text-xs text-muted-foreground block mb-1">{field}</label>
+                      <input
+                        value={form.specifications[field] || ''}
+                        onChange={e => setForm(f => ({ ...f, specifications: { ...f.specifications, [field]: e.target.value } }))}
+                        className="w-full border border-border px-2 py-1.5 text-sm font-body rounded-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
               <div>

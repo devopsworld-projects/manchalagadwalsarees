@@ -716,6 +716,7 @@ export type Database = {
           original_price: number | null
           price: number
           sku: string
+          specifications: Json
           stock: number | null
           updated_at: string
         }
@@ -733,6 +734,7 @@ export type Database = {
           original_price?: number | null
           price: number
           sku: string
+          specifications?: Json
           stock?: number | null
           updated_at?: string
         }
@@ -750,6 +752,7 @@ export type Database = {
           original_price?: number | null
           price?: number
           sku?: string
+          specifications?: Json
           stock?: number | null
           updated_at?: string
         }
