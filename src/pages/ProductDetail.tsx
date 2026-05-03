@@ -116,6 +116,7 @@ function ProductDetail() {
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
   const [showShareMenu, setShowShareMenu] = useState(false);
   const shareRef = useRef<HTMLDivElement>(null);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
   const desktopShareMenuRef = useRef<HTMLDivElement>(null);
   const mobileShareMenuRef = useRef<HTMLDivElement>(null);
 
