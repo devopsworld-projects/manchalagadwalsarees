@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
   ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, X, Copy, Check,
-  Facebook, Twitter, Mail, Zap,
+  Facebook, Twitter, Mail, Zap, Plus, Minus,
 } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
@@ -80,6 +80,24 @@ function ImageMagnifier({ src, alt }: { src: string; alt: string }) {
           }}
         />
       )}
+    </div>
+  );
+}
+
+function CollapsibleSection({ title, defaultOpen = false, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-t border-border/60 pt-4">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center justify-between w-full text-left group min-h-[44px]"
+        aria-expanded={open}
+      >
+        <span className="font-display text-sm font-bold text-primary tracking-wide uppercase">{title}</span>
+        {open ? <Minus className="h-4 w-4 text-primary" /> : <Plus className="h-4 w-4 text-primary" />}
+      </button>
+      {open && <div className="pt-4">{children}</div>}
     </div>
   );
 }
@@ -302,6 +320,19 @@ function ProductDetail() {
   const discountPercent = displayOriginalPrice ? Math.round((1 - Number(displayPrice) / Number(displayOriginalPrice)) * 100) : 0;
   const canAddToCart = isInStock && (colors.length === 0 || selectedColor !== null) && allAttributesSelected;
 
+  // Build "Specific Information" entries from variant attributes + product fields
+  const specInfoMap: Record<string, string> = {};
+  if (selectedVariant?.attributes) {
+    Object.entries(selectedVariant.attributes as Record<string, string>).forEach(([k, v]) => {
+      if (v) specInfoMap[k] = String(v);
+    });
+  }
+  if (categoryName && !specInfoMap['Category']) specInfoMap['Category'] = categoryName;
+  if (colors.length > 0 && !specInfoMap['Color']) {
+    specInfoMap['Color'] = colors.map(getColorName).join(', ');
+  }
+  const specInfoEntries = Object.entries(specInfoMap);
+
   const mobileShareSheet = showShareMenu && typeof document !== 'undefined'
     ? createPortal(
         <>
@@ -347,72 +378,46 @@ function ProductDetail() {
         {/* Product layout */}
         <div className="container px-4 md:px-6 py-4 md:py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
-            {/* ── Image Gallery ── */}
-            <div className="space-y-3">
-              {/* Main image */}
-              <div className="relative group">
-                <div className="aspect-[3/4] overflow-hidden bg-muted relative max-h-[70vh] lg:max-h-none">
-                  <ImageMagnifier src={images[currentImage]} alt={product.name} />
-
-                  {/* Badges */}
-                  <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
-                    {product.is_new && (
-                      <span className="bg-primary text-primary-foreground text-[9px] font-display font-bold tracking-[0.15em] px-3 py-1 uppercase">New</span>
-                    )}
-                    {discountPercent > 0 && (
-                      <span className="bg-accent text-accent-foreground text-[9px] font-body font-bold px-2.5 py-1">{discountPercent}% OFF</span>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={() => setShowZoom(true)}
-                    className="absolute top-4 right-4 bg-background/70 backdrop-blur p-2.5 shadow-sm hover:bg-background transition-colors z-10"
-                    aria-label="Zoom"
-                  >
-                    <ZoomIn className="h-4 w-4" />
-                  </button>
-
-                  {/* Image counter */}
-                  {images.length > 1 && (
-                    <div className="absolute bottom-3 right-3 bg-foreground/60 text-background text-[10px] font-body px-2 py-0.5">
-                      {currentImage + 1}/{images.length}
-                    </div>
-                  )}
-
-                  {/* Temple corner accents */}
-                  <div className="absolute top-2 left-2 w-6 h-6 border-t border-l border-accent/30" />
-                  <div className="absolute bottom-2 right-2 w-6 h-6 border-b border-r border-accent/30" />
-                </div>
-
-                {images.length > 1 && (
-                  <>
-                    <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/70 backdrop-blur p-2 shadow md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10" aria-label="Previous">
-                      <ChevronLeft className="h-4 w-4" />
-                    </button>
-                    <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/70 backdrop-blur p-2 shadow md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10" aria-label="Next">
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
-                  </>
-                )}
-              </div>
-
-              {/* Thumbnail grid below main image */}
-              {images.length > 1 && (
-                <div className="grid grid-cols-4 gap-2">
-                  {images.map((img, i) => (
+            {/* ── Image Gallery: 2x2 grid (Kankatala-style) ── */}
+            <div>
+              <div className="grid grid-cols-2 gap-2 md:gap-3">
+                {Array.from({ length: 4 }).map((_, i) => {
+                  const src = images[i] || images[i % images.length] || '/placeholder.svg';
+                  return (
                     <button
                       key={i}
-                      onClick={() => setCurrentImage(i)}
-                      className={`aspect-[3/4] overflow-hidden border-2 transition-all ${
-                        i === currentImage ? 'border-accent' : 'border-transparent opacity-50 hover:opacity-100'
-                      }`}
+                      type="button"
+                      onClick={() => { setCurrentImage(i % images.length); setShowZoom(true); }}
+                      className="relative group aspect-[3/4] overflow-hidden bg-muted"
                       aria-label={`View image ${i + 1}`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
+                      <img
+                        src={src}
+                        alt={`${product.name} view ${i + 1}`}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading={i < 2 ? 'eager' : 'lazy'}
+                        width={600}
+                        height={800}
+                      />
+                      {i === 0 && (
+                        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+                          {product.is_new && (
+                            <span className="bg-primary text-primary-foreground text-[9px] font-display font-bold tracking-[0.15em] px-3 py-1 uppercase">New</span>
+                          )}
+                          {discountPercent > 0 && (
+                            <span className="bg-accent text-accent-foreground text-[9px] font-body font-bold px-2.5 py-1">{discountPercent}% OFF</span>
+                          )}
+                        </div>
+                      )}
+                      {i === 0 && (
+                        <span className="absolute top-3 right-3 bg-background/80 backdrop-blur p-2 rounded-full shadow-sm z-10">
+                          <ZoomIn className="h-3.5 w-3.5" />
+                        </span>
+                      )}
                     </button>
-                  ))}
-                </div>
-              )}
+                  );
+                })}
+              </div>
             </div>
 
             {/* ── Product Details ── */}
@@ -493,11 +498,6 @@ function ProductDetail() {
                 </div>
               </div>
 
-              {/* Description */}
-              {product.description && (
-                <p className="font-serif text-sm text-muted-foreground leading-relaxed italic">{product.description}</p>
-              )}
-
               <div className="ornate-line" />
 
               {/* Colors */}
@@ -540,39 +540,44 @@ function ProductDetail() {
               ))}
 
 
-              {/* CTAs */}
+              {/* CTAs — Add to Cart only (Kankatala-style) */}
               <div className="space-y-3 pt-2">
                 <button
                   onClick={() => { if (canAddToCart) addToCart(cartProduct); }}
                   disabled={!canAddToCart}
-                  className={`w-full py-4 text-[11px] tracking-[0.25em] font-display font-bold flex items-center justify-center gap-3 transition-colors uppercase ${
-                    canAddToCart ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-muted text-muted-foreground cursor-not-allowed'
+                  className={`w-full py-4 text-[11px] tracking-[0.25em] font-display font-bold flex items-center justify-center gap-3 transition-colors uppercase border-2 ${
+                    canAddToCart ? 'border-primary text-primary hover:bg-primary hover:text-primary-foreground bg-background' : 'border-muted text-muted-foreground cursor-not-allowed bg-background'
                   }`}
                 >
                   <ShoppingBag className="h-4 w-4" />
-                  {hasVariants && !allAttributesSelected ? 'Select Options Above' : !isInStock ? 'Out of Stock' : colors.length > 0 && selectedColor === null ? 'Select Color Above' : 'Add to Cart'}
+                  {hasVariants && !allAttributesSelected ? 'Select Options Above' : !isInStock ? 'Out of Stock' : colors.length > 0 && selectedColor === null ? 'Select Color Above' : 'Add To Cart'}
                 </button>
-                <button
-                  onClick={() => {
-                    if (!canAddToCart) return;
-                    if (!isLoggedIn) { toast.error('Please login for express checkout'); navigate('/login'); return; }
-                    navigate('/checkout', { state: { buyNow: { product: cartProduct, quantity: 1 } } });
-                  }}
-                  disabled={!canAddToCart}
-                  className={`w-full py-4 text-[11px] tracking-[0.25em] font-display font-bold flex items-center justify-center gap-3 transition-colors uppercase ${
-                    canAddToCart ? 'bg-accent text-accent-foreground hover:bg-accent/90' : 'bg-muted text-muted-foreground cursor-not-allowed'
-                  }`}
-                >
-                  <Zap className="h-4 w-4 fill-current" /> Buy Now — Express
-                </button>
-                <a
-                  href={`https://wa.me/${phone}?text=${whatsappEnquiry}`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="w-full py-4 text-[11px] tracking-[0.2em] font-display font-bold flex items-center justify-center gap-3 bg-[#25D366] text-white hover:bg-[#1ebe57] transition-colors uppercase"
-                >
-                  <WhatsAppIcon className="h-4 w-4" /> Order on WhatsApp
-                </a>
               </div>
+
+              {/* Collapsible Description */}
+              {product.description && (
+                <CollapsibleSection title="Product Description" defaultOpen>
+                  <div className="font-body text-sm text-foreground/80 leading-relaxed whitespace-pre-line space-y-3">
+                    {product.description.split(/\n{2,}/).map((para, i) => (
+                      <p key={i}>{para}</p>
+                    ))}
+                  </div>
+                </CollapsibleSection>
+              )}
+
+              {/* Specific Information */}
+              {specInfoEntries.length > 0 && (
+                <CollapsibleSection title="Specific Information" defaultOpen>
+                  <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                    {specInfoEntries.map(([k, v]) => (
+                      <div key={k} className="flex items-baseline justify-between gap-3 border-b border-border/40 pb-2">
+                        <dt className="font-display text-[12px] font-bold text-primary tracking-wide">{k}:</dt>
+                        <dd className="font-body text-sm text-foreground/80 text-right">{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </CollapsibleSection>
+              )}
 
 
 
