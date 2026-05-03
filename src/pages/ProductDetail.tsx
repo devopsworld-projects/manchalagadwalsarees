@@ -1081,34 +1081,54 @@ function ProductDetail() {
       )}
 
 
-      {/* Mobile sticky buy bar — above MobileBottomNav */}
-      <div className="lg:hidden fixed inset-x-0 bottom-16 z-40 bg-background/95 backdrop-blur border-t border-border px-3 py-2 flex items-center gap-3 shadow-[0_-4px_12px_-4px_rgba(0,0,0,0.08)]">
-        <div className="flex flex-col leading-tight min-w-0">
-          <span className="font-display text-base font-bold truncate">{formatPrice(Number(displayPrice))}</span>
-          {displayOriginalPrice && (
-            <span className="font-body text-[11px] text-muted-foreground line-through">{formatPrice(Number(displayOriginalPrice))}</span>
-          )}
+      {/* Mobile sticky buy bar — above MobileBottomNav, with safe-area + availability */}
+      <div
+        className="lg:hidden fixed inset-x-0 z-40 bg-background/95 backdrop-blur border-t border-border shadow-[0_-4px_12px_-4px_rgba(0,0,0,0.08)]"
+        style={{ bottom: 'calc(56px + env(safe-area-inset-bottom, 0px))' }}
+        role="region"
+        aria-label="Purchase options"
+      >
+        {/* Availability strip */}
+        <div className={`px-3 py-1 text-[10px] font-display tracking-wider uppercase text-center border-b ${
+          hasVariants && !allAttributesSelected ? 'bg-muted text-muted-foreground border-border' :
+          isInStock ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900' :
+          'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900'
+        }`}>
+          {hasVariants && !allAttributesSelected
+            ? 'Select options to view availability'
+            : isInStock
+              ? `In Stock${displayStock <= 5 ? ` — only ${displayStock} left` : ''}`
+              : 'Out of Stock'}
         </div>
-        <button
-          onClick={() => {
-            if (!isLoggedIn) { toast.error('Please login to use wishlist'); return; }
-            if (product) toggleWishlist(product.id);
-          }}
-          className={`min-h-[44px] p-2.5 border ${isWishlisted(product.id) ? 'border-primary text-primary bg-primary/10' : 'border-border'}`}
-          aria-label="Wishlist"
-        >
-          <Heart className={`h-4 w-4 ${isWishlisted(product.id) ? 'fill-current' : ''}`} />
-        </button>
-        <button
-          onClick={() => { if (canAddToCart) addToCart(cartProduct); }}
-          disabled={!canAddToCart}
-          className={`flex-1 min-h-[44px] text-[11px] tracking-[0.2em] font-display font-bold uppercase border-2 inline-flex items-center justify-center gap-2 ${
-            canAddToCart ? 'border-primary bg-primary text-primary-foreground' : 'border-muted text-muted-foreground bg-background cursor-not-allowed'
-          }`}
-        >
-          <ShoppingBag className="h-4 w-4" />
-          {hasVariants && !allAttributesSelected ? 'Select Options' : !isInStock ? 'Out of Stock' : 'Add To Cart'}
-        </button>
+        <div className="px-3 py-2 flex items-center gap-2">
+          <div className="flex flex-col leading-tight min-w-0">
+            <span className="font-display text-base font-bold truncate">{formatPrice(Number(displayPrice))}</span>
+            {displayOriginalPrice && (
+              <span className="font-body text-[11px] text-muted-foreground line-through">{formatPrice(Number(displayOriginalPrice))}</span>
+            )}
+          </div>
+          <button
+            onClick={() => {
+              if (!isLoggedIn) { toast.error('Please login to use wishlist'); return; }
+              if (product) toggleWishlist(product.id);
+            }}
+            className={`min-h-[44px] min-w-[44px] p-2.5 border flex items-center justify-center ${isWishlisted(product.id) ? 'border-primary text-primary bg-primary/10' : 'border-border'}`}
+            aria-label={isWishlisted(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+            aria-pressed={isWishlisted(product.id)}
+          >
+            <Heart className={`h-4 w-4 ${isWishlisted(product.id) ? 'fill-current' : ''}`} />
+          </button>
+          <button
+            onClick={() => { if (canAddToCart) addToCart(cartProduct); }}
+            disabled={!canAddToCart}
+            className={`flex-1 min-h-[44px] text-[11px] tracking-[0.2em] font-display font-bold uppercase border-2 inline-flex items-center justify-center gap-2 ${
+              canAddToCart ? 'border-primary bg-primary text-primary-foreground' : 'border-muted text-muted-foreground bg-background cursor-not-allowed'
+            }`}
+          >
+            <ShoppingBag className="h-4 w-4" />
+            <span className="truncate">{hasVariants && !allAttributesSelected ? 'Select Options' : !isInStock ? 'Out of Stock' : 'Add To Cart'}</span>
+          </button>
+        </div>
       </div>
 
       <Footer />
