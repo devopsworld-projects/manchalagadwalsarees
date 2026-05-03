@@ -17,6 +17,7 @@ import { HeritageSection } from '@/components/HeritageSection';
 import { OccasionsBanner } from '@/components/OccasionsBanner';
 import { HomepageSection } from '@/components/HomepageSection';
 import { InstagramSection } from '@/components/InstagramSection';
+import { ScrollReveal } from '@/components/ScrollReveal';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -41,18 +42,18 @@ const Index = () => {
       <Navbar />
       <main>
         <HomepageSection sectionKey="hero"><HeroSection /></HomepageSection>
-        <HomepageSection sectionKey="featured"><FeaturedCarousel /></HomepageSection>
+        <HomepageSection sectionKey="featured"><ScrollReveal><FeaturedCarousel /></ScrollReveal></HomepageSection>
         <HomepageSection sectionKey="new_arrivals"><NewCollections /></HomepageSection>
         <HomepageSection sectionKey="categories"><CategoriesSection /></HomepageSection>
-        <HomepageSection sectionKey="heritage"><HeritageSection /></HomepageSection>
-        <HomepageSection sectionKey="banner"><BannerSlider /></HomepageSection>
-        <HomepageSection sectionKey="occasions"><OccasionsBanner /></HomepageSection>
-        <HomepageSection sectionKey="best_sellers"><BestSellers /></HomepageSection>
-        <HomepageSection sectionKey="testimonials"><TestimonialsSection /></HomepageSection>
-        <HomepageSection sectionKey="google_reviews"><GoogleReviewsSection /></HomepageSection>
-        <HomepageSection sectionKey="store_locations"><StoreLocationsSection /></HomepageSection>
-        <HomepageSection sectionKey="instagram"><InstagramSection /></HomepageSection>
-        <HomepageSection sectionKey="newsletter"><NewsletterSection /></HomepageSection>
+        <HomepageSection sectionKey="heritage"><ScrollReveal><HeritageSection /></ScrollReveal></HomepageSection>
+        <HomepageSection sectionKey="banner"><ScrollReveal><BannerSlider /></ScrollReveal></HomepageSection>
+        <HomepageSection sectionKey="occasions"><ScrollReveal><OccasionsBanner /></ScrollReveal></HomepageSection>
+        <HomepageSection sectionKey="best_sellers"><ScrollReveal><BestSellers /></ScrollReveal></HomepageSection>
+        <HomepageSection sectionKey="testimonials"><ScrollReveal><TestimonialsSection /></ScrollReveal></HomepageSection>
+        <HomepageSection sectionKey="google_reviews"><ScrollReveal><GoogleReviewsSection /></ScrollReveal></HomepageSection>
+        <HomepageSection sectionKey="store_locations"><ScrollReveal><StoreLocationsSection /></ScrollReveal></HomepageSection>
+        <HomepageSection sectionKey="instagram"><ScrollReveal><InstagramSection /></ScrollReveal></HomepageSection>
+        <HomepageSection sectionKey="newsletter"><ScrollReveal><NewsletterSection /></ScrollReveal></HomepageSection>
       </main>
       <Footer />
     </div>
