@@ -19,7 +19,7 @@ import { toast } from 'sonner';
 import { ensureProductOgImage } from '@/lib/ogImage';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
-  ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, X, Copy, Check,
+  ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Maximize2, ArrowLeft, X, Copy, Check,
   Facebook, Twitter, Mail, Zap, Plus, Minus, Loader2, AlertCircle, Clock, CalendarCheck, Sparkles,
 } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -121,8 +121,49 @@ function ProductDetail() {
   const [pincode, setPincode] = useState('');
   const [pincodeStatus, setPincodeStatus] = useState<null | { ok: boolean; eta: string; cod: boolean; city?: string; message: string }>(null);
   const [pincodeChecking, setPincodeChecking] = useState(false);
+  const [specsExpanded, setSpecsExpanded] = useState(false);
+  const [careOpen, setCareOpen] = useState(false);
+  const [lightboxScale, setLightboxScale] = useState(1);
+  const [lightboxOffset, setLightboxOffset] = useState({ x: 0, y: 0 });
+  const thumbsContainerRef = useRef<HTMLDivElement>(null);
   const desktopShareMenuRef = useRef<HTMLDivElement>(null);
   const mobileShareMenuRef = useRef<HTMLDivElement>(null);
+
+  // Care Information: persist open state per product; default open on first view
+  useEffect(() => {
+    if (!id) return;
+    const key = `care-open:${id}`;
+    const stored = typeof window !== 'undefined' ? localStorage.getItem(key) : null;
+    if (stored === null) {
+      setCareOpen(true); // first view default open
+      try { localStorage.setItem(key, '1'); } catch {}
+    } else {
+      setCareOpen(stored === '1');
+    }
+  }, [id]);
+  const handleCareToggle = (open: boolean) => {
+    setCareOpen(open);
+    if (id) { try { localStorage.setItem(`care-open:${id}`, open ? '1' : '0'); } catch {} }
+  };
+
+  // Reset lightbox zoom when image changes or closes
+  useEffect(() => { setLightboxScale(1); setLightboxOffset({ x: 0, y: 0 }); }, [currentImage, showZoom]);
+
+  // Lightbox keyboard controls
+  useEffect(() => {
+    if (!showZoom) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowZoom(false);
+      else if (e.key === 'ArrowLeft') setCurrentImage(i => (i === 0 ? images.length - 1 : i - 1));
+      else if (e.key === 'ArrowRight') setCurrentImage(i => (i === images.length - 1 ? 0 : i + 1));
+      else if (e.key === '+' || e.key === '=') setLightboxScale(s => Math.min(4, s + 0.5));
+      else if (e.key === '-') setLightboxScale(s => Math.max(1, s - 0.5));
+      else if (e.key === '0') { setLightboxScale(1); setLightboxOffset({ x: 0, y: 0 }); }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showZoom]);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ['storefront-product', id],
@@ -419,7 +460,7 @@ function ProductDetail() {
     : null;
 
   return (
-    <div className="min-h-screen pb-32 md:pb-0">
+    <div className="min-h-screen pb-44 md:pb-0">
       <PageMeta
         title={`${product.name}${categoryName ? ` | ${categoryName}` : ''} – ${formatPrice(Number(displayPrice))}`}
         description={
@@ -454,17 +495,34 @@ function ProductDetail() {
             <div className="lg:sticky lg:top-24">
               <div className="flex gap-3">
                 {/* Vertical thumbnail strip — desktop only */}
-                <div className="hidden lg:flex flex-col gap-2 w-20 shrink-0 max-h-[calc(100vh-8rem)] overflow-y-auto pr-1 [scrollbar-width:thin]">
+                <div
+                  ref={thumbsContainerRef}
+                  role="listbox"
+                  aria-label="Product image thumbnails"
+                  aria-orientation="vertical"
+                  className="hidden lg:flex flex-col gap-2 w-20 shrink-0 max-h-[calc(100vh-8rem)] overflow-y-auto pr-1 [scrollbar-width:thin]"
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowDown') { e.preventDefault(); setCurrentImage(i => (i === images.length - 1 ? 0 : i + 1)); }
+                    else if (e.key === 'ArrowUp') { e.preventDefault(); setCurrentImage(i => (i === 0 ? images.length - 1 : i - 1)); }
+                    else if (e.key === 'Home') { e.preventDefault(); setCurrentImage(0); }
+                    else if (e.key === 'End') { e.preventDefault(); setCurrentImage(images.length - 1); }
+                    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowZoom(true); }
+                  }}
+                >
                   {images.map((src, i) => (
                     <button
                       key={i}
                       type="button"
+                      role="option"
+                      aria-selected={i === currentImage}
+                      tabIndex={i === currentImage ? 0 : -1}
                       onClick={() => setCurrentImage(i)}
                       onMouseEnter={() => setCurrentImage(i)}
-                      className={`relative aspect-[3/4] overflow-hidden bg-muted transition-all border-2 ${
+                      onFocus={() => setCurrentImage(i)}
+                      className={`relative aspect-[3/4] overflow-hidden bg-muted transition-all border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                         i === currentImage ? 'border-primary' : 'border-transparent opacity-70 hover:opacity-100'
                       }`}
-                      aria-label={`View image ${i + 1}`}
+                      aria-label={`View image ${i + 1} of ${images.length}`}
                     >
                       <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
                     </button>
@@ -631,17 +689,57 @@ function ProductDetail() {
               {/* Variants */}
               {hasVariants && variantAttrKeys.map(key => (
                 <div key={key}>
-                  <h3 className="font-display text-[11px] font-bold tracking-[0.15em] uppercase mb-3">{key} <span className="text-accent">*</span></h3>
-                  <div className="flex flex-wrap gap-2">
-                    {attrOptions[key]?.map(val => (
-                      <button key={val} onClick={() => setSelectedAttributes(prev => ({ ...prev, [key]: val }))}
-                        className={`px-4 py-2 text-[11px] font-display tracking-[0.1em] border transition-all ${
-                          selectedAttributes[key] === val ? 'border-primary bg-primary/10 text-primary font-bold' : 'border-border text-muted-foreground hover:border-primary/50'
-                        }`}>
-                        {val}
-                      </button>
-                    ))}
+                  <div className="flex items-baseline justify-between mb-3">
+                    <h3 className="font-display text-[11px] font-bold tracking-[0.15em] uppercase">{key} <span className="text-accent">*</span></h3>
+                    {selectedAttributes[key] && (
+                      <span className="font-body text-[11px] text-muted-foreground">
+                        Selected: <span className="text-foreground font-medium">{selectedAttributes[key]}</span>
+                      </span>
+                    )}
                   </div>
+                  <div className="flex flex-wrap gap-2">
+                    {attrOptions[key]?.map(val => {
+                      // Check if any variant matching this option (combined with currently chosen others) is in stock
+                      const candidateVariants = variants!.filter(v => {
+                        const a = (v.attributes as Record<string, string>) || {};
+                        if (a[key] !== val) return false;
+                        return Object.entries(selectedAttributes).every(([k2, v2]) => k2 === key || !v2 || a[k2] === v2);
+                      });
+                      const optionStock = candidateVariants.reduce((sum, v) => sum + (v.stock || 0), 0);
+                      const optionInStock = optionStock > 0;
+                      const isSelected = selectedAttributes[key] === val;
+                      return (
+                        <button
+                          key={val}
+                          onClick={() => setSelectedAttributes(prev => ({ ...prev, [key]: val }))}
+                          aria-pressed={isSelected}
+                          className={`relative px-4 py-2 text-[11px] font-display tracking-[0.1em] border transition-all ${
+                            isSelected ? 'border-primary bg-primary/10 text-primary font-bold' :
+                            optionInStock ? 'border-border text-muted-foreground hover:border-primary/50' :
+                            'border-border/60 text-muted-foreground/60 line-through'
+                          }`}
+                        >
+                          {val}
+                          {!optionInStock && <span className="ml-1.5 text-[9px] font-body normal-case no-underline">(Out)</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {selectedAttributes[key] && (() => {
+                    const matching = variants!.filter(v => {
+                      const a = (v.attributes as Record<string, string>) || {};
+                      return Object.entries(selectedAttributes).every(([k2, v2]) => !v2 || a[k2] === v2);
+                    });
+                    const stockSum = matching.reduce((s, v) => s + (v.stock || 0), 0);
+                    if (matching.length === 0) return null;
+                    return (
+                      <p className={`mt-2 font-body text-[11px] ${stockSum > 0 ? 'text-emerald-700' : 'text-red-700'}`}>
+                        {stockSum > 0
+                          ? `In stock${stockSum <= 5 ? ` — only ${stockSum} left` : ''}`
+                          : 'Out of stock for this combination'}
+                      </p>
+                    );
+                  })()}
                 </div>
               ))}
 
@@ -834,24 +932,26 @@ function ProductDetail() {
 
               </CollapsibleSection>
 
-              {/* Collapsible Description */}
+              {/* Product Description — always open */}
               {product.description && (
-                <CollapsibleSection title="Product Description" defaultOpen>
+                <section className="border-t border-border/60 pt-4">
+                  <h2 className="font-display text-sm font-bold text-primary tracking-wide uppercase mb-3">Product Description</h2>
                   <div className="font-body text-sm text-foreground/80 leading-relaxed whitespace-pre-line space-y-3">
                     {product.description.split(/\n{2,}/).map((para, i) => (
                       <p key={i}>{para}</p>
                     ))}
                   </div>
-                </CollapsibleSection>
+                </section>
               )}
 
-              {/* Specific Information — structured details table */}
+              {/* Specific Information — always open, show first 4, "see more" toggle */}
               {structuredEntries.length > 0 && (
-                <CollapsibleSection title="Specific Information" defaultOpen>
+                <section className="border-t border-border/60 pt-4">
+                  <h2 className="font-display text-sm font-bold text-primary tracking-wide uppercase mb-3">Specific Information</h2>
                   <div className="overflow-hidden border border-border/60">
                     <table className="w-full text-left">
                       <tbody className="divide-y divide-border/40">
-                        {structuredEntries.map(([k, v], idx) => (
+                        {(specsExpanded ? structuredEntries : structuredEntries.slice(0, 4)).map(([k, v], idx) => (
                           <tr key={k} className={idx % 2 === 0 ? 'bg-muted/30' : 'bg-background'}>
                             <th scope="row" className="font-display text-[11px] font-bold tracking-wider text-primary uppercase px-3 py-2.5 w-2/5 align-top">{k}</th>
                             <td className="font-body text-[13px] text-foreground/85 px-3 py-2.5">{v}</td>
@@ -860,28 +960,49 @@ function ProductDetail() {
                       </tbody>
                     </table>
                   </div>
-                </CollapsibleSection>
+                  {structuredEntries.length > 4 && (
+                    <button
+                      type="button"
+                      onClick={() => setSpecsExpanded(s => !s)}
+                      aria-expanded={specsExpanded}
+                      className="mt-3 inline-flex items-center gap-1.5 font-display text-[11px] font-bold tracking-[0.15em] uppercase text-primary hover:underline"
+                    >
+                      {specsExpanded ? <>See Less <Minus className="h-3 w-3" /></> : <>See More ({structuredEntries.length - 4}) <Plus className="h-3 w-3" /></>}
+                    </button>
+                  )}
+                </section>
               )}
 
-              {/* Care Information */}
-              <CollapsibleSection title="Care Information" defaultOpen={false}>
-                <div className="space-y-3">
-                  {[
-                    { icon: '🧼', title: 'Dry Clean Only', desc: 'Professional dry cleaning recommended.' },
-                    { icon: '👜', title: 'Proper Storage', desc: 'Store in cotton bag. Zari reacts to weather.' },
-                    { icon: '🚫', title: 'Avoid Perfume', desc: 'Do not spray directly on the garment.' },
-                    { icon: '🌬️', title: 'Air Regularly', desc: 'Air sarees every few months.' },
-                  ].map(({ icon, title, desc }) => (
-                    <div key={title} className="flex items-start gap-3">
-                      <span className="text-sm mt-0.5 shrink-0">{icon}</span>
-                      <div>
-                        <p className="font-display text-[10px] font-bold tracking-wider text-foreground uppercase">{title}</p>
-                        <p className="font-body text-[11px] text-muted-foreground leading-relaxed">{desc}</p>
+              {/* Care Information — state persists per product */}
+              <div className="border-t border-border/60 pt-4">
+                <button
+                  type="button"
+                  onClick={() => handleCareToggle(!careOpen)}
+                  className="flex items-center justify-between w-full text-left group min-h-[44px]"
+                  aria-expanded={careOpen}
+                >
+                  <span className="font-display text-sm font-bold text-primary tracking-wide uppercase">Care Information</span>
+                  {careOpen ? <Minus className="h-4 w-4 text-primary" /> : <Plus className="h-4 w-4 text-primary" />}
+                </button>
+                {careOpen && (
+                  <div className="pt-4 space-y-3">
+                    {[
+                      { icon: '🧼', title: 'Dry Clean Only', desc: 'Professional dry cleaning recommended.' },
+                      { icon: '👜', title: 'Proper Storage', desc: 'Store in cotton bag. Zari reacts to weather.' },
+                      { icon: '🚫', title: 'Avoid Perfume', desc: 'Do not spray directly on the garment.' },
+                      { icon: '🌬️', title: 'Air Regularly', desc: 'Air sarees every few months.' },
+                    ].map(({ icon, title, desc }) => (
+                      <div key={title} className="flex items-start gap-3">
+                        <span className="text-sm mt-0.5 shrink-0">{icon}</span>
+                        <div>
+                          <p className="font-display text-[10px] font-bold tracking-wider text-foreground uppercase">{title}</p>
+                          <p className="font-body text-[11px] text-muted-foreground leading-relaxed">{desc}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </CollapsibleSection>
+                    ))}
+                  </div>
+                )}
+              </div>
 
             </motion.div>
           </div>
@@ -897,22 +1018,60 @@ function ProductDetail() {
 
       {mobileShareSheet}
 
-      {/* Fullscreen zoom */}
+      {/* Fullscreen lightbox with zoom controls */}
       {showZoom && (
-        <div className="fixed inset-0 z-[70] bg-foreground/95 flex items-center justify-center" onClick={() => setShowZoom(false)}>
-          <button className="absolute top-4 right-4 p-3 bg-background/20 text-white hover:bg-background/40 z-10" onClick={() => setShowZoom(false)} aria-label="Close"><X className="h-6 w-6" /></button>
+        <div
+          className="fixed inset-0 z-[70] bg-foreground/95 flex items-center justify-center"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${product.name} image viewer`}
+          onClick={() => setShowZoom(false)}
+        >
+          <button className="absolute top-4 right-4 p-3 bg-background/20 text-white hover:bg-background/40 z-20" onClick={() => setShowZoom(false)} aria-label="Close image viewer"><X className="h-6 w-6" /></button>
+
+          {/* Zoom controls */}
+          <div
+            className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-background/20 backdrop-blur-sm z-20"
+            onClick={e => e.stopPropagation()}
+          >
+            <button onClick={() => setLightboxScale(s => Math.max(1, s - 0.5))} className="p-2.5 text-white hover:bg-background/30" aria-label="Zoom out" disabled={lightboxScale <= 1}><ZoomOut className="h-5 w-5" /></button>
+            <span className="font-body text-xs text-white tabular-nums px-2 min-w-[3.5rem] text-center">{Math.round(lightboxScale * 100)}%</span>
+            <button onClick={() => setLightboxScale(s => Math.min(4, s + 0.5))} className="p-2.5 text-white hover:bg-background/30" aria-label="Zoom in" disabled={lightboxScale >= 4}><ZoomIn className="h-5 w-5" /></button>
+            <button onClick={() => { setLightboxScale(1); setLightboxOffset({ x: 0, y: 0 }); }} className="p-2.5 text-white hover:bg-background/30" aria-label="Reset zoom"><Maximize2 className="h-5 w-5" /></button>
+          </div>
+
           {images.length > 1 && (
             <>
-              <button onClick={e => { e.stopPropagation(); prevImage(); }} className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-background/20 text-white hover:bg-background/40 z-10"><ChevronLeft className="h-6 w-6" /></button>
-              <button onClick={e => { e.stopPropagation(); nextImage(); }} className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-background/20 text-white hover:bg-background/40 z-10"><ChevronRight className="h-6 w-6" /></button>
+              <button onClick={e => { e.stopPropagation(); prevImage(); }} className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-background/20 text-white hover:bg-background/40 z-20" aria-label="Previous image"><ChevronLeft className="h-6 w-6" /></button>
+              <button onClick={e => { e.stopPropagation(); nextImage(); }} className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-background/20 text-white hover:bg-background/40 z-20" aria-label="Next image"><ChevronRight className="h-6 w-6" /></button>
             </>
           )}
-          <img src={images[currentImage]} alt={product.name} className="max-w-[90vw] max-h-[85vh] object-contain" onClick={e => e.stopPropagation()} />
+
+          <div
+            className="overflow-hidden max-w-[90vw] max-h-[85vh] flex items-center justify-center"
+            onClick={e => e.stopPropagation()}
+            onWheel={e => {
+              e.preventDefault();
+              setLightboxScale(s => Math.max(1, Math.min(4, s + (e.deltaY < 0 ? 0.25 : -0.25))));
+            }}
+            onDoubleClick={() => setLightboxScale(s => (s > 1 ? 1 : 2))}
+          >
+            <img
+              src={images[currentImage]}
+              alt={`${product.name} — view ${currentImage + 1} of ${images.length}`}
+              className="max-w-[90vw] max-h-[85vh] object-contain transition-transform duration-150 select-none"
+              style={{ transform: `scale(${lightboxScale}) translate(${lightboxOffset.x}px, ${lightboxOffset.y}px)`, cursor: lightboxScale > 1 ? 'grab' : 'zoom-in' }}
+              draggable={false}
+            />
+          </div>
+
           {images.length > 1 && (
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 bg-background/20 backdrop-blur-sm p-2">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 bg-background/20 backdrop-blur-sm p-2 z-20" onClick={e => e.stopPropagation()}>
               {images.map((img, i) => (
-                <button key={i} onClick={e => { e.stopPropagation(); setCurrentImage(i); }}
-                  className={`w-10 h-12 overflow-hidden border-2 ${i === currentImage ? 'border-white' : 'border-transparent opacity-50 hover:opacity-80'}`}>
+                <button key={i} onClick={() => setCurrentImage(i)}
+                  aria-label={`View image ${i + 1}`}
+                  aria-current={i === currentImage}
+                  className={`w-10 h-12 overflow-hidden border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-white ${i === currentImage ? 'border-white' : 'border-transparent opacity-50 hover:opacity-80'}`}>
                   <img src={img} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
@@ -922,34 +1081,54 @@ function ProductDetail() {
       )}
 
 
-      {/* Mobile sticky buy bar — above MobileBottomNav */}
-      <div className="lg:hidden fixed inset-x-0 bottom-16 z-40 bg-background/95 backdrop-blur border-t border-border px-3 py-2 flex items-center gap-3 shadow-[0_-4px_12px_-4px_rgba(0,0,0,0.08)]">
-        <div className="flex flex-col leading-tight min-w-0">
-          <span className="font-display text-base font-bold truncate">{formatPrice(Number(displayPrice))}</span>
-          {displayOriginalPrice && (
-            <span className="font-body text-[11px] text-muted-foreground line-through">{formatPrice(Number(displayOriginalPrice))}</span>
-          )}
+      {/* Mobile sticky buy bar — above MobileBottomNav, with safe-area + availability */}
+      <div
+        className="lg:hidden fixed inset-x-0 z-40 bg-background/95 backdrop-blur border-t border-border shadow-[0_-4px_12px_-4px_rgba(0,0,0,0.08)]"
+        style={{ bottom: 'calc(56px + env(safe-area-inset-bottom, 0px))' }}
+        role="region"
+        aria-label="Purchase options"
+      >
+        {/* Availability strip */}
+        <div className={`px-3 py-1 text-[10px] font-display tracking-wider uppercase text-center border-b ${
+          hasVariants && !allAttributesSelected ? 'bg-muted text-muted-foreground border-border' :
+          isInStock ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900' :
+          'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900'
+        }`}>
+          {hasVariants && !allAttributesSelected
+            ? 'Select options to view availability'
+            : isInStock
+              ? `In Stock${displayStock <= 5 ? ` — only ${displayStock} left` : ''}`
+              : 'Out of Stock'}
         </div>
-        <button
-          onClick={() => {
-            if (!isLoggedIn) { toast.error('Please login to use wishlist'); return; }
-            if (product) toggleWishlist(product.id);
-          }}
-          className={`min-h-[44px] p-2.5 border ${isWishlisted(product.id) ? 'border-primary text-primary bg-primary/10' : 'border-border'}`}
-          aria-label="Wishlist"
-        >
-          <Heart className={`h-4 w-4 ${isWishlisted(product.id) ? 'fill-current' : ''}`} />
-        </button>
-        <button
-          onClick={() => { if (canAddToCart) addToCart(cartProduct); }}
-          disabled={!canAddToCart}
-          className={`flex-1 min-h-[44px] text-[11px] tracking-[0.2em] font-display font-bold uppercase border-2 inline-flex items-center justify-center gap-2 ${
-            canAddToCart ? 'border-primary bg-primary text-primary-foreground' : 'border-muted text-muted-foreground bg-background cursor-not-allowed'
-          }`}
-        >
-          <ShoppingBag className="h-4 w-4" />
-          {hasVariants && !allAttributesSelected ? 'Select Options' : !isInStock ? 'Out of Stock' : 'Add To Cart'}
-        </button>
+        <div className="px-3 py-2 flex items-center gap-2">
+          <div className="flex flex-col leading-tight min-w-0">
+            <span className="font-display text-base font-bold truncate">{formatPrice(Number(displayPrice))}</span>
+            {displayOriginalPrice && (
+              <span className="font-body text-[11px] text-muted-foreground line-through">{formatPrice(Number(displayOriginalPrice))}</span>
+            )}
+          </div>
+          <button
+            onClick={() => {
+              if (!isLoggedIn) { toast.error('Please login to use wishlist'); return; }
+              if (product) toggleWishlist(product.id);
+            }}
+            className={`min-h-[44px] min-w-[44px] p-2.5 border flex items-center justify-center ${isWishlisted(product.id) ? 'border-primary text-primary bg-primary/10' : 'border-border'}`}
+            aria-label={isWishlisted(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+            aria-pressed={isWishlisted(product.id)}
+          >
+            <Heart className={`h-4 w-4 ${isWishlisted(product.id) ? 'fill-current' : ''}`} />
+          </button>
+          <button
+            onClick={() => { if (canAddToCart) addToCart(cartProduct); }}
+            disabled={!canAddToCart}
+            className={`flex-1 min-h-[44px] text-[11px] tracking-[0.2em] font-display font-bold uppercase border-2 inline-flex items-center justify-center gap-2 ${
+              canAddToCart ? 'border-primary bg-primary text-primary-foreground' : 'border-muted text-muted-foreground bg-background cursor-not-allowed'
+            }`}
+          >
+            <ShoppingBag className="h-4 w-4" />
+            <span className="truncate">{hasVariants && !allAttributesSelected ? 'Select Options' : !isInStock ? 'Out of Stock' : 'Add To Cart'}</span>
+          </button>
+        </div>
       </div>
 
       <Footer />
