@@ -556,7 +556,54 @@ function ProductDetail() {
                   <ShoppingBag className="h-4 w-4" />
                   {hasVariants && !allAttributesSelected ? 'Select Options Above' : !isInStock ? 'Out of Stock' : colors.length > 0 && selectedColor === null ? 'Select Color Above' : 'Add To Cart'}
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setShowSizeGuide(true)}
+                  className="w-full py-3 text-[11px] tracking-[0.2em] font-display font-bold flex items-center justify-center gap-2 transition-colors uppercase text-primary hover:text-accent"
+                >
+                  <Ruler className="h-4 w-4" /> Size Guide
+                </button>
               </div>
+
+              {/* Delivery & Availability */}
+              <CollapsibleSection title="Delivery & Availability" defaultOpen>
+                <ul className="space-y-3 font-body text-sm text-foreground/80">
+                  <li className="flex items-start gap-3">
+                    <Truck className="h-4 w-4 text-accent mt-0.5 shrink-0" />
+                    <div>
+                      <p className="font-medium text-foreground">Estimated delivery</p>
+                      <p className="text-muted-foreground text-[13px]">
+                        {(() => {
+                          const min = new Date(); min.setDate(min.getDate() + 4);
+                          const max = new Date(); max.setDate(max.getDate() + 7);
+                          const fmt = (d: Date) => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                          return `${fmt(min)} – ${fmt(max)} (3–7 business days, pan-India)`;
+                        })()}
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="font-medium text-foreground">Cash on Delivery available</p>
+                      <p className="text-muted-foreground text-[13px]">For orders below ₹20,000. Verify pincode at checkout.</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Shield className={`h-4 w-4 mt-0.5 shrink-0 ${isInStock ? 'text-emerald-600' : 'text-red-600'}`} />
+                    <div>
+                      <p className="font-medium text-foreground">
+                        {hasVariants && !allAttributesSelected
+                          ? 'Select options to see availability'
+                          : isInStock
+                          ? `In stock${displayStock <= 5 ? ` — only ${displayStock} left` : ''}`
+                          : 'Currently out of stock'}
+                      </p>
+                      <p className="text-muted-foreground text-[13px]">Ships from Hyderabad, Telangana.</p>
+                    </div>
+                  </li>
+                </ul>
+              </CollapsibleSection>
 
               {/* Collapsible Description */}
               {product.description && (
