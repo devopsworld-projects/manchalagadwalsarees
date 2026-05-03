@@ -17,6 +17,7 @@ import { HeritageSection } from '@/components/HeritageSection';
 import { OccasionsBanner } from '@/components/OccasionsBanner';
 import { HomepageSection } from '@/components/HomepageSection';
 import { InstagramSection } from '@/components/InstagramSection';
+import { ScrollReveal } from '@/components/ScrollReveal';
 
 const jsonLd = {
   '@context': 'https://schema.org',
