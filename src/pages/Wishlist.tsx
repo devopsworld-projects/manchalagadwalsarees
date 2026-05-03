@@ -12,6 +12,7 @@ import { useCart, CartProduct } from '@/context/CartContext';
 import { useCurrency } from '@/context/CurrencyContext';
 import { toast } from 'sonner';
 import { PageMeta } from '@/components/PageMeta';
+import { ProductCardSkeleton } from '@/components/ProductCardSkeleton';
 
 export default function Wishlist() {
   const { user, loading: authLoading } = useAuth();
