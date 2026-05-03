@@ -8,6 +8,7 @@ import { CategoriesSection } from '@/components/CategoriesSection';
 import { BannerSlider } from '@/components/BannerSlider';
 import { TestimonialsSection } from '@/components/TestimonialsSection';
 import { GoogleReviewsSection } from '@/components/GoogleReviewsSection';
+import { StoreLocationsSection } from '@/components/StoreLocationsSection';
 import { NewsletterSection } from '@/components/NewsletterSection';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
@@ -49,6 +50,7 @@ const Index = () => {
         <HomepageSection sectionKey="best_sellers"><BestSellers /></HomepageSection>
         <HomepageSection sectionKey="testimonials"><TestimonialsSection /></HomepageSection>
         <HomepageSection sectionKey="google_reviews"><GoogleReviewsSection /></HomepageSection>
+        <HomepageSection sectionKey="store_locations"><StoreLocationsSection /></HomepageSection>
         <HomepageSection sectionKey="instagram"><InstagramSection /></HomepageSection>
         <HomepageSection sectionKey="newsletter"><NewsletterSection /></HomepageSection>
       </main>
