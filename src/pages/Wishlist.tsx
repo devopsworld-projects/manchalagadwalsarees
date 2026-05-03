@@ -95,8 +95,13 @@ export default function Wishlist() {
       <main className="container py-10">
         <h1 className="font-display text-3xl md:text-4xl font-bold text-center mb-2">Your Wishlist</h1>
         <p className="text-center text-muted-foreground font-body mb-10">
-          {isLoading ? 'Loading...' : `${items.length} saved items`}
+          {isLoading ? `\u00a0` : `${items.length} saved items`}
         </p>
+        {isLoading && (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+          </div>
+        )}
 
         {!isLoading && items.length === 0 && (
           <div className="text-center py-16">
