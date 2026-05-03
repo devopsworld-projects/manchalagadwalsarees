@@ -111,13 +111,11 @@ function ProductDetail() {
   const { isWishlisted, toggleWishlist, isLoggedIn } = useWishlist();
   const { data: settings } = useStoreSettings();
   const phone = settings?.whatsapp_number || '919885879188';
-  const [selectedColor, setSelectedColor] = useState<number | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [showZoom, setShowZoom] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
   const [showShareMenu, setShowShareMenu] = useState(false);
   const shareRef = useRef<HTMLDivElement>(null);
-  const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [ogImageUrl, setOgImageUrl] = useState<string | null>(null);
   const [pincode, setPincode] = useState('');
   const [pincodeStatus, setPincodeStatus] = useState<null | { ok: boolean; eta: string; cod: boolean; city?: string; message: string }>(null);
@@ -344,20 +342,18 @@ function ProductDetail() {
   };
 
   const discountPercent = displayOriginalPrice ? Math.round((1 - Number(displayPrice) / Number(displayOriginalPrice)) * 100) : 0;
-  const canAddToCart = isInStock && (colors.length === 0 || selectedColor !== null) && allAttributesSelected;
+  const canAddToCart = isInStock && allAttributesSelected;
 
-  // Build "Specific Information" entries from variant attributes + product fields
-  const specInfoMap: Record<string, string> = {};
-  if (selectedVariant?.attributes) {
-    Object.entries(selectedVariant.attributes as Record<string, string>).forEach(([k, v]) => {
-      if (v) specInfoMap[k] = String(v);
-    });
-  }
-  if (categoryName && !specInfoMap['Category']) specInfoMap['Category'] = categoryName;
-  if (colors.length > 0 && !specInfoMap['Color']) {
-    specInfoMap['Color'] = colors.map(getColorName).join(', ');
-  }
-  const specInfoEntries = Object.entries(specInfoMap);
+  // Build "Specific Information" entries — saree-specific fields from product.specifications
+  const SPEC_FIELDS = [
+    'Pattern', 'Occasion', 'Fabric', 'Material', 'Color Family',
+    'Base Color', 'Border Type', 'Border Size', 'Secondary Color',
+  ] as const;
+  const productSpecs = ((product as any).specifications || {}) as Record<string, string>;
+  const specInfoEntries: [string, string][] = SPEC_FIELDS
+    .map(k => [k, productSpecs[k]] as [string, string])
+    .filter(([, v]) => !!v && String(v).trim() !== '');
+  if (categoryName) specInfoEntries.push(['Category', categoryName]);
 
   const mobileShareSheet = showShareMenu && typeof document !== 'undefined'
     ? createPortal(
@@ -529,28 +525,6 @@ function ProductDetail() {
 
               <div className="ornate-line" />
 
-              {/* Colors */}
-              {colors.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="font-display text-[11px] font-bold tracking-[0.15em] uppercase">Color</span>
-                    <span className="font-body text-xs text-muted-foreground">
-                      {selectedColor !== null ? getColorName(colors[selectedColor]) : '— Select'}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {colors.map((color, i) => (
-                      <button key={i} onClick={() => setSelectedColor(i)}
-                        className={`px-4 py-2 text-[11px] font-display font-bold tracking-[0.1em] border transition-all uppercase ${
-                          selectedColor === i ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:border-primary/50'
-                        }`}>
-                        {getColorName(color)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* Variants */}
               {hasVariants && variantAttrKeys.map(key => (
                 <div key={key}>
@@ -579,14 +553,7 @@ function ProductDetail() {
                   }`}
                 >
                   <ShoppingBag className="h-4 w-4" />
-                  {hasVariants && !allAttributesSelected ? 'Select Options Above' : !isInStock ? 'Out of Stock' : colors.length > 0 && selectedColor === null ? 'Select Color Above' : 'Add To Cart'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowSizeGuide(true)}
-                  className="w-full py-3 text-[11px] tracking-[0.2em] font-display font-bold flex items-center justify-center gap-2 transition-colors uppercase text-primary hover:text-accent"
-                >
-                  <Ruler className="h-4 w-4" /> Size Guide
+                  {hasVariants && !allAttributesSelected ? 'Select Options Above' : !isInStock ? 'Out of Stock' : 'Add To Cart'}
                 </button>
               </div>
 
