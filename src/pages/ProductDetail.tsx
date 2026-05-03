@@ -776,17 +776,21 @@ function ProductDetail() {
                 </CollapsibleSection>
               )}
 
-              {/* Specific Information */}
-              {specInfoEntries.length > 0 && (
+              {/* Specific Information — structured details table */}
+              {structuredEntries.length > 0 && (
                 <CollapsibleSection title="Specific Information" defaultOpen>
-                  <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-                    {specInfoEntries.map(([k, v]) => (
-                      <div key={k} className="flex items-baseline justify-between gap-3 border-b border-border/40 pb-2">
-                        <dt className="font-display text-[12px] font-bold text-primary tracking-wide">{k}:</dt>
-                        <dd className="font-body text-sm text-foreground/80 text-right">{v}</dd>
-                      </div>
-                    ))}
-                  </dl>
+                  <div className="overflow-hidden border border-border/60">
+                    <table className="w-full text-left">
+                      <tbody className="divide-y divide-border/40">
+                        {structuredEntries.map(([k, v], idx) => (
+                          <tr key={k} className={idx % 2 === 0 ? 'bg-muted/30' : 'bg-background'}>
+                            <th scope="row" className="font-display text-[11px] font-bold tracking-wider text-primary uppercase px-3 py-2.5 w-2/5 align-top">{k}</th>
+                            <td className="font-body text-[13px] text-foreground/85 px-3 py-2.5">{v}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </CollapsibleSection>
               )}
 
