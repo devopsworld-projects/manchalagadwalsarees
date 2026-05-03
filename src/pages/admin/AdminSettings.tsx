@@ -267,7 +267,7 @@ const AdminSettings = () => {
           {/* Social Links */}
           <TabsContent value="social" className="max-w-2xl space-y-5">
             <SectionTitle>Social Media & WhatsApp</SectionTitle>
-            <Field label="WhatsApp Number" value={form.whatsapp_number} onChange={v => update('whatsapp_number', v)} placeholder="919494644998" helper="Include country code, no + sign" />
+            <Field label="WhatsApp Number" value={form.whatsapp_number} onChange={v => update('whatsapp_number', v)} placeholder="919885879188" helper="Include country code, no + sign" />
             <Field label="Instagram URL" value={form.social_instagram} onChange={v => update('social_instagram', v)} placeholder="https://instagram.com/yourpage" />
             <Field label="Facebook URL" value={form.social_facebook} onChange={v => update('social_facebook', v)} placeholder="https://facebook.com/yourpage" />
             <Field label="YouTube URL" value={form.social_youtube} onChange={v => update('social_youtube', v)} placeholder="https://youtube.com/yourchannel" />

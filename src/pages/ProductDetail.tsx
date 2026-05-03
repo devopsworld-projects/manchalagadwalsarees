@@ -91,7 +91,7 @@ function ProductDetail() {
   const { format: formatPrice } = useCurrency();
   const { isWishlisted, toggleWishlist, isLoggedIn } = useWishlist();
   const { data: settings } = useStoreSettings();
-  const phone = settings?.whatsapp_number || '919494644998';
+  const phone = settings?.whatsapp_number || '919885879188';
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [showZoom, setShowZoom] = useState(false);

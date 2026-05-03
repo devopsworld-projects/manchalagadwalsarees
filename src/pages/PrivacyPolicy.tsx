@@ -60,7 +60,7 @@ const PrivacyPolicy = () => (
 
         <section className="space-y-3">
           <h2 className="font-display text-xl font-semibold text-foreground">7. Contact</h2>
-          <p>For privacy concerns, reach us at <strong>info@manchalagadwalsarees.com</strong> or call <strong>+91 94946 44998</strong>.</p>
+          <p>For privacy concerns, reach us at <strong>info@manchalagadwalsarees.com</strong> or call <strong>+91 98858 79188</strong>.</p>
         </section>
       </div>
     </main>

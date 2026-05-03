@@ -57,7 +57,7 @@ const Contact = () => {
             <h2 className="font-display text-2xl font-semibold">Get in Touch</h2>
             <div className="space-y-4">
               {[
-                { icon: Phone, label: 'Phone', value: '+91 94946 44998' },
+                { icon: Phone, label: 'Phone', value: '+91 98858 79188' },
                 { icon: Mail, label: 'Email', value: 'info@manchalagadwalsarees.com' },
                 { icon: MapPin, label: 'Address', value: 'Hyderabad, Telangana, India' },
               ].map(item => (
@@ -71,7 +71,7 @@ const Contact = () => {
               ))}
             </div>
             <a
-              href="https://wa.me/917680041607"
+              href="https://wa.me/919885879188"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-[hsl(142,70%,40%)] text-primary-foreground px-6 py-3 text-sm font-body tracking-wider rounded-sm hover:opacity-90 transition-opacity"
