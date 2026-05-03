@@ -447,85 +447,104 @@ function ProductDetail() {
           </Link>
         </div>
 
-        {/* Product layout */}
+        {/* Product layout — premium boutique: vertical thumbs + sticky details */}
         <div className="container px-4 md:px-6 py-4 md:py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
-            {/* ── Image Gallery: 2x2 grid (Kankatala-style) ── */}
-            <div>
-              <div className="grid grid-cols-2 gap-2 md:gap-3">
-                {Array.from({ length: 4 }).map((_, i) => {
-                  const src = images[i] || images[i % images.length] || '/placeholder.svg';
-                  return (
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] gap-6 lg:gap-12 items-start">
+            {/* ── Image Gallery: vertical thumbs + large main ── */}
+            <div className="lg:sticky lg:top-24">
+              <div className="flex gap-3">
+                {/* Vertical thumbnail strip — desktop only */}
+                <div className="hidden lg:flex flex-col gap-2 w-20 shrink-0 max-h-[calc(100vh-8rem)] overflow-y-auto pr-1 [scrollbar-width:thin]">
+                  {images.map((src, i) => (
                     <button
                       key={i}
                       type="button"
-                      onClick={() => { setCurrentImage(i % images.length); setShowZoom(true); }}
-                      className="relative group aspect-[3/4] overflow-hidden bg-muted"
+                      onClick={() => setCurrentImage(i)}
+                      onMouseEnter={() => setCurrentImage(i)}
+                      className={`relative aspect-[3/4] overflow-hidden bg-muted transition-all border-2 ${
+                        i === currentImage ? 'border-primary' : 'border-transparent opacity-70 hover:opacity-100'
+                      }`}
                       aria-label={`View image ${i + 1}`}
                     >
-                      <img
-                        src={src}
-                        alt={`${product.name} view ${i + 1}`}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading={i < 2 ? 'eager' : 'lazy'}
-                        width={600}
-                        height={800}
-                      />
-                      {i === 0 && (
-                        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
-                          {product.is_new && (
-                            <span className="bg-primary text-primary-foreground text-[9px] font-display font-bold tracking-[0.15em] px-3 py-1 uppercase">New</span>
-                          )}
-                          {discountPercent > 0 && (
-                            <span className="bg-accent text-accent-foreground text-[9px] font-body font-bold px-2.5 py-1">{discountPercent}% OFF</span>
-                          )}
-                        </div>
-                      )}
-                      {i === 0 && (
-                        <span className="absolute top-3 right-3 bg-background/80 backdrop-blur p-2 rounded-full shadow-sm z-10">
-                          <ZoomIn className="h-3.5 w-3.5" />
-                        </span>
-                      )}
+                      <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
                     </button>
-                  );
-                })}
+                  ))}
+                </div>
+
+                {/* Main image */}
+                <div className="relative flex-1 group bg-muted overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setShowZoom(true)}
+                    className="block w-full aspect-[3/4]"
+                    aria-label="Zoom image"
+                  >
+                    <img
+                      src={images[currentImage] || '/placeholder.svg'}
+                      alt={`${product.name} — view ${currentImage + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                      loading="eager"
+                      width={900}
+                      height={1200}
+                    />
+                  </button>
+
+                  <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10 pointer-events-none">
+                    {product.is_new && (
+                      <span className="bg-primary text-primary-foreground text-[9px] font-display font-bold tracking-[0.18em] px-3 py-1 uppercase">New</span>
+                    )}
+                    {discountPercent > 0 && (
+                      <span className="bg-accent text-accent-foreground text-[9px] font-body font-bold px-2.5 py-1">{discountPercent}% OFF</span>
+                    )}
+                  </div>
+
+                  <span className="absolute top-4 right-4 bg-background/85 backdrop-blur p-2 rounded-full shadow-sm z-10 pointer-events-none">
+                    <ZoomIn className="h-3.5 w-3.5" />
+                  </span>
+
+                  {images.length > 1 && (
+                    <span className="absolute bottom-4 right-4 bg-foreground/70 text-background font-body text-[10px] tracking-wider px-2.5 py-1 backdrop-blur z-10">
+                      {currentImage + 1} / {images.length}
+                    </span>
+                  )}
+
+                  {images.length > 1 && (
+                    <>
+                      <button type="button" onClick={prevImage}
+                        className="lg:hidden absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2 rounded-full z-10"
+                        aria-label="Previous image"><ChevronLeft className="h-4 w-4" /></button>
+                      <button type="button" onClick={nextImage}
+                        className="lg:hidden absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur p-2 rounded-full z-10"
+                        aria-label="Next image"><ChevronRight className="h-4 w-4" /></button>
+                    </>
+                  )}
+                </div>
               </div>
 
-              {/* Trust badges — below image gallery */}
-              <div className="grid grid-cols-3 gap-2 mt-4">
+              {/* Mobile pagination dots */}
+              {images.length > 1 && (
+                <div className="lg:hidden flex justify-center gap-1.5 mt-3">
+                  {images.map((_, i) => (
+                    <button key={i} type="button" onClick={() => setCurrentImage(i)}
+                      className={`h-1.5 transition-all ${i === currentImage ? 'w-6 bg-primary' : 'w-1.5 bg-border'}`}
+                      aria-label={`Go to image ${i + 1}`} />
+                  ))}
+                </div>
+              )}
+
+              {/* Trust badges — below gallery */}
+              <div className="grid grid-cols-3 gap-2 mt-5">
                 {[
                   { icon: Truck, label: 'Free Shipping', sub: 'Pan India' },
                   { icon: Shield, label: 'Secure Payment', sub: '100% Safe' },
                   { icon: RotateCcw, label: 'Easy Returns', sub: '7-day Policy' },
                 ].map(({ icon: Icon, label, sub }) => (
-                  <div key={label} className="text-center p-3 border border-border">
+                  <div key={label} className="text-center p-3 border border-border/70">
                     <Icon className="h-5 w-5 mx-auto mb-1.5 text-accent" />
                     <p className="font-display text-[9px] font-bold tracking-wider text-foreground uppercase">{label}</p>
                     <p className="font-body text-[9px] text-muted-foreground">{sub}</p>
                   </div>
                 ))}
-              </div>
-
-              {/* Care Information — collapsible, below gallery */}
-              <div className="mt-4">
-                <CollapsibleSection title="Care Information" defaultOpen={false}>
-                  <div className="space-y-3">
-                    {[
-                      { icon: '🧼', title: 'Dry Clean Only', desc: 'Professional dry cleaning recommended.' },
-                      { icon: '👜', title: 'Proper Storage', desc: 'Store in cotton bag. Zari reacts to weather.' },
-                      { icon: '🚫', title: 'Avoid Perfume', desc: 'Do not spray directly on the garment.' },
-                      { icon: '🌬️', title: 'Air Regularly', desc: 'Air sarees every few months.' },
-                    ].map(({ icon, title, desc }) => (
-                      <div key={title} className="flex items-start gap-3">
-                        <span className="text-sm mt-0.5 shrink-0">{icon}</span>
-                        <div>
-                          <p className="font-display text-[10px] font-bold tracking-wider text-foreground uppercase">{title}</p>
-                          <p className="font-body text-[11px] text-muted-foreground leading-relaxed">{desc}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CollapsibleSection>
               </div>
             </div>
 
