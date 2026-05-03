@@ -27,6 +27,7 @@ const marketingItems = [
   { title: 'Banners', url: '/admin/banners', icon: Image },
   { title: 'Blog', url: '/admin/blog', icon: FileText },
   { title: 'Testimonials', url: '/admin/testimonials', icon: MessageCircleHeart },
+  { title: 'Google Reviews', url: '/admin/google-reviews', icon: Star },
   { title: 'Newsletter', url: '/admin/newsletter', icon: Mail },
 ];
 
