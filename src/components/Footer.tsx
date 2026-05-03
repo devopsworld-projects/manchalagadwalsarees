@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Instagram, Facebook, Youtube } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/WhatsAppIcon';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useMenuItems } from '@/hooks/useMenuItems';
 import logo from '@/assets/logo.png';
@@ -17,6 +18,7 @@ export function Footer() {
   const logoSrc = settings?.logo_url || logo;
   const description = settings?.footer_description || 'Discover the finest collection of handcrafted sarees that blend traditional artistry with contemporary grace.';
   const phone = settings?.store_phone || '+91 98858 79188';
+  const whatsappNumber = settings?.whatsapp_number || '919885879188';
   const email = settings?.store_email || 'info@manchalagadwalsarees.com';
   const address = settings?.store_address || 'Hyderabad, Telangana, India';
   const igUrl = settings?.social_instagram || 'https://instagram.com';
@@ -135,6 +137,19 @@ className="group/link flex items-center gap-2 text-sm font-body font-normal text
                     <Phone className="h-3.5 w-3.5 text-accent" />
                   </span>
                   {phone}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`https://wa.me/${whatsappNumber}?text=Hi%2C%20I%27m%20interested%20in%20your%20sarees!`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-sm font-body font-normal text-background/70 hover:text-[#25D366] transition-colors"
+                >
+                  <span className="w-8 h-8 border border-accent/20 flex items-center justify-center shrink-0">
+                    <WhatsAppIcon className="h-3.5 w-3.5 text-[#25D366]" />
+                  </span>
+                  Chat on WhatsApp
                 </a>
               </li>
               <li>
