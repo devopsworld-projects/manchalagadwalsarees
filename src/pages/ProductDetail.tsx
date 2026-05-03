@@ -15,6 +15,7 @@ import { useCart } from '@/context/CartContext';
 import { useCurrency } from '@/context/CurrencyContext';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { toast } from 'sonner';
+import { ensureProductOgImage } from '@/lib/ogImage';
 import {
   ShoppingBag, Heart, Share2, Truck, Shield, RotateCcw,
   ChevronLeft, ChevronRight, ZoomIn, ArrowLeft, X, Copy, Check,
@@ -117,6 +118,10 @@ function ProductDetail() {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const shareRef = useRef<HTMLDivElement>(null);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [ogImageUrl, setOgImageUrl] = useState<string | null>(null);
+  const [pincode, setPincode] = useState('');
+  const [pincodeStatus, setPincodeStatus] = useState<null | { ok: boolean; eta: string; cod: boolean; city?: string; message: string }>(null);
+  const [pincodeChecking, setPincodeChecking] = useState(false);
   const desktopShareMenuRef = useRef<HTMLDivElement>(null);
   const mobileShareMenuRef = useRef<HTMLDivElement>(null);
 
@@ -169,6 +174,26 @@ function ProductDetail() {
         image: product.images?.[0] || '/placeholder.svg', price: Number(product.price),
       });
     }
+  }, [product]);
+
+  // Generate per-product Open Graph card (cached in storage by SKU)
+  useEffect(() => {
+    let cancelled = false;
+    if (!product) return;
+    const firstImage = product.images?.[0];
+    if (!firstImage) return;
+    const cat = (product as any).categories?.name || '';
+    const priceLabel = `₹${Number(product.price).toLocaleString('en-IN')}`;
+    ensureProductOgImage({
+      sku: product.sku,
+      name: product.name,
+      category: cat,
+      priceLabel,
+      imageUrl: firstImage,
+    }).then(url => {
+      if (!cancelled && url) setOgImageUrl(url);
+    });
+    return () => { cancelled = true; };
   }, [product]);
 
   useEffect(() => {
@@ -367,7 +392,7 @@ function ProductDetail() {
           (product.description ? product.description.replace(/\s+/g, ' ').slice(0, 140) + '… ' : '') +
           `Shop ${product.name}${categoryName ? ` from our ${categoryName} collection` : ''} at ${formatPrice(Number(displayPrice))}. Free shipping across India.`
         }
-        canonicalPath={`/product/${product.sku}`} ogImage={images[0]} ogType="product" jsonLd={productJsonLd}
+        canonicalPath={`/product/${product.sku}`} ogImage={ogImageUrl || images[0]} ogType="product" jsonLd={productJsonLd}
       />
       <AnnouncementBar /><Navbar />
 
@@ -567,42 +592,112 @@ function ProductDetail() {
 
               {/* Delivery & Availability */}
               <CollapsibleSection title="Delivery & Availability" defaultOpen>
-                <ul className="space-y-3 font-body text-sm text-foreground/80">
-                  <li className="flex items-start gap-3">
-                    <Truck className="h-4 w-4 text-accent mt-0.5 shrink-0" />
-                    <div>
-                      <p className="font-medium text-foreground">Estimated delivery</p>
-                      <p className="text-muted-foreground text-[13px]">
-                        {(() => {
-                          const min = new Date(); min.setDate(min.getDate() + 4);
-                          const max = new Date(); max.setDate(max.getDate() + 7);
-                          const fmt = (d: Date) => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-                          return `${fmt(min)} – ${fmt(max)} (3–7 business days, pan-India)`;
-                        })()}
-                      </p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
-                    <div>
-                      <p className="font-medium text-foreground">Cash on Delivery available</p>
-                      <p className="text-muted-foreground text-[13px]">For orders below ₹20,000. Verify pincode at checkout.</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Shield className={`h-4 w-4 mt-0.5 shrink-0 ${isInStock ? 'text-emerald-600' : 'text-red-600'}`} />
-                    <div>
-                      <p className="font-medium text-foreground">
-                        {hasVariants && !allAttributesSelected
-                          ? 'Select options to see availability'
-                          : isInStock
-                          ? `In stock${displayStock <= 5 ? ` — only ${displayStock} left` : ''}`
-                          : 'Currently out of stock'}
-                      </p>
-                      <p className="text-muted-foreground text-[13px]">Ships from Hyderabad, Telangana.</p>
-                    </div>
-                  </li>
-                </ul>
+                <div className="space-y-4">
+                  <form
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      const pin = pincode.trim();
+                      if (!/^\d{6}$/.test(pin)) {
+                        setPincodeStatus({ ok: false, eta: '', cod: false, message: 'Enter a valid 6-digit Indian pincode.' });
+                        return;
+                      }
+                      setPincodeChecking(true);
+                      try {
+                        const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+                        const json = await res.json();
+                        const office = Array.isArray(json) && json[0]?.PostOffice?.[0];
+                        if (!office) {
+                          setPincodeStatus({ ok: false, eta: '', cod: false, message: 'Pincode not serviceable. Please try another.' });
+                          return;
+                        }
+                        const state = office.State as string;
+                        const district = (office.District || office.Name) as string;
+                        const fastStates = ['Telangana', 'Andhra Pradesh', 'Karnataka', 'Tamil Nadu', 'Maharashtra'];
+                        const isFast = fastStates.includes(state);
+                        const minDays = isFast ? 2 : 4;
+                        const maxDays = isFast ? 4 : 7;
+                        const min = new Date(); min.setDate(min.getDate() + minDays);
+                        const max = new Date(); max.setDate(max.getDate() + maxDays);
+                        const fmt = (d: Date) => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                        const noCodStates = ['Andaman and Nicobar Islands', 'Lakshadweep'];
+                        const cod = !noCodStates.includes(state);
+                        setPincodeStatus({ ok: true, eta: `${fmt(min)} – ${fmt(max)}`, cod, city: `${district}, ${state}`, message: '' });
+                      } catch {
+                        setPincodeStatus({ ok: false, eta: '', cod: false, message: 'Could not verify pincode. Please try again.' });
+                      } finally {
+                        setPincodeChecking(false);
+                      }
+                    }}
+                    className="flex items-stretch gap-2"
+                  >
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="\d{6}"
+                      maxLength={6}
+                      value={pincode}
+                      onChange={e => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      placeholder="Enter delivery pincode"
+                      aria-label="Delivery pincode"
+                      className="flex-1 min-h-[44px] px-3 py-2 text-sm font-body border border-border bg-background focus:outline-none focus:border-primary"
+                    />
+                    <button
+                      type="submit"
+                      disabled={pincodeChecking || pincode.length !== 6}
+                      className="min-h-[44px] px-4 text-[11px] tracking-[0.2em] font-display font-bold uppercase border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {pincodeChecking ? 'Checking…' : 'Check'}
+                    </button>
+                  </form>
+
+                  {pincodeStatus && !pincodeStatus.ok && (
+                    <p className="font-body text-[13px] text-red-600">{pincodeStatus.message}</p>
+                  )}
+
+                  <ul className="space-y-3 font-body text-sm text-foreground/80">
+                    <li className="flex items-start gap-3">
+                      <Truck className="h-4 w-4 text-accent mt-0.5 shrink-0" />
+                      <div>
+                        <p className="font-medium text-foreground">Estimated delivery</p>
+                        <p className="text-muted-foreground text-[13px]">
+                          {pincodeStatus?.ok
+                            ? `${pincodeStatus.eta} — ${pincodeStatus.city}`
+                            : (() => {
+                                const min = new Date(); min.setDate(min.getDate() + 4);
+                                const max = new Date(); max.setDate(max.getDate() + 7);
+                                const fmt = (d: Date) => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                                return `${fmt(min)} – ${fmt(max)} (3–7 business days, pan-India)`;
+                              })()}
+                        </p>
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <Check className={`h-4 w-4 mt-0.5 shrink-0 ${pincodeStatus?.ok && !pincodeStatus.cod ? 'text-red-600' : 'text-emerald-600'}`} />
+                      <div>
+                        <p className="font-medium text-foreground">
+                          {pincodeStatus?.ok
+                            ? (pincodeStatus.cod ? 'Cash on Delivery available' : 'COD not available for this pincode')
+                            : 'Cash on Delivery available'}
+                        </p>
+                        <p className="text-muted-foreground text-[13px]">For orders below ₹20,000.</p>
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <Shield className={`h-4 w-4 mt-0.5 shrink-0 ${isInStock ? 'text-emerald-600' : 'text-red-600'}`} />
+                      <div>
+                        <p className="font-medium text-foreground">
+                          {hasVariants && !allAttributesSelected
+                            ? 'Select options to see availability'
+                            : isInStock
+                            ? `In stock${displayStock <= 5 ? ` — only ${displayStock} left` : ''}`
+                            : 'Currently out of stock'}
+                        </p>
+                        <p className="text-muted-foreground text-[13px]">Ships from Hyderabad, Telangana.</p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+
               </CollapsibleSection>
 
               {/* Collapsible Description */}
