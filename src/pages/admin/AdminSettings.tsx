@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Save, Upload, Palette, Globe, Image, Megaphone, Share2, Settings } from 'lucide-react';
+import { Save, Upload, Palette, Globe, Image, Megaphone, Share2, Settings, Truck, Instagram } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -134,12 +134,14 @@ const AdminSettings = () => {
 
       <form onSubmit={handleSubmit}>
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 mb-6">
+          <TabsList className="grid w-full grid-cols-4 sm:grid-cols-8 mb-6">
             <TabsTrigger value="general" className="text-xs gap-1"><Settings className="h-3.5 w-3.5 hidden sm:inline" /> General</TabsTrigger>
             <TabsTrigger value="branding" className="text-xs gap-1"><Upload className="h-3.5 w-3.5 hidden sm:inline" /> Branding</TabsTrigger>
             <TabsTrigger value="appearance" className="text-xs gap-1"><Palette className="h-3.5 w-3.5 hidden sm:inline" /> Colors</TabsTrigger>
             <TabsTrigger value="hero" className="text-xs gap-1"><Image className="h-3.5 w-3.5 hidden sm:inline" /> Hero</TabsTrigger>
             <TabsTrigger value="social" className="text-xs gap-1"><Share2 className="h-3.5 w-3.5 hidden sm:inline" /> Social</TabsTrigger>
+            <TabsTrigger value="instagram" className="text-xs gap-1"><Instagram className="h-3.5 w-3.5 hidden sm:inline" /> IG Feed</TabsTrigger>
+            <TabsTrigger value="cod" className="text-xs gap-1"><Truck className="h-3.5 w-3.5 hidden sm:inline" /> COD</TabsTrigger>
             <TabsTrigger value="announcements" className="text-xs gap-1"><Megaphone className="h-3.5 w-3.5 hidden sm:inline" /> Announce</TabsTrigger>
           </TabsList>
 
@@ -269,6 +271,65 @@ const AdminSettings = () => {
             <Field label="Instagram URL" value={form.social_instagram} onChange={v => update('social_instagram', v)} placeholder="https://instagram.com/yourpage" />
             <Field label="Facebook URL" value={form.social_facebook} onChange={v => update('social_facebook', v)} placeholder="https://facebook.com/yourpage" />
             <Field label="YouTube URL" value={form.social_youtube} onChange={v => update('social_youtube', v)} placeholder="https://youtube.com/yourchannel" />
+          </TabsContent>
+
+          {/* Instagram */}
+          <TabsContent value="instagram" className="max-w-2xl space-y-5">
+            <SectionTitle>Instagram Feed (Behold.so)</SectionTitle>
+            <div className="bg-muted/50 p-4 rounded-lg border border-border text-xs font-body text-muted-foreground space-y-2">
+              <p><strong>Setup (free, ~5 min):</strong></p>
+              <ol className="list-decimal list-inside space-y-1">
+                <li>Go to <a href="https://behold.so" target="_blank" rel="noopener" className="text-primary underline">behold.so</a> and sign up (free).</li>
+                <li>Connect your Instagram <strong>@manchala_gadwal_sareee</strong>.</li>
+                <li>Create a widget, copy the <strong>Feed ID</strong>, paste below.</li>
+              </ol>
+            </div>
+            <Field label="Behold Feed ID" value={form.behold_feed_id} onChange={v => update('behold_feed_id', v)} placeholder="e.g. abc123XYZ" helper="Leave empty to show a 'Follow us' CTA instead of the live feed." />
+            <div className="flex items-center gap-3">
+              <Switch
+                checked={(form.instagram_section_enabled ?? 'true') === 'true'}
+                onCheckedChange={v => update('instagram_section_enabled', v ? 'true' : 'false')}
+              />
+              <Label className="font-body text-sm">Show Instagram section on homepage</Label>
+            </div>
+            <Field label="Section Title" value={form.instagram_section_title} onChange={v => update('instagram_section_title', v)} placeholder="Follow Our Journey" />
+            <Field label="Section Subtitle" value={form.instagram_section_subtitle} onChange={v => update('instagram_section_subtitle', v)} placeholder="@manchala_gadwal_sareee" />
+          </TabsContent>
+
+          {/* COD Rules */}
+          <TabsContent value="cod" className="max-w-2xl space-y-5">
+            <SectionTitle>Cash on Delivery Rules</SectionTitle>
+            <div className="flex items-center gap-3">
+              <Switch
+                checked={(form.cod_enabled ?? 'true') === 'true'}
+                onCheckedChange={v => update('cod_enabled', v ? 'true' : 'false')}
+              />
+              <Label className="font-body text-sm">Enable Cash on Delivery</Label>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="Minimum Order (₹)" value={form.cod_min_order} onChange={v => update('cod_min_order', v)} inputType="number" helper="0 = no minimum" />
+              <Field label="Maximum Order (₹)" value={form.cod_max_order} onChange={v => update('cod_max_order', v)} inputType="number" helper="0 = no maximum" />
+            </div>
+            <div>
+              <Label className="font-body text-sm font-semibold block mb-2">Pincode Restriction</Label>
+              <select
+                value={form.cod_pincode_mode || 'all'}
+                onChange={e => update('cod_pincode_mode', e.target.value)}
+                className="w-full h-10 border border-border rounded-md px-3 font-body text-sm bg-background"
+              >
+                <option value="all">Allow all pincodes</option>
+                <option value="allow">Only allow listed pincodes</option>
+                <option value="block">Block listed pincodes</option>
+              </select>
+            </div>
+            <Field
+              label="Pincodes (comma or space separated)"
+              value={form.cod_pincodes}
+              onChange={v => update('cod_pincodes', v)}
+              type="textarea"
+              placeholder="500001, 500002, 500003"
+              helper="Used only if pincode restriction is set to allow/block."
+            />
           </TabsContent>
 
           {/* Announcements */}
