@@ -176,6 +176,26 @@ function ProductDetail() {
     }
   }, [product]);
 
+  // Generate per-product Open Graph card (cached in storage by SKU)
+  useEffect(() => {
+    let cancelled = false;
+    if (!product) return;
+    const firstImage = product.images?.[0];
+    if (!firstImage) return;
+    const cat = (product as any).categories?.name || '';
+    const priceLabel = `₹${Number(product.price).toLocaleString('en-IN')}`;
+    ensureProductOgImage({
+      sku: product.sku,
+      name: product.name,
+      category: cat,
+      priceLabel,
+      imageUrl: firstImage,
+    }).then(url => {
+      if (!cancelled && url) setOgImageUrl(url);
+    });
+    return () => { cancelled = true; };
+  }, [product]);
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       const target = e.target as Node;
