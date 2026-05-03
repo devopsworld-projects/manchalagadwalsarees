@@ -163,13 +163,13 @@ export function Navbar() {
             </nav>
           </div>
           <a
-            href="https://wa.me/919494644998"
+            href="https://wa.me/919885879188"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-[10px] tracking-[0.1em] font-body font-normal text-background/70 hover:text-accent transition-colors"
           >
             <Phone className="h-3 w-3 text-accent/70" />
-            +91 94946 44998
+            +91 98858 79188
           </a>
         </div>
         {/* Bottom gold accent */}
@@ -438,7 +438,7 @@ export function Navbar() {
             {/* Bottom CTA */}
             <div className="p-5 border-t border-border">
               <a
-                href="https://wa.me/919494644998"
+                href="https://wa.me/919885879188"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full py-3 bg-foreground text-background text-[10px] font-display tracking-[0.2em] uppercase hover:bg-primary transition-colors"

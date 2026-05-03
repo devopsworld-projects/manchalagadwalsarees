@@ -22,7 +22,7 @@ const jsonLd = {
   name: "Manchala Gadwal Sarees",
   description: 'Authentic handwoven Gadwal silk sarees from Telangana. Pure zari, temple borders, bridal & festive collections with free shipping across India.',
   url: 'https://manchalagadwalsarees.lovable.app',
-  telephone: '+919494644998',
+  telephone: '+919885879188',
   priceRange: '₹₹',
 };
 

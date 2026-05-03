@@ -59,7 +59,7 @@ export function MenuPreview({ items, group }: MenuPreviewProps) {
               </nav>
               <span className="flex items-center gap-1.5 text-[9px] tracking-[0.1em] text-background/70">
                 <Phone className="h-2.5 w-2.5 text-accent/70" />
-                +91 94946 44998
+                +91 98858 79188
               </span>
             </div>
             <div className="h-[1px] bg-gradient-to-r from-transparent via-accent/40 to-transparent" />

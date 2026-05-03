@@ -3,7 +3,7 @@ import { WhatsAppIcon } from '@/components/WhatsAppIcon';
 
 export function WhatsAppButton() {
   const { data: settings } = useStoreSettings();
-  const phone = settings?.whatsapp_number || '919494644998';
+  const phone = settings?.whatsapp_number || '919885879188';
   const url = `https://wa.me/${phone}?text=Hi%2C%20I%27m%20interested%20in%20your%20sarees!`;
 
   return (
