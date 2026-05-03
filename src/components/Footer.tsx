@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Instagram, Facebook, Youtube } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/WhatsAppIcon';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useMenuItems } from '@/hooks/useMenuItems';
 import logo from '@/assets/logo.png';
