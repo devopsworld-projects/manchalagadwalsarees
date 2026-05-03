@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ProductCard } from './ProductCard';
 import { Link } from 'react-router-dom';
+import { SectionHeader } from './SectionHeader';
 
 export function BestSellers() {
   const { data: bestSellers = [] } = useQuery({
