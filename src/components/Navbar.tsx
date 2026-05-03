@@ -149,33 +149,33 @@ export function Navbar() {
     <header className="sticky top-0 z-50">
       {/* ─── Top Utility Bar ─── */}
       <div className="bg-foreground text-background hidden md:block">
-        <div className="container flex items-center justify-between h-8">
+        <div className="container flex items-center justify-between h-9">
           <div className="flex items-center gap-5">
-            <nav className="flex items-center gap-6">
+            <nav className="flex items-center gap-7">
               {topBarItems.map(item => (
                 <Link
                   key={item.id}
                   to={getItemUrl(item)}
-                  className="text-[10px] tracking-[0.2em] font-display font-medium text-background/70 hover:text-accent transition-colors uppercase"
+                  className="text-[10px] tracking-luxe font-display font-normal text-background/65 hover:text-accent transition-colors duration-500 uppercase"
                 >
                   {item.label}
                 </Link>
               ))}
             </nav>
           </div>
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-7">
             <a
               href="tel:+919885879188"
-              className="flex items-center gap-2 text-[10px] tracking-[0.1em] font-body font-normal text-background/70 hover:text-accent transition-colors"
+              className="flex items-center gap-2 text-[10px] tracking-refined font-body font-normal text-background/65 hover:text-accent transition-colors duration-500"
             >
-              <Phone className="h-3 w-3 text-accent/70" />
+              <Phone className="h-3 w-3 text-accent/80" />
               +91 98858 79188
             </a>
             <a
               href={`https://wa.me/${settings?.whatsapp_number || '919885879188'}?text=Hi%2C%20I%27m%20interested%20in%20your%20sarees!`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-[10px] tracking-[0.1em] font-body font-normal text-background/70 hover:text-[#25D366] transition-colors"
+              className="flex items-center gap-2 text-[10px] tracking-refined font-body font-normal text-background/65 hover:text-[#25D366] transition-colors duration-500"
               aria-label="Chat on WhatsApp"
             >
               <WhatsAppIcon className="h-3.5 w-3.5 text-[#25D366]" />
@@ -183,13 +183,12 @@ export function Navbar() {
             </a>
           </div>
         </div>
-        {/* Bottom gold accent */}
-        <div className="h-[1px] bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
       </div>
 
       {/* ─── Main Navigation ─── */}
-      <div className="bg-background border-b border-border/60 relative">
-        <div className="container flex items-center justify-between gap-4 py-3 md:py-4">
+      <div className="bg-background/95 backdrop-blur-md border-b border-border/50 relative shadow-soft">
+        <div className="container flex items-center justify-between gap-4 py-4 md:py-5">
           {/* Mobile: menu button + currency on the left */}
           <div className="flex items-center gap-1 md:hidden">
             <button
