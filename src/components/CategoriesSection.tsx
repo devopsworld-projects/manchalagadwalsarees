@@ -71,22 +71,15 @@ export function CategoriesSection() {
   const displayed = showAll ? categories : categories.slice(0, 8);
 
   return (
-    <section className="pt-6 md:pt-8 pb-24 md:pb-32 relative kolam-texture">
+    <section className="pt-4 md:pt-6 pb-20 md:pb-32 relative kolam-texture">
       <div className="container">
-        {/* Header */}
-        <div className="text-center mb-16 md:mb-20">
-          <div className="lotus-divider mb-5">
-            <span className="lotus" />
-          </div>
-          
-          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mt-2 tracking-wide">
-            Our Sacred Collections
-          </h2>
-          <div className="w-20 ornate-line mx-auto mt-5" />
-          <p className="font-serif text-base md:text-lg text-muted-foreground mt-4 italic max-w-md mx-auto">
-            {categories.length} curated traditions — woven across the looms of Bharat
-          </p>
-        </div>
+        <ScrollReveal>
+          <SectionHeader
+            eyebrow="Heritage Weaves"
+            title="Our Sacred Collections"
+            subtitle={`${categories.length} curated traditions — woven across the looms of Bharat`}
+          />
+        </ScrollReveal>
 
         {/* Clean uniform grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
