@@ -347,72 +347,46 @@ function ProductDetail() {
         {/* Product layout */}
         <div className="container px-4 md:px-6 py-4 md:py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
-            {/* ── Image Gallery ── */}
-            <div className="space-y-3">
-              {/* Main image */}
-              <div className="relative group">
-                <div className="aspect-[3/4] overflow-hidden bg-muted relative max-h-[70vh] lg:max-h-none">
-                  <ImageMagnifier src={images[currentImage]} alt={product.name} />
-
-                  {/* Badges */}
-                  <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
-                    {product.is_new && (
-                      <span className="bg-primary text-primary-foreground text-[9px] font-display font-bold tracking-[0.15em] px-3 py-1 uppercase">New</span>
-                    )}
-                    {discountPercent > 0 && (
-                      <span className="bg-accent text-accent-foreground text-[9px] font-body font-bold px-2.5 py-1">{discountPercent}% OFF</span>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={() => setShowZoom(true)}
-                    className="absolute top-4 right-4 bg-background/70 backdrop-blur p-2.5 shadow-sm hover:bg-background transition-colors z-10"
-                    aria-label="Zoom"
-                  >
-                    <ZoomIn className="h-4 w-4" />
-                  </button>
-
-                  {/* Image counter */}
-                  {images.length > 1 && (
-                    <div className="absolute bottom-3 right-3 bg-foreground/60 text-background text-[10px] font-body px-2 py-0.5">
-                      {currentImage + 1}/{images.length}
-                    </div>
-                  )}
-
-                  {/* Temple corner accents */}
-                  <div className="absolute top-2 left-2 w-6 h-6 border-t border-l border-accent/30" />
-                  <div className="absolute bottom-2 right-2 w-6 h-6 border-b border-r border-accent/30" />
-                </div>
-
-                {images.length > 1 && (
-                  <>
-                    <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/70 backdrop-blur p-2 shadow md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10" aria-label="Previous">
-                      <ChevronLeft className="h-4 w-4" />
-                    </button>
-                    <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/70 backdrop-blur p-2 shadow md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10" aria-label="Next">
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
-                  </>
-                )}
-              </div>
-
-              {/* Thumbnail grid below main image */}
-              {images.length > 1 && (
-                <div className="grid grid-cols-4 gap-2">
-                  {images.map((img, i) => (
+            {/* ── Image Gallery: 2x2 grid (Kankatala-style) ── */}
+            <div>
+              <div className="grid grid-cols-2 gap-2 md:gap-3">
+                {Array.from({ length: 4 }).map((_, i) => {
+                  const src = images[i] || images[i % images.length] || '/placeholder.svg';
+                  return (
                     <button
                       key={i}
-                      onClick={() => setCurrentImage(i)}
-                      className={`aspect-[3/4] overflow-hidden border-2 transition-all ${
-                        i === currentImage ? 'border-accent' : 'border-transparent opacity-50 hover:opacity-100'
-                      }`}
+                      type="button"
+                      onClick={() => { setCurrentImage(i % images.length); setShowZoom(true); }}
+                      className="relative group aspect-[3/4] overflow-hidden bg-muted"
                       aria-label={`View image ${i + 1}`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
+                      <img
+                        src={src}
+                        alt={`${product.name} view ${i + 1}`}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading={i < 2 ? 'eager' : 'lazy'}
+                        width={600}
+                        height={800}
+                      />
+                      {i === 0 && (
+                        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+                          {product.is_new && (
+                            <span className="bg-primary text-primary-foreground text-[9px] font-display font-bold tracking-[0.15em] px-3 py-1 uppercase">New</span>
+                          )}
+                          {discountPercent > 0 && (
+                            <span className="bg-accent text-accent-foreground text-[9px] font-body font-bold px-2.5 py-1">{discountPercent}% OFF</span>
+                          )}
+                        </div>
+                      )}
+                      {i === 0 && (
+                        <span className="absolute top-3 right-3 bg-background/80 backdrop-blur p-2 rounded-full shadow-sm z-10">
+                          <ZoomIn className="h-3.5 w-3.5" />
+                        </span>
+                      )}
                     </button>
-                  ))}
-                </div>
-              )}
+                  );
+                })}
+              </div>
             </div>
 
             {/* ── Product Details ── */}
