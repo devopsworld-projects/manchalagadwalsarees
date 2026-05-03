@@ -1018,22 +1018,60 @@ function ProductDetail() {
 
       {mobileShareSheet}
 
-      {/* Fullscreen zoom */}
+      {/* Fullscreen lightbox with zoom controls */}
       {showZoom && (
-        <div className="fixed inset-0 z-[70] bg-foreground/95 flex items-center justify-center" onClick={() => setShowZoom(false)}>
-          <button className="absolute top-4 right-4 p-3 bg-background/20 text-white hover:bg-background/40 z-10" onClick={() => setShowZoom(false)} aria-label="Close"><X className="h-6 w-6" /></button>
+        <div
+          className="fixed inset-0 z-[70] bg-foreground/95 flex items-center justify-center"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${product.name} image viewer`}
+          onClick={() => setShowZoom(false)}
+        >
+          <button className="absolute top-4 right-4 p-3 bg-background/20 text-white hover:bg-background/40 z-20" onClick={() => setShowZoom(false)} aria-label="Close image viewer"><X className="h-6 w-6" /></button>
+
+          {/* Zoom controls */}
+          <div
+            className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-background/20 backdrop-blur-sm z-20"
+            onClick={e => e.stopPropagation()}
+          >
+            <button onClick={() => setLightboxScale(s => Math.max(1, s - 0.5))} className="p-2.5 text-white hover:bg-background/30" aria-label="Zoom out" disabled={lightboxScale <= 1}><ZoomOut className="h-5 w-5" /></button>
+            <span className="font-body text-xs text-white tabular-nums px-2 min-w-[3.5rem] text-center">{Math.round(lightboxScale * 100)}%</span>
+            <button onClick={() => setLightboxScale(s => Math.min(4, s + 0.5))} className="p-2.5 text-white hover:bg-background/30" aria-label="Zoom in" disabled={lightboxScale >= 4}><ZoomIn className="h-5 w-5" /></button>
+            <button onClick={() => { setLightboxScale(1); setLightboxOffset({ x: 0, y: 0 }); }} className="p-2.5 text-white hover:bg-background/30" aria-label="Reset zoom"><Maximize2 className="h-5 w-5" /></button>
+          </div>
+
           {images.length > 1 && (
             <>
-              <button onClick={e => { e.stopPropagation(); prevImage(); }} className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-background/20 text-white hover:bg-background/40 z-10"><ChevronLeft className="h-6 w-6" /></button>
-              <button onClick={e => { e.stopPropagation(); nextImage(); }} className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-background/20 text-white hover:bg-background/40 z-10"><ChevronRight className="h-6 w-6" /></button>
+              <button onClick={e => { e.stopPropagation(); prevImage(); }} className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-background/20 text-white hover:bg-background/40 z-20" aria-label="Previous image"><ChevronLeft className="h-6 w-6" /></button>
+              <button onClick={e => { e.stopPropagation(); nextImage(); }} className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-background/20 text-white hover:bg-background/40 z-20" aria-label="Next image"><ChevronRight className="h-6 w-6" /></button>
             </>
           )}
-          <img src={images[currentImage]} alt={product.name} className="max-w-[90vw] max-h-[85vh] object-contain" onClick={e => e.stopPropagation()} />
+
+          <div
+            className="overflow-hidden max-w-[90vw] max-h-[85vh] flex items-center justify-center"
+            onClick={e => e.stopPropagation()}
+            onWheel={e => {
+              e.preventDefault();
+              setLightboxScale(s => Math.max(1, Math.min(4, s + (e.deltaY < 0 ? 0.25 : -0.25))));
+            }}
+            onDoubleClick={() => setLightboxScale(s => (s > 1 ? 1 : 2))}
+          >
+            <img
+              src={images[currentImage]}
+              alt={`${product.name} — view ${currentImage + 1} of ${images.length}`}
+              className="max-w-[90vw] max-h-[85vh] object-contain transition-transform duration-150 select-none"
+              style={{ transform: `scale(${lightboxScale}) translate(${lightboxOffset.x}px, ${lightboxOffset.y}px)`, cursor: lightboxScale > 1 ? 'grab' : 'zoom-in' }}
+              draggable={false}
+            />
+          </div>
+
           {images.length > 1 && (
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 bg-background/20 backdrop-blur-sm p-2">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 bg-background/20 backdrop-blur-sm p-2 z-20" onClick={e => e.stopPropagation()}>
               {images.map((img, i) => (
-                <button key={i} onClick={e => { e.stopPropagation(); setCurrentImage(i); }}
-                  className={`w-10 h-12 overflow-hidden border-2 ${i === currentImage ? 'border-white' : 'border-transparent opacity-50 hover:opacity-80'}`}>
+                <button key={i} onClick={() => setCurrentImage(i)}
+                  aria-label={`View image ${i + 1}`}
+                  aria-current={i === currentImage}
+                  className={`w-10 h-12 overflow-hidden border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-white ${i === currentImage ? 'border-white' : 'border-transparent opacity-50 hover:opacity-80'}`}>
                   <img src={img} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
