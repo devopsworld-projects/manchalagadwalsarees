@@ -70,86 +70,88 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group relative">
       <Link to={`/product/${product.sku}`} className="block">
-        {/* Image container with temple-inspired frame */}
-        <div className="relative aspect-[3/4] overflow-hidden bg-muted">
+        {/* Image — premium boutique frame */}
+        <div className="relative aspect-[3/4] overflow-hidden bg-secondary image-luxe">
           <img
             src={image}
             alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            className="w-full h-full object-cover"
             loading="lazy"
             width={800}
             height={1024}
           />
 
-          {/* Hover overlay with subtle gold gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          {/* Soft vignette on hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-foreground/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+          {/* Editorial inner frame */}
+          <div className="pointer-events-none absolute inset-2 border border-background/0 group-hover:border-background/30 transition-colors duration-700" />
 
           {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+          <div className="absolute top-4 left-4 flex flex-col gap-1.5">
             {product.is_new && !outOfStock && (
-              <span className="bg-accent text-accent-foreground text-[9px] font-display font-bold tracking-[0.15em] px-3 py-1 uppercase">
+              <span className="bg-background/95 backdrop-blur-sm text-primary text-[9px] font-display font-semibold tracking-luxe px-3 py-1.5 uppercase shadow-soft">
                 New
               </span>
             )}
             {outOfStock && (
-              <span className="bg-foreground/80 text-background text-[9px] font-display font-bold tracking-[0.15em] px-3 py-1 uppercase">
+              <span className="bg-foreground/85 text-background text-[9px] font-display font-semibold tracking-luxe px-3 py-1.5 uppercase">
                 Sold Out
               </span>
             )}
             {discount > 0 && !outOfStock && (
-              <span className="bg-primary text-primary-foreground text-[9px] font-body font-bold px-2.5 py-0.5">
+              <span className="bg-primary text-primary-foreground text-[9px] font-display font-semibold tracking-refined px-3 py-1.5 uppercase">
                 -{discount}%
               </span>
             )}
           </div>
 
-          {/* Wishlist */}
+          {/* Wishlist — refined circular */}
           <button
             onClick={handleToggleWishlist}
-            className="absolute top-3 right-3 p-2 bg-background/80 backdrop-blur-sm hover:bg-background transition-all border border-transparent hover:border-accent/30"
+            className="absolute top-4 right-4 h-9 w-9 rounded-full bg-background/95 backdrop-blur-sm flex items-center justify-center shadow-soft hover:shadow-elegant transition-all duration-500 hover:scale-110"
             aria-label="Add to wishlist"
           >
-            <Heart className={`h-4 w-4 transition-colors ${liked ? 'fill-primary text-primary' : 'text-foreground/50 group-hover:text-foreground'}`} />
+            <Heart className={`h-[15px] w-[15px] transition-colors ${liked ? 'fill-primary text-primary' : 'text-foreground/60'}`} />
           </button>
 
-          {/* Quick Add — desktop hover */}
+          {/* Quick Add — slides up on desktop hover */}
           {!outOfStock && (
             <button
               onClick={handleAddToCart}
-              className="absolute bottom-0 left-0 right-0 bg-foreground text-background text-[10px] font-display tracking-[0.25em] uppercase py-4 items-center justify-center gap-2.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 hover:bg-primary hidden md:flex"
+              className="absolute bottom-3 left-3 right-3 bg-background/95 backdrop-blur-md text-primary text-[10px] font-display tracking-refined uppercase py-3.5 items-center justify-center gap-2 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out hover:bg-primary hover:text-primary-foreground hidden md:flex shadow-elegant"
               aria-label="Quick add to cart"
             >
               <ShoppingBag className="h-3.5 w-3.5" />
-              Add to Cart
+              Add to Bag
             </button>
           )}
-
-          {/* Bottom gold accent line */}
-          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-accent/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </div>
 
-        {/* Product info */}
-        <div className="mt-4 space-y-2">
-          <h3 className="font-display text-[11px] md:text-xs font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 tracking-[0.08em] uppercase leading-relaxed">
+        {/* Product info — editorial spacing */}
+        <div className="mt-5 space-y-2.5 px-0.5">
+          <h3 className="font-display text-[12px] md:text-[13px] font-medium text-foreground/90 group-hover:text-primary transition-colors duration-500 line-clamp-2 tracking-refined uppercase leading-relaxed">
             {product.name}
           </h3>
+
           {product.colors && product.colors.length > 0 && (
             <div className="flex items-center gap-1.5">
               {product.colors.slice(0, 4).map((color, i) => (
                 <span
                   key={i}
-                  className="h-3 w-3 rounded-full border border-border/60"
+                  className="h-2.5 w-2.5 rounded-full border border-border/80 shadow-soft"
                   style={{ backgroundColor: color }}
                 />
               ))}
               {product.colors.length > 4 && (
-                <span className="text-[10px] text-muted-foreground font-body">+{product.colors.length - 4}</span>
+                <span className="text-[10px] text-muted-foreground font-body ml-0.5">+{product.colors.length - 4}</span>
               )}
             </div>
           )}
-          <div className="flex items-center justify-between gap-1">
-            <div className="flex items-center gap-2">
-              <span className="font-display font-bold text-foreground text-sm tracking-wide">
+
+          <div className="flex items-center justify-between gap-2 pt-0.5">
+            <div className="flex items-baseline gap-2">
+              <span className="font-display font-semibold text-foreground text-[15px] tracking-wide">
                 {format(product.price)}
               </span>
               {product.original_price && (
@@ -158,11 +160,10 @@ export function ProductCard({ product }: ProductCardProps) {
                 </span>
               )}
             </div>
-            {/* Mobile add-to-cart */}
             {!outOfStock && (
               <button
                 onClick={handleAddToCart}
-                className="md:hidden p-2 bg-foreground text-background shrink-0 hover:bg-primary transition-colors"
+                className="md:hidden h-9 w-9 rounded-full bg-primary text-primary-foreground shrink-0 flex items-center justify-center hover:bg-primary/90 transition-colors shadow-soft"
                 aria-label="Add to cart"
               >
                 <ShoppingBag className="h-3.5 w-3.5" />
