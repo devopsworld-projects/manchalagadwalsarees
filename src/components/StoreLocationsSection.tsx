@@ -141,11 +141,17 @@ export function StoreLocationsSection() {
                         Get Directions
                       </a>
                     )}
-                    {loc.map_url && (
+                    {(loc.map_url || loc.address) && (
                       <a
-                        href={loc.map_url}
+                        href={loc.map_url || '#'}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={(e) => {
+                          if (isMobile) {
+                            e.preventDefault();
+                            setMapLoc(loc);
+                          }
+                        }}
                         className="flex-1 inline-flex items-center justify-center gap-2 min-h-[44px] px-4 py-2.5 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-display text-[11px] font-bold tracking-[0.2em] uppercase"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
