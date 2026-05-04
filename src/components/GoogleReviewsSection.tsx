@@ -51,15 +51,15 @@ export function GoogleReviewsSection() {
   };
 
   return (
-    <section className="py-20 md:py-28 bg-background">
-      <div className="container">
+    <section className="py-12 md:py-28 bg-background">
+      <div className="container px-4">
         {/* Header */}
-        <div className="flex flex-col items-center text-center mb-12">
-          <div className="flex items-center gap-3 mb-4">
-            <GoogleGIcon className="h-8 w-8" />
-            <span className="font-display text-xs font-bold tracking-[0.25em] uppercase text-muted-foreground">Google Reviews</span>
+        <div className="flex flex-col items-center text-center mb-8 md:mb-12">
+          <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+            <GoogleGIcon className="h-6 w-6 md:h-8 md:w-8" />
+            <span className="font-display text-[10px] md:text-xs font-bold tracking-[0.25em] uppercase text-muted-foreground">Google Reviews</span>
           </div>
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground tracking-wide">
+          <h2 className="font-display text-2xl md:text-5xl font-bold text-foreground tracking-wide">
             What Our Customers Say
           </h2>
           <div className="w-20 ornate-line mt-5 mb-5" />
