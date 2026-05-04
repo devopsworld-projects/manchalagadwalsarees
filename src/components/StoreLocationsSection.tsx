@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { MapPin, Phone, Clock, Star, Navigation, ExternalLink } from 'lucide-react';
+import { MapPin, Phone, Clock, Star, Navigation, ExternalLink, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface LocationRow {
   id: string;
