@@ -77,13 +77,13 @@ export function GoogleReviewsSection() {
         </div>
 
         {/* Reviews grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {reviews.map((r) => {
             const initial = (r.author_initial || r.author_name[0] || '?').toUpperCase();
             return (
               <article
                 key={r.id}
-                className="relative bg-card border border-border p-6 flex flex-col"
+                className="relative bg-card border border-border p-5 md:p-6 flex flex-col"
               >
                 <div className="absolute top-4 right-4">
                   <GoogleGIcon className="h-4 w-4 opacity-70" />
