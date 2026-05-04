@@ -165,6 +165,62 @@ export function StoreLocationsSection() {
           })}
         </div>
       </div>
+
+      <Dialog open={!!mapLoc} onOpenChange={(o) => !o && setMapLoc(null)}>
+        <DialogContent className="p-0 max-w-full w-screen h-[100dvh] sm:h-[100dvh] sm:max-w-full rounded-none border-0 gap-0 flex flex-col [&>button]:hidden">
+          <DialogTitle className="sr-only">{mapLoc?.name} map</DialogTitle>
+          {mapLoc && (
+            <>
+              <header className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-background shrink-0">
+                <div className="min-w-0 flex-1">
+                  <p className="font-display text-sm font-bold truncate">{mapLoc.name}</p>
+                  <p className="font-body text-xs text-muted-foreground truncate">
+                    {[mapLoc.address, mapLoc.city].filter(Boolean).join(', ')}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setMapLoc(null)}
+                  className="h-10 w-10 inline-flex items-center justify-center rounded-full hover:bg-muted shrink-0"
+                  aria-label="Close map"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </header>
+              <div className="flex-1 relative bg-muted">
+                <iframe
+                  title={`Map of ${mapLoc.name}`}
+                  src={buildEmbedUrl(mapLoc)}
+                  className="absolute inset-0 w-full h-full border-0"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+              <div className="flex gap-2 px-4 py-3 border-t border-border bg-background shrink-0" style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}>
+                {mapLoc.directions_url && (
+                  <a
+                    href={mapLoc.directions_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-2 min-h-[44px] px-4 py-2.5 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-display text-[11px] font-bold tracking-[0.2em] uppercase"
+                  >
+                    <Navigation className="h-3.5 w-3.5" />
+                    Directions
+                  </a>
+                )}
+                {mapLoc.phone && (
+                  <a
+                    href={`tel:${mapLoc.phone.replace(/\s/g, '')}`}
+                    className="flex-1 inline-flex items-center justify-center gap-2 min-h-[44px] px-4 py-2.5 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-display text-[11px] font-bold tracking-[0.2em] uppercase"
+                  >
+                    <Phone className="h-3.5 w-3.5" />
+                    Call
+                  </a>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
