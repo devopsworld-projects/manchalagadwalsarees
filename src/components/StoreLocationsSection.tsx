@@ -35,25 +35,25 @@ export function StoreLocationsSection() {
   if (locations.length === 0) return null;
 
   return (
-    <section className="py-20 md:py-28 bg-muted/30">
-      <div className="container">
-        <div className="flex flex-col items-center text-center mb-12">
-          <div className="flex items-center gap-2 mb-4">
-            <MapPin className="h-5 w-5 text-accent" />
-            <span className="font-display text-xs font-bold tracking-[0.25em] uppercase text-muted-foreground">
+    <section className="py-12 md:py-28 bg-muted/30">
+      <div className="container px-4">
+        <div className="flex flex-col items-center text-center mb-8 md:mb-12">
+          <div className="flex items-center gap-2 mb-3 md:mb-4">
+            <MapPin className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+            <span className="font-display text-[10px] md:text-xs font-bold tracking-[0.25em] uppercase text-muted-foreground">
               Visit Us
             </span>
           </div>
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground tracking-wide">
+          <h2 className="font-display text-2xl md:text-5xl font-bold text-foreground tracking-wide">
             Our Store Locations
           </h2>
-          <div className="w-20 ornate-line mt-5 mb-5" />
+          <div className="w-20 ornate-line mt-4 mb-4 md:mt-5 md:mb-5" />
           <p className="font-body text-sm md:text-base text-muted-foreground max-w-xl">
             Experience our exquisite saree collections in person at our boutiques across Hyderabad.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 lg:gap-8">
           {locations.map((loc) => {
             const fullAddr = [loc.address, loc.city, loc.state, loc.pincode]
               .filter(Boolean)
