@@ -76,14 +76,14 @@ export function GoogleReviewsSection() {
           </div>
         </div>
 
-        {/* Reviews grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        {/* Reviews: swipe carousel on mobile, grid on desktop */}
+        <div className="-mx-4 px-4 flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-none md:mx-0 md:px-0 md:overflow-visible md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:pb-0">
           {reviews.map((r) => {
             const initial = (r.author_initial || r.author_name[0] || '?').toUpperCase();
             return (
               <article
                 key={r.id}
-                className="relative bg-card border border-border p-5 md:p-6 flex flex-col"
+                className="relative bg-card border border-border p-5 md:p-6 flex flex-col snap-center shrink-0 w-[85%] sm:w-[60%] md:w-auto md:shrink"
               >
                 <div className="absolute top-4 right-4">
                   <GoogleGIcon className="h-4 w-4 opacity-70" />
