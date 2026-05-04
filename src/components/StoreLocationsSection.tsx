@@ -22,6 +22,8 @@ interface LocationRow {
 }
 
 export function StoreLocationsSection() {
+  const isMobile = useIsMobile();
+  const [mapLoc, setMapLoc] = useState<LocationRow | null>(null);
   const { data: locations = [] } = useQuery({
     queryKey: ['store-locations-public'],
     queryFn: async () => {
@@ -36,6 +38,13 @@ export function StoreLocationsSection() {
   });
 
   if (locations.length === 0) return null;
+
+  const buildEmbedUrl = (loc: LocationRow) => {
+    const q = encodeURIComponent(
+      [loc.name, loc.address, loc.city, loc.state, loc.pincode].filter(Boolean).join(', ')
+    );
+    return `https://maps.google.com/maps?q=${q}&output=embed`;
+  };
 
   return (
     <section className="py-12 md:py-28 bg-muted/30">
