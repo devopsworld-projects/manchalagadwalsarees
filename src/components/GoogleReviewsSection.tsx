@@ -122,16 +122,16 @@ export function GoogleReviewsSection() {
         </div>
 
         {/* CTA */}
-        <div className="flex justify-center mt-12">
+        <div className="flex justify-center mt-8 md:mt-12">
           <a
             href={reviewsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2.5 min-h-[44px] px-6 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-display text-[11px] font-bold tracking-[0.25em] uppercase"
+            className="inline-flex items-center gap-2 min-h-[44px] px-5 md:px-6 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-display text-[10px] md:text-[11px] font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase text-center"
           >
-            <GoogleGIcon className="h-4 w-4" />
-            View All Reviews on Google
-            <ExternalLink className="h-3.5 w-3.5" />
+            <GoogleGIcon className="h-4 w-4 shrink-0" />
+            <span>View All Reviews</span>
+            <ExternalLink className="h-3.5 w-3.5 shrink-0" />
           </a>
         </div>
       </div>
