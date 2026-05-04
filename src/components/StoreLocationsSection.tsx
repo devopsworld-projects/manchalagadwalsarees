@@ -195,27 +195,43 @@ export function StoreLocationsSection() {
                   referrerPolicy="no-referrer-when-downgrade"
                 />
               </div>
-              <div className="flex gap-2 px-4 py-3 border-t border-border bg-background shrink-0" style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}>
-                {mapLoc.directions_url && (
-                  <a
-                    href={mapLoc.directions_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-2 min-h-[44px] px-4 py-2.5 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-display text-[11px] font-bold tracking-[0.2em] uppercase"
-                  >
-                    <Navigation className="h-3.5 w-3.5" />
-                    Directions
-                  </a>
-                )}
-                {mapLoc.phone && (
-                  <a
-                    href={`tel:${mapLoc.phone.replace(/\s/g, '')}`}
-                    className="flex-1 inline-flex items-center justify-center gap-2 min-h-[44px] px-4 py-2.5 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-display text-[11px] font-bold tracking-[0.2em] uppercase"
-                  >
-                    <Phone className="h-3.5 w-3.5" />
-                    Call
-                  </a>
-                )}
+              <div className="flex flex-col gap-2 px-4 py-3 border-t border-border bg-background shrink-0" style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}>
+                <a
+                  href={
+                    mapLoc.directions_url ||
+                    `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                      [mapLoc.name, mapLoc.address, mapLoc.city, mapLoc.state, mapLoc.pincode].filter(Boolean).join(', ')
+                    )}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2 min-h-[44px] px-4 py-2.5 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-display text-[11px] font-bold tracking-[0.2em] uppercase"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Open in Google Maps
+                </a>
+                <div className="flex gap-2">
+                  {mapLoc.directions_url && (
+                    <a
+                      href={mapLoc.directions_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 inline-flex items-center justify-center gap-2 min-h-[44px] px-4 py-2.5 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-display text-[11px] font-bold tracking-[0.2em] uppercase"
+                    >
+                      <Navigation className="h-3.5 w-3.5" />
+                      Directions
+                    </a>
+                  )}
+                  {mapLoc.phone && (
+                    <a
+                      href={`tel:${mapLoc.phone.replace(/\s/g, '')}`}
+                      className="flex-1 inline-flex items-center justify-center gap-2 min-h-[44px] px-4 py-2.5 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-display text-[11px] font-bold tracking-[0.2em] uppercase"
+                    >
+                      <Phone className="h-3.5 w-3.5" />
+                      Call
+                    </a>
+                  )}
+                </div>
               </div>
             </>
           )}
