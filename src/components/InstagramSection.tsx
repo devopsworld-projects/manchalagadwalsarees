@@ -30,12 +30,12 @@ export function InstagramSection() {
   if (!enabled) return null;
 
   return (
-    <section className="py-16 md:py-20 bg-background">
+    <section className="py-12 md:py-20 bg-background">
       <div className="container px-4">
-        <div className="text-center mb-10">
+        <div className="text-center mb-8 md:mb-10">
           <span className="text-accent text-[8px] tracking-[0.5em]">◆&nbsp;&nbsp;INSTAGRAM&nbsp;&nbsp;◆</span>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mt-3">{title}</h2>
-          <p className="font-body text-sm text-muted-foreground mt-2">{subtitle}</p>
+          <h2 className="font-display text-2xl md:text-4xl font-bold text-primary mt-3">{title}</h2>
+          <p className="font-body text-xs md:text-sm text-muted-foreground mt-2 break-all">{subtitle}</p>
           <div className="w-16 ornate-line mt-4 mx-auto" />
         </div>
 
@@ -43,9 +43,9 @@ export function InstagramSection() {
           // @ts-expect-error custom element
           <behold-widget feed-id={feedId} class="block max-w-5xl mx-auto" />
         ) : (
-          <div className="max-w-3xl mx-auto text-center border border-border bg-muted/20 p-10">
-            <Instagram className="h-10 w-10 mx-auto text-primary mb-4" />
-            <p className="font-body text-base mb-5 text-muted-foreground">
+          <div className="max-w-3xl mx-auto text-center border border-border bg-muted/20 p-6 md:p-10">
+            <Instagram className="h-9 w-9 md:h-10 md:w-10 mx-auto text-primary mb-3 md:mb-4" />
+            <p className="font-body text-sm md:text-base mb-5 text-muted-foreground">
               Discover our latest weaves, behind-the-scenes craft, and bridal stories.
             </p>
             <a

@@ -51,15 +51,15 @@ export function GoogleReviewsSection() {
   };
 
   return (
-    <section className="py-20 md:py-28 bg-background">
-      <div className="container">
+    <section className="py-12 md:py-28 bg-background">
+      <div className="container px-4">
         {/* Header */}
-        <div className="flex flex-col items-center text-center mb-12">
-          <div className="flex items-center gap-3 mb-4">
-            <GoogleGIcon className="h-8 w-8" />
-            <span className="font-display text-xs font-bold tracking-[0.25em] uppercase text-muted-foreground">Google Reviews</span>
+        <div className="flex flex-col items-center text-center mb-8 md:mb-12">
+          <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+            <GoogleGIcon className="h-6 w-6 md:h-8 md:w-8" />
+            <span className="font-display text-[10px] md:text-xs font-bold tracking-[0.25em] uppercase text-muted-foreground">Google Reviews</span>
           </div>
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground tracking-wide">
+          <h2 className="font-display text-2xl md:text-5xl font-bold text-foreground tracking-wide">
             What Our Customers Say
           </h2>
           <div className="w-20 ornate-line mt-5 mb-5" />
@@ -77,13 +77,13 @@ export function GoogleReviewsSection() {
         </div>
 
         {/* Reviews grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {reviews.map((r) => {
             const initial = (r.author_initial || r.author_name[0] || '?').toUpperCase();
             return (
               <article
                 key={r.id}
-                className="relative bg-card border border-border p-6 flex flex-col"
+                className="relative bg-card border border-border p-5 md:p-6 flex flex-col"
               >
                 <div className="absolute top-4 right-4">
                   <GoogleGIcon className="h-4 w-4 opacity-70" />
@@ -122,16 +122,16 @@ export function GoogleReviewsSection() {
         </div>
 
         {/* CTA */}
-        <div className="flex justify-center mt-12">
+        <div className="flex justify-center mt-8 md:mt-12">
           <a
             href={reviewsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2.5 min-h-[44px] px-6 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-display text-[11px] font-bold tracking-[0.25em] uppercase"
+            className="inline-flex items-center gap-2 min-h-[44px] px-5 md:px-6 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-display text-[10px] md:text-[11px] font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase text-center"
           >
-            <GoogleGIcon className="h-4 w-4" />
-            View All Reviews on Google
-            <ExternalLink className="h-3.5 w-3.5" />
+            <GoogleGIcon className="h-4 w-4 shrink-0" />
+            <span>View All Reviews</span>
+            <ExternalLink className="h-3.5 w-3.5 shrink-0" />
           </a>
         </div>
       </div>
