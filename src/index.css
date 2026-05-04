@@ -429,3 +429,12 @@
 .animate-slow-spin {
   animation: slow-spin 60s linear infinite;
 }
+
+/* Hide scrollbar utility */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
