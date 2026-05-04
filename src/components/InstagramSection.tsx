@@ -30,12 +30,12 @@ export function InstagramSection() {
   if (!enabled) return null;
 
   return (
-    <section className="py-16 md:py-20 bg-background">
+    <section className="py-12 md:py-20 bg-background">
       <div className="container px-4">
-        <div className="text-center mb-10">
+        <div className="text-center mb-8 md:mb-10">
           <span className="text-accent text-[8px] tracking-[0.5em]">◆&nbsp;&nbsp;INSTAGRAM&nbsp;&nbsp;◆</span>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mt-3">{title}</h2>
-          <p className="font-body text-sm text-muted-foreground mt-2">{subtitle}</p>
+          <h2 className="font-display text-2xl md:text-4xl font-bold text-primary mt-3">{title}</h2>
+          <p className="font-body text-xs md:text-sm text-muted-foreground mt-2 break-all">{subtitle}</p>
           <div className="w-16 ornate-line mt-4 mx-auto" />
         </div>
 
