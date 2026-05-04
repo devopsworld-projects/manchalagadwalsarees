@@ -43,9 +43,9 @@ export function InstagramSection() {
           // @ts-expect-error custom element
           <behold-widget feed-id={feedId} class="block max-w-5xl mx-auto" />
         ) : (
-          <div className="max-w-3xl mx-auto text-center border border-border bg-muted/20 p-10">
-            <Instagram className="h-10 w-10 mx-auto text-primary mb-4" />
-            <p className="font-body text-base mb-5 text-muted-foreground">
+          <div className="max-w-3xl mx-auto text-center border border-border bg-muted/20 p-6 md:p-10">
+            <Instagram className="h-9 w-9 md:h-10 md:w-10 mx-auto text-primary mb-3 md:mb-4" />
+            <p className="font-body text-sm md:text-base mb-5 text-muted-foreground">
               Discover our latest weaves, behind-the-scenes craft, and bridal stories.
             </p>
             <a
