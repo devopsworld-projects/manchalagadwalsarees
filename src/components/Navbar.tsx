@@ -62,7 +62,8 @@ function MegaNavItem({ item, isOpen, onOpen, onClose, isActive }: {
     return (
       <Link
         to={getItemUrl(item)}
-        className="relative text-[13px] tracking-[0.02em] font-body font-semibold text-primary/90 hover:text-accent active:text-accent transition-colors py-2 capitalize"
+        aria-current={isActive ? 'page' : undefined}
+        className={`relative text-[13px] tracking-[0.02em] font-body font-semibold ${isActive ? 'text-accent' : 'text-primary/90'} hover:text-accent active:text-accent transition-colors py-2 capitalize after:content-[''] after:absolute after:left-0 after:right-0 after:-bottom-0.5 after:h-[2px] after:bg-accent after:transition-transform after:duration-300 ${isActive ? 'after:scale-x-100' : 'after:scale-x-0'} after:origin-center hover:after:scale-x-100`}
       >
         {item.label}
       </Link>
