@@ -347,7 +347,11 @@ export function Navbar() {
               </button>
               <Link to="/" onClick={() => setMobileOpen(false)} className="flex flex-col items-center mt-1">
                 {/* Image logo on very narrow phones; wordmark when space allows */}
-                <img src={logoSrc} alt="Manchala Gadwal Sarees" className="h-14 w-auto block xs:hidden" />
+                <img 
+                  src={logoSrc} 
+                  alt="Manchala Gadwal Sarees" 
+                  className="h-16 w-auto block xs:hidden brightness-110 drop-shadow-[0_0_10px_rgba(212,175,55,0.25)]" 
+                />
                 <span className="hidden xs:block font-display text-2xl sm:text-3xl font-bold tracking-[0.1em] leading-none">
                   MANCHALA
                 </span>
