@@ -407,6 +407,7 @@ export function Navbar() {
               {[...menuItems, ...mobileMenuItems].map(item => {
                 const children = item.children || [];
                 const hasChildren = children.length > 0;
+                const itemActive = isItemActive(item, location.pathname, location.search);
 
                 if (!hasChildren) {
                   return (
@@ -414,7 +415,8 @@ export function Navbar() {
                       key={item.id}
                       to={getItemUrl(item)}
                       onClick={() => setMobileOpen(false)}
-                      className="block py-3 text-[13px] tracking-[0.2em] font-display font-bold text-foreground/90 hover:text-accent active:text-accent min-h-[44px] uppercase transition-colors"
+                      aria-current={itemActive ? 'page' : undefined}
+                      className={`flex items-center gap-3 py-3 text-[13px] tracking-[0.2em] font-display font-bold ${itemActive ? 'text-accent border-l-2 border-accent pl-3 -ml-3' : 'text-foreground/90'} hover:text-accent active:text-accent min-h-[44px] uppercase transition-colors`}
                     >
                       {item.label}
                     </Link>
@@ -425,24 +427,29 @@ export function Navbar() {
                   <div key={item.id}>
                     <button
                       onClick={() => setMobileExpanded(mobileExpanded === item.id ? null : item.id)}
-                      className="flex items-center justify-between w-full py-3 text-[13px] tracking-[0.2em] font-display font-bold text-foreground/90 hover:text-accent active:text-accent min-h-[44px] uppercase transition-colors"
+                      aria-current={itemActive ? 'page' : undefined}
+                      className={`flex items-center justify-between w-full py-3 text-[13px] tracking-[0.2em] font-display font-bold ${itemActive ? 'text-accent' : 'text-foreground/90'} hover:text-accent active:text-accent min-h-[44px] uppercase transition-colors`}
                     >
-                      {item.label}
+                      <span className={itemActive ? 'border-l-2 border-accent pl-3 -ml-3' : ''}>{item.label}</span>
                       <ChevronDown className={`h-4 w-4 text-accent/50 transition-transform duration-300 ${mobileExpanded === item.id ? 'rotate-180' : ''}`} />
                     </button>
                     {mobileExpanded === item.id && (
                       <div className="pl-4 pb-2 space-y-0.5 border-l-2 border-accent/30 ml-2">
-                        {children.map(child => (
-                          <Link
-                            key={child.id}
-                            to={getItemUrl(child)}
-                            onClick={() => { setMobileOpen(false); setMobileExpanded(null); }}
-                            className="flex items-center py-2.5 text-sm tracking-[0.08em] font-body font-semibold text-foreground/80 hover:text-accent active:text-accent transition-colors min-h-[44px]"
-                          >
-                            <span className="w-2 h-[1px] bg-accent/30 mr-3" />
-                            {child.label}
-                          </Link>
-                        ))}
+                        {children.map(child => {
+                          const childActive = isUrlActive(getItemUrl(child), location.pathname, location.search);
+                          return (
+                            <Link
+                              key={child.id}
+                              to={getItemUrl(child)}
+                              onClick={() => { setMobileOpen(false); setMobileExpanded(null); }}
+                              aria-current={childActive ? 'page' : undefined}
+                              className={`flex items-center py-2.5 text-sm tracking-[0.08em] font-body font-semibold ${childActive ? 'text-accent' : 'text-foreground/80'} hover:text-accent active:text-accent transition-colors min-h-[44px]`}
+                            >
+                              <span className={`w-2 h-[1px] ${childActive ? 'bg-accent' : 'bg-accent/30'} mr-3`} />
+                              {child.label}
+                            </Link>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
