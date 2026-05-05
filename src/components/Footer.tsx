@@ -5,6 +5,7 @@ import { WhatsAppIcon } from '@/components/WhatsAppIcon';
 import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { useMenuItems } from '@/hooks/useMenuItems';
 import { cn } from '@/lib/utils';
+import { Motif } from '@/components/Motif';
 import logo from '@/assets/logo.png';
 
 function getItemUrl(item: { slug: string | null; url: string | null }) {
@@ -23,7 +24,8 @@ function FooterColumn({ title, children, defaultOpen = false }: { title: string;
         className="md:pointer-events-none flex w-full items-center justify-between md:block min-h-[44px] md:min-h-0"
         aria-expanded={open}
       >
-        <h4 className="font-display text-[11px] font-bold text-background tracking-[0.25em] uppercase md:mb-6 relative md:inline-block">
+        <h4 className="font-display text-[11px] font-bold text-background tracking-[0.25em] uppercase md:mb-6 relative md:inline-flex md:items-center md:gap-2">
+          <Motif kind="paisley" tint="gold" opacity={55} className="hidden md:inline-block h-3.5 w-2.5" />
           {title}
           <span className="hidden md:block absolute -bottom-2 left-0 w-8 h-px bg-gradient-to-r from-accent to-transparent" />
         </h4>
@@ -107,6 +109,14 @@ export function Footer() {
       <div className="pointer-events-none absolute inset-0 opacity-[0.04]" style={{
         backgroundImage: 'radial-gradient(circle at 20% 0%, hsl(var(--accent)) 0%, transparent 40%), radial-gradient(circle at 80% 100%, hsl(var(--accent)) 0%, transparent 40%)',
       }} />
+
+      {/* Decorative corner motifs */}
+      <Motif kind="paisley" tint="gold" opacity={14} motion="float" reveal
+        className="absolute top-8 right-6 md:top-14 md:right-16 h-20 w-14 md:h-28 md:w-20 z-0" />
+      <Motif kind="paisley" tint="gold" opacity={10} motion="sway" reveal flip
+        className="absolute bottom-20 left-6 md:bottom-28 md:left-16 h-16 w-12 md:h-24 md:w-16 z-0 hidden sm:block" />
+      <Motif kind="elephant" tint="gold" opacity={18} reveal
+        className="absolute bottom-2 left-1/2 -translate-x-1/2 h-8 w-16 md:h-12 md:w-24 z-0" />
 
       <div className="relative container py-10 md:py-20">
         {/* Brand block */}

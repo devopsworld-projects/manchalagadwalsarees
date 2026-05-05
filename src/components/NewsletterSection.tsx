@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Send } from 'lucide-react';
 import { toast } from 'sonner';
+import { Motif } from '@/components/Motif';
 
 export function NewsletterSection() {
   const [email, setEmail] = useState('');
@@ -107,15 +108,21 @@ export function NewsletterSection() {
         </div>
       </div>
 
-      {/* Decorative diamonds */}
+      {/* Decorative diamonds + motifs */}
       <div className="absolute right-16 top-1/2 -translate-y-1/2 hidden lg:block">
         <div className="w-24 h-24 border border-accent/15 rotate-45" />
         <div className="w-16 h-16 border border-accent/10 rotate-45 absolute top-4 left-4" />
+        <Motif kind="paisley" tint="gold" opacity={28} motion="float" reveal
+          className="absolute -top-10 -right-6 h-16 w-12" />
       </div>
       <div className="absolute left-16 top-1/2 -translate-y-1/2 hidden lg:block">
         <div className="w-24 h-24 border border-accent/15 rotate-45" />
         <div className="w-16 h-16 border border-accent/10 rotate-45 absolute top-4 left-4" />
+        <Motif kind="paisley" tint="gold" opacity={28} motion="sway" reveal flip
+          className="absolute -bottom-10 -left-6 h-16 w-12" />
       </div>
+      <Motif kind="elephant" tint="gold" opacity={20} reveal
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 h-10 w-20 md:h-12 md:w-24" />
     </section>
   );
 }
