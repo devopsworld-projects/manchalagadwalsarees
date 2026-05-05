@@ -400,7 +400,7 @@ export function Navbar() {
                             key={child.id}
                             to={getItemUrl(child)}
                             onClick={() => { setMobileOpen(false); setMobileExpanded(null); }}
-                            className="flex items-center py-2.5 text-sm tracking-[0.08em] font-body text-muted-foreground hover:text-accent transition-colors min-h-[44px]"
+                            className="flex items-center py-2.5 text-sm tracking-[0.08em] font-body font-semibold text-foreground/80 hover:text-accent active:text-accent transition-colors min-h-[44px]"
                           >
                             <span className="w-2 h-[1px] bg-accent/30 mr-3" />
                             {child.label}
