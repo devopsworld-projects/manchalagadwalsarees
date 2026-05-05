@@ -38,7 +38,7 @@ function MegaNavItem({ item, isOpen, onOpen, onClose }: {
     return (
       <Link
         to={getItemUrl(item)}
-        className="relative text-[13px] tracking-[0.02em] font-body font-medium text-primary hover:text-accent transition-colors py-2 capitalize"
+        className="relative text-[13px] tracking-[0.02em] font-body font-semibold text-primary/90 hover:text-accent active:text-accent transition-colors py-2 capitalize"
       >
         {item.label}
       </Link>
@@ -61,7 +61,7 @@ function MegaNavItem({ item, isOpen, onOpen, onClose }: {
     >
       <button
         onClick={onOpen}
-        className="flex items-center gap-1 text-[13px] tracking-[0.02em] font-body font-medium text-primary hover:text-accent transition-colors py-2 capitalize"
+        className="flex items-center gap-1 text-[13px] tracking-[0.02em] font-body font-semibold text-primary/90 hover:text-accent active:text-accent transition-colors py-2 capitalize"
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
@@ -156,7 +156,7 @@ export function Navbar() {
                 <Link
                   key={item.id}
                   to={getItemUrl(item)}
-                  className="text-[10px] tracking-luxe font-display font-normal text-background/65 hover:text-accent transition-colors duration-500 uppercase"
+                  className="text-[10px] tracking-luxe font-display font-medium text-background/80 hover:text-accent active:text-accent transition-colors duration-500 uppercase"
                 >
                   {item.label}
                 </Link>
@@ -255,19 +255,19 @@ export function Navbar() {
           {/* Right actions */}
           <div className="flex items-center gap-0.5 sm:gap-1">
             <button
-              className="p-2.5 text-primary/80 hover:text-accent transition-colors"
+              className="p-2.5 text-primary hover:text-accent active:text-accent transition-colors"
               aria-label="Search"
               onClick={() => setSearchOpen(true)}
             >
               <Search className="h-[18px] w-[18px]" />
             </button>
-            <Link to="/wishlist" className="p-2.5 text-primary/80 hover:text-accent transition-colors hidden sm:block" aria-label="Wishlist">
+            <Link to="/wishlist" className="p-2.5 text-primary hover:text-accent active:text-accent transition-colors hidden sm:block" aria-label="Wishlist">
               <Heart className="h-[18px] w-[18px]" />
             </Link>
             {user ? (
               <div ref={userMenuRef} className="relative hidden md:block">
                 <button
-                  className="p-2.5 text-primary/80 hover:text-accent transition-colors"
+                  className="p-2.5 text-primary hover:text-accent active:text-accent transition-colors"
                   aria-label="Account"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                 >
@@ -282,21 +282,21 @@ export function Navbar() {
                     <Link
                       to="/account"
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-3 px-5 py-3 text-sm font-body hover:bg-accent/5 hover:text-accent transition-colors"
+                      className="flex items-center gap-3 px-5 py-3 text-sm font-body font-medium text-foreground/90 hover:text-accent active:text-accent transition-colors"
                     >
                       <User className="h-4 w-4" /> My Account
                     </Link>
                     <Link
                       to="/account/orders"
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-3 px-5 py-3 text-sm font-body hover:bg-accent/5 hover:text-accent transition-colors"
+                      className="flex items-center gap-3 px-5 py-3 text-sm font-body font-medium text-foreground/90 hover:text-accent active:text-accent transition-colors"
                     >
                       <Package className="h-4 w-4" /> My Orders
                     </Link>
                     <div className="ornate-line mx-4 my-1" />
                     <button
                       onClick={async () => { setUserMenuOpen(false); await signOut(); }}
-                      className="flex items-center gap-3 w-full px-5 py-3 text-sm font-body text-destructive hover:bg-destructive/5 transition-colors"
+                      className="flex items-center gap-3 w-full px-5 py-3 text-sm font-body font-medium text-destructive hover:bg-destructive/5 transition-colors"
                     >
                       <LogOut className="h-4 w-4" /> Logout
                     </button>
@@ -304,12 +304,12 @@ export function Navbar() {
                 )}
               </div>
             ) : (
-              <Link to="/login" className="p-2.5 text-primary/80 hover:text-accent transition-colors hidden md:block" aria-label="Login">
+              <Link to="/login" className="p-2.5 text-primary hover:text-accent active:text-accent transition-colors hidden md:block" aria-label="Login">
                 <User className="h-[18px] w-[18px]" />
               </Link>
             )}
             <button
-              className="p-2.5 text-primary/80 hover:text-accent transition-colors relative"
+              className="p-2.5 text-primary hover:text-accent active:text-accent transition-colors relative"
               onClick={() => setIsCartOpen(true)}
               aria-label="Cart"
             >
@@ -377,7 +377,7 @@ export function Navbar() {
                       key={item.id}
                       to={getItemUrl(item)}
                       onClick={() => setMobileOpen(false)}
-                      className="block py-3 text-[12px] tracking-[0.2em] font-display font-semibold text-foreground/70 hover:text-accent min-h-[44px] uppercase transition-colors"
+                      className="block py-3 text-[13px] tracking-[0.2em] font-display font-bold text-foreground/90 hover:text-accent active:text-accent min-h-[44px] uppercase transition-colors"
                     >
                       {item.label}
                     </Link>
@@ -388,7 +388,7 @@ export function Navbar() {
                   <div key={item.id}>
                     <button
                       onClick={() => setMobileExpanded(mobileExpanded === item.id ? null : item.id)}
-                      className="flex items-center justify-between w-full py-3 text-[12px] tracking-[0.2em] font-display font-semibold text-foreground/70 min-h-[44px] uppercase"
+                      className="flex items-center justify-between w-full py-3 text-[13px] tracking-[0.2em] font-display font-bold text-foreground/90 hover:text-accent active:text-accent min-h-[44px] uppercase transition-colors"
                     >
                       {item.label}
                       <ChevronDown className={`h-4 w-4 text-accent/50 transition-transform duration-300 ${mobileExpanded === item.id ? 'rotate-180' : ''}`} />
@@ -400,7 +400,7 @@ export function Navbar() {
                             key={child.id}
                             to={getItemUrl(child)}
                             onClick={() => { setMobileOpen(false); setMobileExpanded(null); }}
-                            className="flex items-center py-2.5 text-sm tracking-[0.08em] font-body text-muted-foreground hover:text-accent transition-colors min-h-[44px]"
+                            className="flex items-center py-2.5 text-sm tracking-[0.08em] font-body font-semibold text-foreground/80 hover:text-accent active:text-accent transition-colors min-h-[44px]"
                           >
                             <span className="w-2 h-[1px] bg-accent/30 mr-3" />
                             {child.label}
