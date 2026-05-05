@@ -221,23 +221,13 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* Wordmark logo (Kankatala-style) */}
-          <Link to="/" className="flex flex-col items-center shrink-0 px-2 md:px-6 group">
-            {/* Mobile shows image logo */}
-            <img 
-              src={logoSrc} 
-              alt="Manchala Gadwal Sarees" 
-              className="h-16 sm:h-20 w-auto md:hidden brightness-110 drop-shadow-[0_0_10px_rgba(212,175,55,0.2)]" 
+          {/* Logo (transparent PNG includes wordmark) */}
+          <Link to="/" className="flex items-center justify-center shrink-0 px-2 md:px-6 group">
+            <img
+              src={logoSrc}
+              alt="Manchala Gadwal Sarees"
+              className="h-14 sm:h-16 md:h-20 lg:h-24 w-auto object-contain drop-shadow-[0_2px_8px_rgba(212,175,55,0.25)] transition-transform group-hover:scale-105"
             />
-            {/* Desktop shows serif wordmark */}
-            <span className="hidden md:block font-display text-3xl lg:text-[34px] font-bold tracking-[0.08em] text-primary leading-none">
-              MANCHALA
-            </span>
-            <span className="hidden md:flex items-center gap-2 mt-1.5">
-              <span className="h-px w-6 bg-accent/60" />
-              <span className="font-body text-[9px] tracking-[0.4em] text-accent uppercase">Gadwal Sarees</span>
-              <span className="h-px w-6 bg-accent/60" />
-            </span>
           </Link>
 
           <nav className="hidden md:flex flex-1 items-center justify-start gap-7">
@@ -345,23 +335,12 @@ export function Navbar() {
               >
                 <X className="h-5 w-5" />
               </button>
-              <Link to="/" onClick={() => setMobileOpen(false)} className="flex flex-col items-center mt-1">
-                {/* Image logo on very narrow phones; wordmark when space allows */}
-                <img 
-                  src={logoSrc} 
-                  alt="Manchala Gadwal Sarees" 
-                  className="h-16 w-auto block xs:hidden brightness-110 drop-shadow-[0_0_10px_rgba(212,175,55,0.25)]" 
+              <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center justify-center mt-1">
+                <img
+                  src={logoSrc}
+                  alt="Manchala Gadwal Sarees"
+                  className="h-20 sm:h-24 w-auto object-contain drop-shadow-[0_2px_10px_rgba(212,175,55,0.3)]"
                 />
-                <span className="hidden xs:block font-display text-2xl sm:text-3xl font-bold tracking-[0.1em] leading-none">
-                  MANCHALA
-                </span>
-                <span className="hidden xs:flex items-center gap-2 mt-2">
-                  <span className="h-px w-6 bg-accent/70" />
-                  <span className="font-body text-[9px] tracking-[0.4em] text-accent uppercase">
-                    Gadwal Sarees
-                  </span>
-                  <span className="h-px w-6 bg-accent/70" />
-                </span>
               </Link>
             </div>
 

@@ -112,8 +112,15 @@ export function Footer() {
         {/* Brand block */}
         <div className="md:grid md:grid-cols-4 md:gap-12">
           <div className="text-center md:text-left mb-8 md:mb-0">
-            <Link to="/">
-              <img src={logoSrc} alt="Manchala Gadwal Sarees" className="h-32 w-auto mb-6 mx-auto md:mx-0 drop-shadow-[0_0_20px_rgba(212,175,55,0.35)]" loading="lazy" width={512} height={512} />
+            <Link to="/" className="inline-block">
+              <img
+                src={logoSrc}
+                alt="Manchala Gadwal Sarees"
+                className="h-28 sm:h-32 md:h-36 lg:h-40 w-auto object-contain mb-6 mx-auto md:mx-0 drop-shadow-[0_0_24px_rgba(212,175,55,0.4)]"
+                loading="lazy"
+                width={512}
+                height={512}
+              />
             </Link>
             <p className="font-serif text-sm leading-relaxed text-background/65 italic mb-6 max-w-xs mx-auto md:mx-0">
               {description}
