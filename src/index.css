@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lato:wght@400;700;900&family=Tiro+Devanagari+Sanskrit:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lato:wght@400;700;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Tiro+Devanagari+Sanskrit:ital@0;1&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,49 +6,49 @@
 
 @layer base {
   :root {
-    /* ─── Royal Temple Heritage — refined for premium quietude ─── */
-    /* Warm ivory canvas instead of stark white for boutique warmth */
-    --background: 36 30% 98%;
-    --foreground: 350 35% 14%;
+    /* ─── Brand Identity Sheet — Manchala Gadwal Sarees ─── */
+    /* Palette: Gold #D4AF37 · Burgundy #6B0F1A · Black #0D0D0D · Cream #F7F4EC */
+    --background: 45 41% 95%;
+    --foreground: 0 0% 5%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 350 35% 14%;
+    --card: 45 41% 97%;
+    --card-foreground: 0 0% 5%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 350 35% 14%;
+    --popover: 45 41% 97%;
+    --popover-foreground: 0 0% 5%;
 
-    /* Deeper, more dignified burgundy */
-    --primary: 350 55% 24%;
-    --primary-foreground: 36 30% 98%;
+    /* Deep brand burgundy #6B0F1A */
+    --primary: 353 75% 24%;
+    --primary-foreground: 45 41% 95%;
 
-    --secondary: 35 28% 95%;
-    --secondary-foreground: 350 55% 20%;
+    --secondary: 45 30% 92%;
+    --secondary-foreground: 353 75% 22%;
 
-    --muted: 35 22% 94%;
-    --muted-foreground: 30 8% 38%;
+    --muted: 45 25% 91%;
+    --muted-foreground: 0 0% 28%;
 
-    /* Antique champagne gold — less yellow, more refined */
-    --accent: 36 48% 46%;
-    --accent-foreground: 350 55% 18%;
+    /* Antique gold #D4AF37 */
+    --accent: 46 65% 52%;
+    --accent-foreground: 0 0% 8%;
 
-    --destructive: 0 70% 45%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 353 75% 32%;
+    --destructive-foreground: 45 41% 95%;
 
-    --border: 35 20% 88%;
-    --input: 35 20% 88%;
-    --ring: 36 48% 46%;
+    --border: 45 22% 84%;
+    --input: 45 22% 84%;
+    --ring: 46 65% 52%;
 
     --radius: 0.125rem;
 
-    --gold: 36 48% 46%;
-    --gold-light: 38 52% 64%;
-    --gold-dark: 34 60% 32%;
-    --burgundy: 350 55% 24%;
-    --burgundy-light: 350 45% 38%;
-    --cream: 36 30% 96%;
-    --cream-dark: 35 22% 88%;
-    --temple-red: 0 55% 32%;
-    --temple-green: 150 28% 28%;
+    --gold: 46 65% 52%;
+    --gold-light: 46 70% 66%;
+    --gold-dark: 42 70% 36%;
+    --burgundy: 353 75% 24%;
+    --burgundy-light: 353 60% 36%;
+    --cream: 45 41% 95%;
+    --cream-dark: 45 25% 86%;
+    --temple-red: 353 75% 24%;
+    --temple-green: 150 28% 24%;
 
     /* Premium gradients & shadows */
     --gradient-gold: linear-gradient(135deg, hsl(34 60% 38%), hsl(38 55% 58%), hsl(34 60% 38%));
@@ -116,7 +116,7 @@
   body { position: relative; -webkit-overflow-scrolling: touch; }
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Lato', sans-serif;
+    font-family: 'Lora', 'Lato', serif;
     font-feature-settings: 'kern', 'liga', 'calt';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -156,7 +156,8 @@
 @layer utilities {
   .font-display { font-family: 'Cinzel', serif; }
   .font-serif { font-family: 'Cormorant Garamond', serif; }
-  .font-body { font-family: 'Lato', sans-serif; }
+  .font-body { font-family: 'Lora', 'Lato', serif; }
+  .font-sans-body { font-family: 'Lato', sans-serif; }
 
   .tracking-luxe { letter-spacing: 0.32em; }
   .tracking-refined { letter-spacing: 0.18em; }
