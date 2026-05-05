@@ -342,15 +342,6 @@ export function Navbar() {
                   className="h-20 sm:h-24 w-auto object-contain drop-shadow-[0_2px_10px_rgba(212,175,55,0.3)]"
                 />
               </Link>
-                </span>
-                <span className="hidden xs:flex items-center gap-2 mt-2">
-                  <span className="h-px w-6 bg-accent/70" />
-                  <span className="font-body text-[9px] tracking-[0.4em] text-accent uppercase">
-                    Gadwal Sarees
-                  </span>
-                  <span className="h-px w-6 bg-accent/70" />
-                </span>
-              </Link>
             </div>
 
             {/* Menu items */}
