@@ -78,8 +78,7 @@ export default {
       fontFamily: {
         display: ['"Cinzel"', 'serif'],
         serif: ['"Cormorant Garamond"', 'serif'],
-        body: ['"Lora"', '"Lato"', 'serif'],
-        sans: ['"Lato"', 'sans-serif'],
+        body: ['"Lato"', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
