@@ -86,9 +86,10 @@ function MegaNavItem({ item, isOpen, onOpen, onClose, isActive }: {
     >
       <button
         onClick={onOpen}
-        className="flex items-center gap-1 text-[13px] tracking-[0.02em] font-body font-semibold text-primary/90 hover:text-accent active:text-accent transition-colors py-2 capitalize"
+        className={`relative flex items-center gap-1 text-[13px] tracking-[0.02em] font-body font-semibold ${isActive ? 'text-accent' : 'text-primary/90'} hover:text-accent active:text-accent transition-colors py-2 capitalize after:content-[''] after:absolute after:left-0 after:right-4 after:-bottom-0.5 after:h-[2px] after:bg-accent after:transition-transform after:duration-300 ${isActive ? 'after:scale-x-100' : 'after:scale-x-0'} after:origin-center hover:after:scale-x-100`}
         aria-haspopup="true"
         aria-expanded={isOpen}
+        aria-current={isActive ? 'page' : undefined}
       >
         {item.label}
         <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
