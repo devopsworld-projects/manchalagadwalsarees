@@ -224,7 +224,11 @@ export function Navbar() {
           {/* Wordmark logo (Kankatala-style) */}
           <Link to="/" className="flex flex-col items-center shrink-0 px-2 md:px-6 group">
             {/* Mobile shows image logo */}
-            <img src={logoSrc} alt="Manchala Gadwal Sarees" className="h-14 sm:h-16 w-auto md:hidden" />
+            <img 
+              src={logoSrc} 
+              alt="Manchala Gadwal Sarees" 
+              className="h-16 sm:h-20 w-auto md:hidden brightness-110 drop-shadow-[0_0_10px_rgba(212,175,55,0.2)]" 
+            />
             {/* Desktop shows serif wordmark */}
             <span className="hidden md:block font-display text-3xl lg:text-[34px] font-bold tracking-[0.08em] text-primary leading-none">
               MANCHALA
@@ -343,7 +347,11 @@ export function Navbar() {
               </button>
               <Link to="/" onClick={() => setMobileOpen(false)} className="flex flex-col items-center mt-1">
                 {/* Image logo on very narrow phones; wordmark when space allows */}
-                <img src={logoSrc} alt="Manchala Gadwal Sarees" className="h-14 w-auto block xs:hidden" />
+                <img 
+                  src={logoSrc} 
+                  alt="Manchala Gadwal Sarees" 
+                  className="h-16 w-auto block xs:hidden brightness-110 drop-shadow-[0_0_10px_rgba(212,175,55,0.25)]" 
+                />
                 <span className="hidden xs:block font-display text-2xl sm:text-3xl font-bold tracking-[0.1em] leading-none">
                   MANCHALA
                 </span>
