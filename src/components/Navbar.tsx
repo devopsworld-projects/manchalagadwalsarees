@@ -183,15 +183,19 @@ export function Navbar() {
         <div className="container flex items-center justify-between h-9">
           <div className="flex items-center gap-5">
             <nav className="flex items-center gap-7">
-              {topBarItems.map(item => (
-                <Link
-                  key={item.id}
-                  to={getItemUrl(item)}
-                  className="text-[10px] tracking-luxe font-display font-medium text-background/80 hover:text-accent active:text-accent transition-colors duration-500 uppercase"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {topBarItems.map(item => {
+                const active = isUrlActive(getItemUrl(item), location.pathname, location.search);
+                return (
+                  <Link
+                    key={item.id}
+                    to={getItemUrl(item)}
+                    aria-current={active ? 'page' : undefined}
+                    className={`text-[10px] tracking-luxe font-display font-medium ${active ? 'text-accent' : 'text-background/80'} hover:text-accent active:text-accent transition-colors duration-500 uppercase`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </nav>
           </div>
           <div className="flex items-center gap-7">
