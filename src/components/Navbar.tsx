@@ -335,15 +335,13 @@ export function Navbar() {
               >
                 <X className="h-5 w-5" />
               </button>
-              <Link to="/" onClick={() => setMobileOpen(false)} className="flex flex-col items-center mt-1">
-                {/* Image logo on very narrow phones; wordmark when space allows */}
-                <img 
-                  src={logoSrc} 
-                  alt="Manchala Gadwal Sarees" 
-                  className="h-16 w-auto block xs:hidden brightness-110 drop-shadow-[0_0_10px_rgba(212,175,55,0.25)]" 
+              <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center justify-center mt-1">
+                <img
+                  src={logoSrc}
+                  alt="Manchala Gadwal Sarees"
+                  className="h-20 sm:h-24 w-auto object-contain drop-shadow-[0_2px_10px_rgba(212,175,55,0.3)]"
                 />
-                <span className="hidden xs:block font-display text-2xl sm:text-3xl font-bold tracking-[0.1em] leading-none">
-                  MANCHALA
+              </Link>
                 </span>
                 <span className="hidden xs:flex items-center gap-2 mt-2">
                   <span className="h-px w-6 bg-accent/70" />
