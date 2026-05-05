@@ -280,6 +280,7 @@ export function Navbar() {
                 isOpen={openDropdown === item.id}
                 onOpen={() => setOpenDropdown(item.id)}
                 onClose={() => setOpenDropdown(null)}
+                isActive={isItemActive(item, location.pathname, location.search)}
               />
             ))}
           </nav>
