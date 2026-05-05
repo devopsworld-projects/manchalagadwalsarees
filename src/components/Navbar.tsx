@@ -61,7 +61,7 @@ function MegaNavItem({ item, isOpen, onOpen, onClose }: {
     >
       <button
         onClick={onOpen}
-        className="flex items-center gap-1 text-[13px] tracking-[0.02em] font-body font-medium text-primary hover:text-accent transition-colors py-2 capitalize"
+        className="flex items-center gap-1 text-[13px] tracking-[0.02em] font-body font-semibold text-primary/90 hover:text-accent active:text-accent transition-colors py-2 capitalize"
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
@@ -156,7 +156,7 @@ export function Navbar() {
                 <Link
                   key={item.id}
                   to={getItemUrl(item)}
-                  className="text-[10px] tracking-luxe font-display font-normal text-background/65 hover:text-accent transition-colors duration-500 uppercase"
+                  className="text-[10px] tracking-luxe font-display font-medium text-background/80 hover:text-accent active:text-accent transition-colors duration-500 uppercase"
                 >
                   {item.label}
                 </Link>
@@ -377,7 +377,7 @@ export function Navbar() {
                       key={item.id}
                       to={getItemUrl(item)}
                       onClick={() => setMobileOpen(false)}
-                      className="block py-3 text-[12px] tracking-[0.2em] font-display font-semibold text-foreground/70 hover:text-accent min-h-[44px] uppercase transition-colors"
+                      className="block py-3 text-[13px] tracking-[0.2em] font-display font-bold text-foreground/90 hover:text-accent active:text-accent min-h-[44px] uppercase transition-colors"
                     >
                       {item.label}
                     </Link>
