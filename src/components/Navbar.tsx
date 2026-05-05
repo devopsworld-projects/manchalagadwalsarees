@@ -38,7 +38,7 @@ function MegaNavItem({ item, isOpen, onOpen, onClose }: {
     return (
       <Link
         to={getItemUrl(item)}
-        className="relative text-[13px] tracking-[0.02em] font-body font-medium text-primary hover:text-accent transition-colors py-2 capitalize"
+        className="relative text-[13px] tracking-[0.02em] font-body font-semibold text-primary/90 hover:text-accent active:text-accent transition-colors py-2 capitalize"
       >
         {item.label}
       </Link>
