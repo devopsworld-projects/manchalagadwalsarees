@@ -47,6 +47,10 @@ function MegaNavItem({ item, isOpen, onOpen, onClose, isActive }: {
   isActive: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const children = item.children || [];
+  const hasChildren = children.length > 0;
+  const ref = useRef<HTMLDivElement>(null);
   const children = item.children || [];
   const hasChildren = children.length > 0;
 
