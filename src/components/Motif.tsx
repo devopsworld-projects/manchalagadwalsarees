@@ -1,21 +1,64 @@
 import { SVGProps } from 'react';
 
 type MotifKind = 'paisley' | 'temple' | 'elephant' | 'lotus';
+type MotifTint = 'gold' | 'cream' | 'burgundy' | 'auto';
+type MotifMotion = 'none' | 'float' | 'sway' | 'hover-lift' | 'hover-rotate';
 
-interface Props extends SVGProps<SVGSVGElement> {
+interface Props extends Omit<SVGProps<SVGSVGElement>, 'color'> {
   kind?: MotifKind;
+  /** Color family. 'auto' inherits currentColor — let parent set text-* */
+  tint?: MotifTint;
+  /** Decorative opacity (0–100). Defaults to a low-contrast value. */
+  opacity?: number;
+  /** Subtle motion variant. All animations are GPU-friendly + reduced-motion safe. */
+  motion?: MotifMotion;
+  /** Mirror horizontally — handy for symmetric corner pairs */
+  flip?: boolean;
 }
+
+const tintClass: Record<MotifTint, string> = {
+  gold: 'text-accent',
+  cream: 'text-cream dark:text-background',
+  burgundy: 'text-primary',
+  auto: '',
+};
+
+const motionClass: Record<MotifMotion, string> = {
+  none: '',
+  float: 'motif-float',
+  sway: 'motif-sway',
+  'hover-lift': 'motif-hover-lift',
+  'hover-rotate': 'motif-hover-rotate',
+};
 
 /**
  * Subtle decorative SVG motifs (paisley / temple arch / elephant / lotus).
- * Uses currentColor so callers can tint with text-* utilities and control
- * opacity. Always decorative — aria-hidden + pointer-events-none.
+ * Always decorative — aria-hidden + pointer-events-none. Use `tint` for
+ * theme-aware coloring or set a `text-*` class on the parent with tint="auto".
  */
-export function Motif({ kind = 'paisley', className = '', ...rest }: Props) {
+export function Motif({
+  kind = 'paisley',
+  tint = 'gold',
+  opacity = 30,
+  motion = 'none',
+  flip = false,
+  className = '',
+  style,
+  ...rest
+}: Props) {
   const common = {
     'aria-hidden': true,
     focusable: false as const,
-    className: `pointer-events-none select-none ${className}`,
+    className: [
+      'pointer-events-none select-none',
+      tintClass[tint],
+      motionClass[motion],
+      flip ? '-scale-x-100' : '',
+      className,
+    ]
+      .filter(Boolean)
+      .join(' '),
+    style: { opacity: Math.max(0, Math.min(100, opacity)) / 100, ...style },
     fill: 'none',
     stroke: 'currentColor',
     strokeWidth: 0.8,
