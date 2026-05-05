@@ -50,9 +50,6 @@ function MegaNavItem({ item, isOpen, onOpen, onClose, isActive }: {
   const location = useLocation();
   const children = item.children || [];
   const hasChildren = children.length > 0;
-  const ref = useRef<HTMLDivElement>(null);
-  const children = item.children || [];
-  const hasChildren = children.length > 0;
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
