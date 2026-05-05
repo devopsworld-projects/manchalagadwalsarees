@@ -114,18 +114,22 @@ function MegaNavItem({ item, isOpen, onOpen, onClose, isActive }: {
 
             {/* Columns */}
             <div className={`grid ${gridClass} gap-x-6 gap-y-1.5`}>
-              {children.map(child => (
-                <Link
-                  key={child.id}
-                  to={getItemUrl(child)}
-                  onClick={onClose}
-                  role="menuitem"
-                  className="group flex items-center text-[13px] font-body text-primary/85 hover:text-accent transition-colors py-1.5 capitalize"
-                >
-                  <span className="w-1.5 h-1.5 bg-accent/0 group-hover:bg-accent transition-colors mr-2 rounded-full" />
-                  {child.label}
-                </Link>
-              ))}
+              {children.map(child => {
+                const childActive = isUrlActive(getItemUrl(child), location.pathname, location.search);
+                return (
+                  <Link
+                    key={child.id}
+                    to={getItemUrl(child)}
+                    onClick={onClose}
+                    role="menuitem"
+                    aria-current={childActive ? 'page' : undefined}
+                    className={`group flex items-center text-[13px] font-body ${childActive ? 'text-accent font-semibold' : 'text-primary/85'} hover:text-accent transition-colors py-1.5 capitalize`}
+                  >
+                    <span className={`w-1.5 h-1.5 ${childActive ? 'bg-accent' : 'bg-accent/0'} group-hover:bg-accent transition-colors mr-2 rounded-full`} />
+                    {child.label}
+                  </Link>
+                );
+              })}
             </div>
 
             {/* View all */}
