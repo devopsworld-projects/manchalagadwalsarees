@@ -5,6 +5,7 @@ import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Motif } from './Motif';
 import heroSlide2 from '@/assets/hero-slide-2.jpg';
 import heroSlide3 from '@/assets/hero-slide-3.jpg';
 import manchalaHero from '@/assets/manchala-hero.jpg';
@@ -79,6 +80,11 @@ export function HeroSection() {
 
       {/* Subtle thin frame */}
       <div className="pointer-events-none absolute inset-6 md:inset-10 border border-background/10 z-10" />
+
+      {/* Decorative corner motifs */}
+      <Motif kind="paisley" className="absolute top-10 right-10 md:top-16 md:right-16 h-20 w-14 md:h-28 md:w-20 text-accent/20 z-10" />
+      <Motif kind="paisley" className="absolute bottom-10 left-10 md:bottom-16 md:left-16 h-16 w-12 md:h-24 md:w-16 text-accent/15 -scale-x-100 rotate-180 z-10 hidden sm:block" />
+      <Motif kind="elephant" className="absolute bottom-6 right-6 md:bottom-10 md:right-12 h-10 w-20 md:h-14 md:w-28 text-accent/25 z-10" />
 
       {/* Content — editorial alignment */}
       <div className="relative z-10 h-full flex flex-col justify-end pb-24 md:pb-32 lg:pb-36">

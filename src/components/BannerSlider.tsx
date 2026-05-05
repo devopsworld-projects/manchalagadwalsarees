@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
+import { Motif } from './Motif';
 
 export function BannerSlider() {
   const { data: banners = [] } = useQuery({
@@ -29,6 +30,8 @@ export function BannerSlider() {
               )}
               {/* Hover gold border */}
               <div className="absolute inset-0 border-2 border-transparent group-hover:border-accent/30 transition-colors duration-300" />
+              {/* Subtle paisley motif */}
+              <Motif kind="paisley" className="absolute top-3 right-3 h-10 w-7 text-accent/40 opacity-60 group-hover:opacity-90 transition-opacity duration-500" />
             </Link>
           ))}
         </div>

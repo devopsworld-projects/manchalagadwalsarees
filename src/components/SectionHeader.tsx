@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Motif } from './Motif';
 
 interface Props {
   eyebrow?: string;
@@ -22,9 +23,11 @@ export function SectionHeader({ eyebrow, title, subtitle, align = 'center', acti
         {eyebrow && (
           <div className={`flex items-center gap-3 mb-3 md:mb-4 ${isCenter ? 'justify-center' : ''}`}>
             <span className="w-6 md:w-10 h-px bg-accent/50" />
+            <Motif kind="paisley" className="h-4 w-3 text-accent/70" />
             <span className="font-body text-[9px] md:text-[10px] tracking-[0.35em] md:tracking-[0.4em] uppercase text-accent">
               {eyebrow}
             </span>
+            <Motif kind="paisley" className="h-4 w-3 text-accent/70 -scale-x-100" />
             <span className="w-6 md:w-10 h-px bg-accent/50" />
           </div>
         )}
