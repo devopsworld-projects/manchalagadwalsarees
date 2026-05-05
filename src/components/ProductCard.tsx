@@ -4,6 +4,7 @@ import { useCart, CartProduct } from '@/context/CartContext';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useCurrency } from '@/context/CurrencyContext';
 import { toast } from 'sonner';
+import { Motif } from '@/components/Motif';
 
 export interface ProductData {
   id: string;
@@ -86,6 +87,15 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Editorial inner frame */}
           <div className="pointer-events-none absolute inset-2 border border-background/0 group-hover:border-background/30 transition-colors duration-700" />
+
+          {/* Subtle corner motif — fades in on hover */}
+          <Motif
+            kind="paisley"
+            tint="cream"
+            opacity={50}
+            motion="hover-lift"
+            className="absolute bottom-3 left-3 h-8 w-6 opacity-0 group-hover:opacity-60 transition-opacity duration-700"
+          />
 
           {/* Badges */}
           <div className="absolute top-4 left-4 flex flex-col gap-1.5">
