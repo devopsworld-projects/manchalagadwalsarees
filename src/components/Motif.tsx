@@ -1,4 +1,4 @@
-import { SVGProps } from 'react';
+import { SVGProps, useEffect, useRef, useState } from 'react';
 
 type MotifKind = 'paisley' | 'temple' | 'elephant' | 'lotus';
 type MotifTint = 'gold' | 'cream' | 'burgundy' | 'auto';
@@ -14,6 +14,8 @@ interface Props extends Omit<SVGProps<SVGSVGElement>, 'color'> {
   motion?: MotifMotion;
   /** Mirror horizontally — handy for symmetric corner pairs */
   flip?: boolean;
+  /** Fade/slide in when scrolled into view */
+  reveal?: boolean;
 }
 
 const tintClass: Record<MotifTint, string> = {
@@ -42,11 +44,40 @@ export function Motif({
   opacity = 30,
   motion = 'none',
   flip = false,
+  reveal = false,
   className = '',
   style,
   ...rest
 }: Props) {
+  const ref = useRef<SVGSVGElement | null>(null);
+  const [shown, setShown] = useState(!reveal);
+
+  useEffect(() => {
+    if (!reveal || shown) return;
+    const node = ref.current;
+    if (!node) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setShown(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            setShown(true);
+            io.disconnect();
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -10% 0px' }
+    );
+    io.observe(node);
+    return () => io.disconnect();
+  }, [reveal, shown]);
+
+  const finalOpacity = Math.max(0, Math.min(100, opacity)) / 100;
   const common = {
+    ref,
     'aria-hidden': true,
     focusable: false as const,
     className: [
@@ -54,11 +85,17 @@ export function Motif({
       tintClass[tint],
       motionClass[motion],
       flip ? '-scale-x-100' : '',
+      reveal ? 'motif-reveal' : '',
+      reveal && shown ? 'motif-reveal-in' : '',
       className,
     ]
       .filter(Boolean)
       .join(' '),
-    style: { opacity: Math.max(0, Math.min(100, opacity)) / 100, ...style },
+    style: {
+      opacity: reveal && !shown ? 0 : finalOpacity,
+      ['--motif-opacity' as any]: finalOpacity,
+      ...style,
+    },
     fill: 'none',
     stroke: 'currentColor',
     strokeWidth: 0.8,
