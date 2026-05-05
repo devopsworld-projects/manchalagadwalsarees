@@ -187,7 +187,7 @@ export function Navbar() {
       </div>
 
       {/* ─── Main Navigation ─── */}
-      <div className="bg-background/95 backdrop-blur-md border-b border-border/50 relative shadow-soft">
+      <div className="bg-background backdrop-blur-md border-b-2 border-accent/20 relative shadow-md">
         <div className="container flex items-center justify-between gap-4 py-4 md:py-5">
           {/* Mobile: menu button + currency on the left */}
           <div className="flex items-center gap-1 md:hidden">
