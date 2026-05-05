@@ -388,7 +388,7 @@ export function Navbar() {
                   <div key={item.id}>
                     <button
                       onClick={() => setMobileExpanded(mobileExpanded === item.id ? null : item.id)}
-                      className="flex items-center justify-between w-full py-3 text-[12px] tracking-[0.2em] font-display font-semibold text-foreground/70 min-h-[44px] uppercase"
+                      className="flex items-center justify-between w-full py-3 text-[13px] tracking-[0.2em] font-display font-bold text-foreground/90 hover:text-accent active:text-accent min-h-[44px] uppercase transition-colors"
                     >
                       {item.label}
                       <ChevronDown className={`h-4 w-4 text-accent/50 transition-transform duration-300 ${mobileExpanded === item.id ? 'rotate-180' : ''}`} />
