@@ -255,19 +255,19 @@ export function Navbar() {
           {/* Right actions */}
           <div className="flex items-center gap-0.5 sm:gap-1">
             <button
-              className="p-2.5 text-primary/80 hover:text-accent transition-colors"
+              className="p-2.5 text-primary hover:text-accent active:text-accent transition-colors"
               aria-label="Search"
               onClick={() => setSearchOpen(true)}
             >
               <Search className="h-[18px] w-[18px]" />
             </button>
-            <Link to="/wishlist" className="p-2.5 text-primary/80 hover:text-accent transition-colors hidden sm:block" aria-label="Wishlist">
+            <Link to="/wishlist" className="p-2.5 text-primary hover:text-accent active:text-accent transition-colors hidden sm:block" aria-label="Wishlist">
               <Heart className="h-[18px] w-[18px]" />
             </Link>
             {user ? (
               <div ref={userMenuRef} className="relative hidden md:block">
                 <button
-                  className="p-2.5 text-primary/80 hover:text-accent transition-colors"
+                  className="p-2.5 text-primary hover:text-accent active:text-accent transition-colors"
                   aria-label="Account"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                 >
@@ -282,21 +282,21 @@ export function Navbar() {
                     <Link
                       to="/account"
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-3 px-5 py-3 text-sm font-body hover:bg-accent/5 hover:text-accent transition-colors"
+                      className="flex items-center gap-3 px-5 py-3 text-sm font-body font-medium text-foreground/90 hover:text-accent active:text-accent transition-colors"
                     >
                       <User className="h-4 w-4" /> My Account
                     </Link>
                     <Link
                       to="/account/orders"
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-3 px-5 py-3 text-sm font-body hover:bg-accent/5 hover:text-accent transition-colors"
+                      className="flex items-center gap-3 px-5 py-3 text-sm font-body font-medium text-foreground/90 hover:text-accent active:text-accent transition-colors"
                     >
                       <Package className="h-4 w-4" /> My Orders
                     </Link>
                     <div className="ornate-line mx-4 my-1" />
                     <button
                       onClick={async () => { setUserMenuOpen(false); await signOut(); }}
-                      className="flex items-center gap-3 w-full px-5 py-3 text-sm font-body text-destructive hover:bg-destructive/5 transition-colors"
+                      className="flex items-center gap-3 w-full px-5 py-3 text-sm font-body font-medium text-destructive hover:bg-destructive/5 transition-colors"
                     >
                       <LogOut className="h-4 w-4" /> Logout
                     </button>
@@ -304,12 +304,12 @@ export function Navbar() {
                 )}
               </div>
             ) : (
-              <Link to="/login" className="p-2.5 text-primary/80 hover:text-accent transition-colors hidden md:block" aria-label="Login">
+              <Link to="/login" className="p-2.5 text-primary hover:text-accent active:text-accent transition-colors hidden md:block" aria-label="Login">
                 <User className="h-[18px] w-[18px]" />
               </Link>
             )}
             <button
-              className="p-2.5 text-primary/80 hover:text-accent transition-colors relative"
+              className="p-2.5 text-primary hover:text-accent active:text-accent transition-colors relative"
               onClick={() => setIsCartOpen(true)}
               aria-label="Cart"
             >
