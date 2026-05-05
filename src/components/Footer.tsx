@@ -112,7 +112,7 @@ export function Footer() {
         {/* Brand block */}
         <div className="md:grid md:grid-cols-4 md:gap-12">
           <div className="text-center md:text-left mb-8 md:mb-0">
-            <img src={logoSrc} alt="Manchala Gadwal Sarees" className="h-20 w-auto mb-5 brightness-200 mx-auto md:mx-0" loading="lazy" width={512} height={512} />
+            <img src={logoSrc} alt="Manchala Gadwal Sarees" className="h-28 w-auto mb-6 brightness-200 mx-auto md:mx-0 drop-shadow-[0_0_15px_rgba(212,175,55,0.25)]" loading="lazy" width={512} height={512} />
             <p className="font-serif text-sm leading-relaxed text-background/65 italic mb-6 max-w-xs mx-auto md:mx-0">
               {description}
             </p>
