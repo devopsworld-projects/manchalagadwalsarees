@@ -16,11 +16,35 @@ function getItemUrl(item: MenuItem) {
   return '/collections';
 }
 
-function MegaNavItem({ item, isOpen, onOpen, onClose }: {
+function isUrlActive(url: string, pathname: string, search: string): boolean {
+  if (!url) return false;
+  const [path, query] = url.split('?');
+  if (query) {
+    if (pathname !== path) return false;
+    const target = new URLSearchParams(query);
+    const current = new URLSearchParams(search);
+    for (const [k, v] of target.entries()) {
+      if (current.get(k) !== v) return false;
+    }
+    return true;
+  }
+  if (path === '/') return pathname === '/';
+  // Avoid marking parent active when a filtered child is selected
+  if (path === '/collections' && new URLSearchParams(search).get('filter')) return false;
+  return pathname === path || pathname.startsWith(path + '/');
+}
+
+function isItemActive(item: MenuItem, pathname: string, search: string): boolean {
+  if (isUrlActive(getItemUrl(item), pathname, search)) return true;
+  return (item.children || []).some(c => isUrlActive(getItemUrl(c), pathname, search));
+}
+
+function MegaNavItem({ item, isOpen, onOpen, onClose, isActive }: {
   item: MenuItem;
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
+  isActive: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const children = item.children || [];
