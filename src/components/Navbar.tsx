@@ -257,22 +257,15 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* Wordmark logo (Kankatala-style) */}
-          <Link to="/" className="flex flex-col items-center shrink-0 px-2 md:px-6 group">
-            {/* Mobile shows image logo */}
-            <img 
-              src={logoSrc} 
-              alt="Manchala Gadwal Sarees" 
-              className="h-16 sm:h-20 w-auto md:hidden brightness-110 drop-shadow-[0_0_10px_rgba(212,175,55,0.2)]" 
-            />
-            {/* Desktop shows serif wordmark */}
-            <span className="hidden md:block font-display text-3xl lg:text-[34px] font-bold tracking-[0.08em] text-primary leading-none">
+          {/* Wordmark logo (Kankatala-style) — shown on all breakpoints */}
+          <Link to="/" className="flex flex-col items-center shrink-0 px-2 md:px-6 group" aria-label="Manchala Gadwal Sarees">
+            <span className="font-display text-2xl sm:text-3xl lg:text-[34px] font-bold tracking-[0.08em] text-primary leading-none">
               MANCHALA
             </span>
-            <span className="hidden md:flex items-center gap-2 mt-1.5">
-              <span className="h-px w-6 bg-accent/60" />
-              <span className="font-body text-[9px] tracking-[0.4em] text-accent uppercase">Gadwal Sarees</span>
-              <span className="h-px w-6 bg-accent/60" />
+            <span className="flex items-center gap-2 mt-1 sm:mt-1.5">
+              <span className="h-px w-4 sm:w-6 bg-accent/60" />
+              <span className="font-body text-[8px] sm:text-[9px] tracking-[0.35em] sm:tracking-[0.4em] text-accent uppercase whitespace-nowrap">Gadwal Sarees</span>
+              <span className="h-px w-4 sm:w-6 bg-accent/60" />
             </span>
           </Link>
 
