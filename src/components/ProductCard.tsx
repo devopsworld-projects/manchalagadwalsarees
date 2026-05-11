@@ -75,7 +75,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="relative aspect-[3/4] overflow-hidden bg-secondary image-luxe">
           <img
             src={image}
-            alt={product.name}
+            alt={`${product.name} — handwoven Gadwal saree by Manchala Gadwal Sarees`}
             className="w-full h-full object-cover"
             loading="lazy"
             width={800}

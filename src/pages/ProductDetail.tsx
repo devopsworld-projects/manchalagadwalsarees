@@ -524,7 +524,7 @@ function ProductDetail() {
                       }`}
                       aria-label={`View image ${i + 1} of ${images.length}`}
                     >
-                      <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                      <img src={src} alt={`${product.name} — thumbnail ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
                     </button>
                   ))}
                 </div>
@@ -1072,7 +1072,7 @@ function ProductDetail() {
                   aria-label={`View image ${i + 1}`}
                   aria-current={i === currentImage}
                   className={`w-10 h-12 overflow-hidden border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-white ${i === currentImage ? 'border-white' : 'border-transparent opacity-50 hover:opacity-80'}`}>
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img src={img} alt={`${product.name} — thumbnail ${i + 1}`} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

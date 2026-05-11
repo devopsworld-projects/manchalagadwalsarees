@@ -19,7 +19,7 @@ export function HeritageSection() {
         <div className="absolute inset-0">
           <img
             src={heritageImg}
-            alt="Handcrafted saree"
+            alt="Handcrafted Gadwal silk saree on a traditional handloom"
             className="w-full h-full object-cover"
             loading="lazy"
             width={1920}
@@ -84,7 +84,7 @@ export function HeritageSection() {
                 <div className="relative border-2 border-accent/20 p-2">
                   <img
                     src={artisanImg}
-                    alt="Artisan weaving gold zari"
+                    alt="Master weaver working on a Gadwal saree with gold zari border"
                     className="w-full aspect-[4/5] object-cover"
                     loading="lazy"
                     width={600}

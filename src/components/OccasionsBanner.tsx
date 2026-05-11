@@ -38,7 +38,7 @@ export function OccasionsBanner() {
       <div className="absolute inset-0">
         <img
           src={flatlay}
-          alt="Collection of luxurious silk sarees"
+          alt="Curated collection of handwoven Gadwal silk sarees"
           className="w-full h-full object-cover"
           loading="lazy"
           width={1920}
