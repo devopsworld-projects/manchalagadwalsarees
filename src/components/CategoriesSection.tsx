@@ -6,32 +6,34 @@ import { SectionHeader } from './SectionHeader';
 import { ScrollReveal } from './ScrollReveal';
 
 
-import kanjivaramImg from '@/assets/categories/kanjivaram.jpg';
-import banarasiImg from '@/assets/categories/banarasi.jpg';
-import softSilkImg from '@/assets/categories/soft-silk.jpg';
-import cottonImg from '@/assets/categories/cotton.jpg';
-import maggamImg from '@/assets/categories/maggam.jpg';
-import powerloomImg from '@/assets/categories/powerloom.jpg';
-import kalamkariImg from '@/assets/categories/kalamkari.jpg';
-import mysoreSilkImg from '@/assets/categories/mysore-silk.jpg';
-import sambalpuriImg from '@/assets/categories/sambalpuri.jpg';
-import rawSilkImg from '@/assets/categories/raw-silk.jpg';
+import cottonGadwalImg from '@/assets/categories/cotton-gadwal.jpg';
+import sicoGadwalImg from '@/assets/categories/sico-gadwal.jpg';
+import silkGadwalImg from '@/assets/categories/silk-gadwal.jpg';
+import tissueGadwalImg from '@/assets/categories/tissue-gadwal.jpg';
+import gadwalKanchiImg from '@/assets/categories/gadwal-kanchi-design.jpg';
+import penKalamkariGadwalImg from '@/assets/categories/pen-kalamkari-gadwal.jpg';
+import bridalGadwalImg from '@/assets/categories/bridal-gadwal.jpg';
+import bandhaniGadwalImg from '@/assets/categories/bandhani-gadwal.jpg';
+import kanchipuramImg from '@/assets/categories/kanchipuram.jpg';
+import bridalKanchipuramImg from '@/assets/categories/bridal-kanchipuram.jpg';
+import kalamkariKanchipuramImg from '@/assets/categories/kalamkari-kanchipuram.jpg';
+import korvaiKanchipuramImg from '@/assets/categories/korvai-kanchipuram.jpg';
+import vintageKanchipuramImg from '@/assets/categories/vintage-kanchipuram.jpg';
 
 const categoryImages: Record<string, string> = {
-  'cotton-gadwal': cottonImg,
-  'sico-gadwal': softSilkImg,
-  'silk-gadwal': rawSilkImg,
-  'tissue-gadwal': banarasiImg,
-  'gadwal-kanchi-design': kanjivaramImg,
-  'pen-kalamkari-gadwal': kalamkariImg,
-  'bridal-gadwal': maggamImg,
-  'bandhani-gadwal': sambalpuriImg,
-  'kanchipuram': kanjivaramImg,
-  'bridal-kanchipuram': maggamImg,
-  'kalamkari-kanchipuram': kalamkariImg,
-  'korvai-kanchipuram': mysoreSilkImg,
-  'vintage-kanchipuram': banarasiImg,
-  'sico': softSilkImg,
+  'cotton-gadwal': cottonGadwalImg,
+  'sico-gadwal': sicoGadwalImg,
+  'silk-gadwal': silkGadwalImg,
+  'tissue-gadwal': tissueGadwalImg,
+  'gadwal-kanchi-design': gadwalKanchiImg,
+  'pen-kalamkari-gadwal': penKalamkariGadwalImg,
+  'bridal-gadwal': bridalGadwalImg,
+  'bandhani-gadwal': bandhaniGadwalImg,
+  'kanchipuram': kanchipuramImg,
+  'bridal-kanchipuram': bridalKanchipuramImg,
+  'kalamkari-kanchipuram': kalamkariKanchipuramImg,
+  'korvai-kanchipuram': korvaiKanchipuramImg,
+  'vintage-kanchipuram': vintageKanchipuramImg,
 };
 
 export function CategoriesSection() {
