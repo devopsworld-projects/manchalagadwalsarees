@@ -2,42 +2,42 @@ import { Link } from 'react-router-dom';
 
 const fabrics = [
   {
-    name: 'Kanjivaram Silk',
-    description: 'The queen of silks, woven in Tamil Nadu with pure mulberry silk and real gold zari.',
+    name: 'Silk Gadwal',
+    description: 'The signature Gadwal weave — pure mulberry silk body with rich pallu and intricate zari borders.',
     icon: '🏛️',
-    slug: 'kanjivaram-sarees',
+    slug: 'silk-gadwal',
     highlight: true,
   },
   {
-    name: 'Banarasi Silk',
-    description: 'Mughal-inspired opulence from Varanasi with intricate brocade work in gold and silver.',
+    name: 'Kanchipuram',
+    description: 'Temple-town heritage from Tamil Nadu, woven with pure silk and real gold-dipped zari.',
     icon: '✨',
-    slug: 'banarasi-sarees',
+    slug: 'kanchipuram',
     highlight: true,
   },
   {
-    name: 'Mysore Silk',
-    description: 'GI-tagged pure silk from Karnataka. Lightweight yet lustrous with kasuti embroidery.',
-    icon: '🦚',
-    slug: 'mysore-silk-sarees',
-  },
-  {
-    name: 'Chanderi',
-    description: 'Sheer, lightweight from Madhya Pradesh. Silk-cotton blend with delicate texture.',
-    icon: '🌸',
-    slug: 'chanderi-cotton-silk',
-  },
-  {
-    name: 'Sambalpuri Ikkat',
-    description: "Odisha's tie-dye masterpiece with mesmerizing geometric patterns.",
-    icon: '🎨',
-    slug: 'sambalpuri-sarees',
-  },
-  {
-    name: 'Soft Cotton',
-    description: 'Breathable cotton sarees ideal for daily wear in vibrant hand-block designs.',
+    name: 'Cotton Gadwal',
+    description: 'Breathable cotton body with the iconic Gadwal silk pallu — perfect for everyday grace.',
     icon: '🌿',
-    slug: 'south-cotton-sarees',
+    slug: 'cotton-gadwal',
+  },
+  {
+    name: 'Tissue Gadwal',
+    description: 'Featherlight tissue with shimmering zari work — luminous and ceremonial.',
+    icon: '🌸',
+    slug: 'tissue-gadwal',
+  },
+  {
+    name: 'Pen Kalamkari Gadwal',
+    description: 'Hand-painted Kalamkari motifs on the classic Gadwal silk canvas.',
+    icon: '🎨',
+    slug: 'pen-kalamkari-gadwal',
+  },
+  {
+    name: 'Korvai Kanchipuram',
+    description: 'Distinctive contrast borders woven separately and joined by master weavers.',
+    icon: '🦚',
+    slug: 'korvai-kanchipuram',
   },
 ];
 

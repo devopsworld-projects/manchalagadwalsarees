@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom';
 import flatlay from '@/assets/saree-collection-flatlay.jpg';
 
 const occasions = [
-  { name: 'Weddings', emoji: '🪷', filter: 'wedding-sarees', desc: 'Sacred bridal silks' },
-  { name: 'Festivals', emoji: '🪔', filter: 'best-sellers', desc: 'Diwali, Pongal & more' },
-  { name: 'Daily Grace', emoji: '🌸', filter: 'south-cotton-sarees', desc: 'Everyday elegance' },
-  { name: 'Gifting', emoji: '🎁', filter: 'new-arrivals', desc: 'Blessings to loved ones' },
+  { name: 'Bridal', emoji: '🪷', filter: 'bridal-gadwal', desc: 'Sacred bridal silks' },
+  { name: 'Festivals', emoji: '🪔', filter: 'kanchipuram', desc: 'Diwali, Pongal & more' },
+  { name: 'Daily Grace', emoji: '🌸', filter: 'cotton-gadwal', desc: 'Everyday elegance' },
+  { name: 'Gifting', emoji: '🎁', filter: 'silk-gadwal', desc: 'Blessings to loved ones' },
 ];
 
 export function OccasionsBanner() {
