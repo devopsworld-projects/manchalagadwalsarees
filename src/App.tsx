@@ -60,6 +60,7 @@ const AdminAuditLog = lazy(() => import("./pages/admin/AdminAuditLog.tsx"));
 const AdminPageSEO = lazy(() => import("./pages/admin/AdminPageSEO.tsx"));
 const AdminHeroSlides = lazy(() => import("./pages/admin/AdminHeroSlides.tsx"));
 const AdminSections = lazy(() => import("./pages/admin/AdminSections.tsx"));
+const AdminNotFound = lazy(() => import("./pages/admin/AdminNotFound.tsx"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy.tsx"));
 const Terms = lazy(() => import("./pages/Terms.tsx"));
 const ShippingPolicy = lazy(() => import("./pages/ShippingPolicy.tsx"));
@@ -153,6 +154,7 @@ const App = () => {
                   <Route path="returns" element={<AdminReturns />} />
                   <Route path="audit-log" element={<AdminAuditLog />} />
                   <Route path="page-seo" element={<AdminPageSEO />} />
+                  <Route path="*" element={<AdminNotFound />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>
