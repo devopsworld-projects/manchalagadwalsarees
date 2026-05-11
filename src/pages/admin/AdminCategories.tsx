@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Pencil, Trash2, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Upload, ImageIcon, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useBulkSelect } from '@/hooks/useBulkSelect';
@@ -14,7 +14,8 @@ const AdminCategories = () => {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<Category | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: '', slug: '', description: '', sort_order: '0' });
+  const [uploading, setUploading] = useState(false);
+  const [form, setForm] = useState({ name: '', slug: '', description: '', sort_order: '0', image_url: '' });
 
   const { data: categories, isLoading } = useQuery({
     queryKey: ['admin-categories'],
