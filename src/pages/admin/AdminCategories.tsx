@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Pencil, Trash2, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Upload, ImageIcon, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useBulkSelect } from '@/hooks/useBulkSelect';
@@ -14,7 +14,8 @@ const AdminCategories = () => {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<Category | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: '', slug: '', description: '', sort_order: '0' });
+  const [uploading, setUploading] = useState(false);
+  const [form, setForm] = useState({ name: '', slug: '', description: '', sort_order: '0', image_url: '' });
 
   const { data: categories, isLoading } = useQuery({
     queryKey: ['admin-categories'],
@@ -49,17 +50,34 @@ const AdminCategories = () => {
     onError: (err: Error) => toast({ title: 'Error', description: err.message, variant: 'destructive' }),
   });
 
-  const resetForm = () => { setForm({ name: '', slug: '', description: '', sort_order: '0' }); setEditing(null); setShowForm(false); };
+  const resetForm = () => { setForm({ name: '', slug: '', description: '', sort_order: '0', image_url: '' }); setEditing(null); setShowForm(false); };
 
   const startEdit = (c: Category) => {
     setEditing(c);
-    setForm({ name: c.name, slug: c.slug, description: c.description || '', sort_order: String(c.sort_order || 0) });
+    setForm({ name: c.name, slug: c.slug, description: c.description || '', sort_order: String(c.sort_order || 0), image_url: c.image_url || '' });
     setShowForm(true);
+  };
+
+  const handleImageUpload = async (file: File) => {
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop();
+      const path = `categories/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error } = await supabase.storage.from('product-images').upload(path, file);
+      if (error) throw error;
+      const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(path);
+      setForm(f => ({ ...f, image_url: publicUrl }));
+      toast({ title: 'Image uploaded' });
+    } catch (err: any) {
+      toast({ title: 'Upload failed', description: err.message, variant: 'destructive' });
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    saveMutation.mutate({ name: form.name, slug: form.slug || form.name.toLowerCase().replace(/\s+/g, '-'), description: form.description || null, sort_order: Number(form.sort_order) });
+    saveMutation.mutate({ name: form.name, slug: form.slug || form.name.toLowerCase().replace(/\s+/g, '-'), description: form.description || null, sort_order: Number(form.sort_order), image_url: form.image_url || null });
   };
 
   return (
@@ -83,7 +101,7 @@ const AdminCategories = () => {
 
       {showForm && (
         <div className="fixed inset-0 bg-foreground/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-background rounded-lg w-full max-w-md p-6">
+          <div className="bg-background rounded-lg w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-display text-xl font-semibold">{editing ? 'Edit Category' : 'New Category'}</h3>
               <button onClick={resetForm}><X className="h-5 w-5" /></button>
@@ -93,6 +111,29 @@ const AdminCategories = () => {
               <div><label className="font-body text-sm font-semibold block mb-1">Slug</label><input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} placeholder="auto-generated" className="w-full border border-border px-3 py-2 text-sm font-body rounded-sm focus:outline-none focus:ring-1 focus:ring-primary" /></div>
               <div><label className="font-body text-sm font-semibold block mb-1">Description</label><textarea rows={2} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} className="w-full border border-border px-3 py-2 text-sm font-body rounded-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none" /></div>
               <div><label className="font-body text-sm font-semibold block mb-1">Sort Order</label><input type="number" value={form.sort_order} onChange={e => setForm(f => ({ ...f, sort_order: e.target.value }))} className="w-full border border-border px-3 py-2 text-sm font-body rounded-sm focus:outline-none focus:ring-1 focus:ring-primary" /></div>
+              <div>
+                <label className="font-body text-sm font-semibold block mb-1">Category Image</label>
+                <div className="flex items-start gap-3">
+                  <div className="w-24 h-32 border border-border rounded-sm overflow-hidden bg-muted flex items-center justify-center flex-shrink-0">
+                    {form.image_url ? (
+                      <img src={form.image_url} alt="Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <label className={`flex items-center justify-center gap-2 border border-dashed border-border px-3 py-2 text-sm font-body rounded-sm cursor-pointer hover:bg-muted transition-colors ${uploading ? 'opacity-60 pointer-events-none' : ''}`}>
+                      {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                      {uploading ? 'Uploading...' : form.image_url ? 'Replace Image' : 'Upload Image'}
+                      <input type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleImageUpload(f); e.target.value = ''; }} />
+                    </label>
+                    <input type="url" placeholder="Or paste image URL" value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))} className="w-full border border-border px-3 py-2 text-xs font-body rounded-sm focus:outline-none focus:ring-1 focus:ring-primary" />
+                    {form.image_url && (
+                      <button type="button" onClick={() => setForm(f => ({ ...f, image_url: '' }))} className="text-xs text-destructive hover:underline">Remove image</button>
+                    )}
+                  </div>
+                </div>
+              </div>
               <div className="flex gap-3">
                 <button type="submit" disabled={saveMutation.isPending} className="flex-1 bg-primary text-primary-foreground py-2.5 text-sm tracking-wider font-body hover:bg-burgundy-light transition-colors disabled:opacity-50">{saveMutation.isPending ? 'SAVING...' : editing ? 'UPDATE' : 'CREATE'}</button>
                 <button type="button" onClick={resetForm} className="px-6 py-2.5 border border-border text-sm font-body hover:bg-muted transition-colors">CANCEL</button>
@@ -110,6 +151,7 @@ const AdminCategories = () => {
             <thead className="bg-muted">
               <tr className="font-body text-xs text-muted-foreground uppercase tracking-wider">
                 <th className="p-3 w-10"><Checkbox checked={bulk.allSelected} onCheckedChange={bulk.toggleAll} /></th>
+                <th className="p-3 w-16">Image</th>
                 <th className="text-left p-3">Name</th>
                 <th className="text-left p-3">Slug</th>
                 <th className="text-left p-3">Description</th>
@@ -121,6 +163,13 @@ const AdminCategories = () => {
               {categories?.map(cat => (
                 <tr key={cat.id} className={`hover:bg-muted/30 transition-colors ${bulk.selectedIds.has(cat.id) ? 'bg-primary/5' : ''}`}>
                   <td className="p-3"><Checkbox checked={bulk.selectedIds.has(cat.id)} onCheckedChange={() => bulk.toggle(cat.id)} /></td>
+                  <td className="p-3">
+                    {cat.image_url ? (
+                      <img src={cat.image_url} alt={cat.name} className="w-12 h-14 object-cover rounded-sm border border-border" />
+                    ) : (
+                      <div className="w-12 h-14 bg-muted rounded-sm border border-border flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>
+                    )}
+                  </td>
                   <td className="p-3 font-body text-sm font-medium">{cat.name}</td>
                   <td className="p-3 font-body text-sm text-muted-foreground">{cat.slug}</td>
                   <td className="p-3 font-body text-sm text-muted-foreground">{cat.description || '—'}</td>
@@ -134,7 +183,7 @@ const AdminCategories = () => {
                 </tr>
               ))}
               {(!categories || categories.length === 0) && (
-                <tr><td colSpan={6} className="p-8 text-center text-muted-foreground font-body">No categories yet.</td></tr>
+                <tr><td colSpan={7} className="p-8 text-center text-muted-foreground font-body">No categories yet.</td></tr>
               )}
             </tbody>
           </table>
