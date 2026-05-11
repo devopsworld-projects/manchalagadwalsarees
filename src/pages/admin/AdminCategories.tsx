@@ -50,17 +50,34 @@ const AdminCategories = () => {
     onError: (err: Error) => toast({ title: 'Error', description: err.message, variant: 'destructive' }),
   });
 
-  const resetForm = () => { setForm({ name: '', slug: '', description: '', sort_order: '0' }); setEditing(null); setShowForm(false); };
+  const resetForm = () => { setForm({ name: '', slug: '', description: '', sort_order: '0', image_url: '' }); setEditing(null); setShowForm(false); };
 
   const startEdit = (c: Category) => {
     setEditing(c);
-    setForm({ name: c.name, slug: c.slug, description: c.description || '', sort_order: String(c.sort_order || 0) });
+    setForm({ name: c.name, slug: c.slug, description: c.description || '', sort_order: String(c.sort_order || 0), image_url: c.image_url || '' });
     setShowForm(true);
+  };
+
+  const handleImageUpload = async (file: File) => {
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop();
+      const path = `categories/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error } = await supabase.storage.from('product-images').upload(path, file);
+      if (error) throw error;
+      const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(path);
+      setForm(f => ({ ...f, image_url: publicUrl }));
+      toast({ title: 'Image uploaded' });
+    } catch (err: any) {
+      toast({ title: 'Upload failed', description: err.message, variant: 'destructive' });
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    saveMutation.mutate({ name: form.name, slug: form.slug || form.name.toLowerCase().replace(/\s+/g, '-'), description: form.description || null, sort_order: Number(form.sort_order) });
+    saveMutation.mutate({ name: form.name, slug: form.slug || form.name.toLowerCase().replace(/\s+/g, '-'), description: form.description || null, sort_order: Number(form.sort_order), image_url: form.image_url || null });
   };
 
   return (
