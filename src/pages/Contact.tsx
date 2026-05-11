@@ -54,32 +54,66 @@ const Contact = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
           {/* Contact info */}
-          <div className="space-y-6">
-            <h2 className="font-display text-2xl font-semibold">Get in Touch</h2>
+          <div className="space-y-8">
             <div className="space-y-4">
-              {[
-                { icon: Phone, label: 'Phone', value: '+91 98858 79188' },
-                { icon: Mail, label: 'Email', value: 'info@manchalagadwalsarees.com' },
-                { icon: MapPin, label: 'Address', value: 'Hyderabad, Telangana, India' },
-              ].map(item => (
-                <div key={item.label} className="flex items-start gap-3">
-                  <item.icon className="h-5 w-5 text-gold mt-0.5" />
+              <h2 className="font-display text-2xl font-semibold">Get in Touch</h2>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <Mail className="h-5 w-5 text-gold mt-0.5" />
                   <div>
-                    <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">{item.label}</p>
-                    <p className="font-body">{item.value}</p>
+                    <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">Email</p>
+                    <a href="mailto:info@manchalagadwalsarees.com" className="font-body hover:text-primary">info@manchalagadwalsarees.com</a>
                   </div>
                 </div>
-              ))}
+                <div className="flex items-start gap-3">
+                  <MapPin className="h-5 w-5 text-gold mt-0.5" />
+                  <div>
+                    <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">Address</p>
+                    <p className="font-body">Hyderabad, Telangana, India</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <a
-              href="https://wa.me/919885879188"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-[hsl(142,70%,40%)] text-primary-foreground px-6 py-3 text-sm font-body tracking-wider rounded-sm hover:opacity-90 transition-opacity"
-            >
-              <MessageCircle className="h-4 w-4" />
-              WhatsApp Us
-            </a>
+
+            {/* Management */}
+            <div>
+              <h2 className="font-display text-2xl font-semibold mb-1">Management</h2>
+              <p className="font-body text-sm text-muted-foreground mb-4">
+                <span className="font-semibold text-foreground">Founder:</span> Manchala Madappa
+              </p>
+
+              <h3 className="font-display text-lg font-semibold mb-3">Team</h3>
+              <ul className="space-y-3">
+                {[
+                  { name: 'Krishna Murthy Manchala', phone: '9030866421' },
+                  { name: 'Raghavendra Manchala', phone: '9885879188' },
+                  { name: 'Siva Murthy Kunigiri', phone: '9848577448' },
+                  { name: 'Pavan Kunigiri', phone: '9493134992' },
+                ].map(member => (
+                  <li key={member.phone} className="flex items-center justify-between gap-3 border-b border-border/60 pb-2">
+                    <div className="flex items-start gap-3">
+                      <Phone className="h-4 w-4 text-gold mt-1" />
+                      <div>
+                        <p className="font-body text-sm font-semibold">{member.name}</p>
+                        <a href={`tel:+91${member.phone}`} className="font-body text-sm text-muted-foreground hover:text-primary">
+                          +91 {member.phone.slice(0, 5)} {member.phone.slice(5)}
+                        </a>
+                      </div>
+                    </div>
+                    <a
+                      href={`https://wa.me/91${member.phone}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`WhatsApp ${member.name}`}
+                      className="inline-flex items-center gap-1 text-[hsl(142,70%,40%)] hover:opacity-80 text-xs font-body tracking-wider"
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                      <span className="hidden sm:inline">WhatsApp</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* Form */}
