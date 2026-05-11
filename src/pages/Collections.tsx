@@ -36,6 +36,7 @@ const Collections = () => {
   const [page, setPage] = useState(1);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [gridLayout, setGridLayout] = useState<GridLayout>('3');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const handleScroll = () => setShowBackToTop(window.scrollY > 400);
