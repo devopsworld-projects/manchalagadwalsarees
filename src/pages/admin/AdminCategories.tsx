@@ -151,6 +151,7 @@ const AdminCategories = () => {
             <thead className="bg-muted">
               <tr className="font-body text-xs text-muted-foreground uppercase tracking-wider">
                 <th className="p-3 w-10"><Checkbox checked={bulk.allSelected} onCheckedChange={bulk.toggleAll} /></th>
+                <th className="p-3 w-16">Image</th>
                 <th className="text-left p-3">Name</th>
                 <th className="text-left p-3">Slug</th>
                 <th className="text-left p-3">Description</th>
@@ -162,6 +163,13 @@ const AdminCategories = () => {
               {categories?.map(cat => (
                 <tr key={cat.id} className={`hover:bg-muted/30 transition-colors ${bulk.selectedIds.has(cat.id) ? 'bg-primary/5' : ''}`}>
                   <td className="p-3"><Checkbox checked={bulk.selectedIds.has(cat.id)} onCheckedChange={() => bulk.toggle(cat.id)} /></td>
+                  <td className="p-3">
+                    {cat.image_url ? (
+                      <img src={cat.image_url} alt={cat.name} className="w-12 h-14 object-cover rounded-sm border border-border" />
+                    ) : (
+                      <div className="w-12 h-14 bg-muted rounded-sm border border-border flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>
+                    )}
+                  </td>
                   <td className="p-3 font-body text-sm font-medium">{cat.name}</td>
                   <td className="p-3 font-body text-sm text-muted-foreground">{cat.slug}</td>
                   <td className="p-3 font-body text-sm text-muted-foreground">{cat.description || '—'}</td>
