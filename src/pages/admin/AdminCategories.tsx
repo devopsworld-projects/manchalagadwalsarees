@@ -111,6 +111,29 @@ const AdminCategories = () => {
               <div><label className="font-body text-sm font-semibold block mb-1">Slug</label><input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} placeholder="auto-generated" className="w-full border border-border px-3 py-2 text-sm font-body rounded-sm focus:outline-none focus:ring-1 focus:ring-primary" /></div>
               <div><label className="font-body text-sm font-semibold block mb-1">Description</label><textarea rows={2} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} className="w-full border border-border px-3 py-2 text-sm font-body rounded-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none" /></div>
               <div><label className="font-body text-sm font-semibold block mb-1">Sort Order</label><input type="number" value={form.sort_order} onChange={e => setForm(f => ({ ...f, sort_order: e.target.value }))} className="w-full border border-border px-3 py-2 text-sm font-body rounded-sm focus:outline-none focus:ring-1 focus:ring-primary" /></div>
+              <div>
+                <label className="font-body text-sm font-semibold block mb-1">Category Image</label>
+                <div className="flex items-start gap-3">
+                  <div className="w-24 h-32 border border-border rounded-sm overflow-hidden bg-muted flex items-center justify-center flex-shrink-0">
+                    {form.image_url ? (
+                      <img src={form.image_url} alt="Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <label className={`flex items-center justify-center gap-2 border border-dashed border-border px-3 py-2 text-sm font-body rounded-sm cursor-pointer hover:bg-muted transition-colors ${uploading ? 'opacity-60 pointer-events-none' : ''}`}>
+                      {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                      {uploading ? 'Uploading...' : form.image_url ? 'Replace Image' : 'Upload Image'}
+                      <input type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleImageUpload(f); e.target.value = ''; }} />
+                    </label>
+                    <input type="url" placeholder="Or paste image URL" value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))} className="w-full border border-border px-3 py-2 text-xs font-body rounded-sm focus:outline-none focus:ring-1 focus:ring-primary" />
+                    {form.image_url && (
+                      <button type="button" onClick={() => setForm(f => ({ ...f, image_url: '' }))} className="text-xs text-destructive hover:underline">Remove image</button>
+                    )}
+                  </div>
+                </div>
+              </div>
               <div className="flex gap-3">
                 <button type="submit" disabled={saveMutation.isPending} className="flex-1 bg-primary text-primary-foreground py-2.5 text-sm tracking-wider font-body hover:bg-burgundy-light transition-colors disabled:opacity-50">{saveMutation.isPending ? 'SAVING...' : editing ? 'UPDATE' : 'CREATE'}</button>
                 <button type="button" onClick={resetForm} className="px-6 py-2.5 border border-border text-sm font-body hover:bg-muted transition-colors">CANCEL</button>
