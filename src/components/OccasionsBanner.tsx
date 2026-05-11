@@ -1,14 +1,38 @@
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import flatlay from '@/assets/saree-collection-flatlay.jpg';
 
-const occasions = [
-  { name: 'Bridal', emoji: '🪷', filter: 'bridal-gadwal', desc: 'Sacred bridal silks' },
-  { name: 'Festivals', emoji: '🪔', filter: 'kanchipuram', desc: 'Diwali, Pongal & more' },
-  { name: 'Daily Grace', emoji: '🌸', filter: 'cotton-gadwal', desc: 'Everyday elegance' },
-  { name: 'Gifting', emoji: '🎁', filter: 'silk-gadwal', desc: 'Blessings to loved ones' },
-];
+const FALLBACK_EMOJIS = ['🪷', '🪔', '🌸', '🎁'];
+const FALLBACK_DESCS = ['Sacred bridal silks', 'Festive heritage', 'Everyday grace', 'Blessings to loved ones'];
+const PREFERRED_SLUGS = ['bridal-gadwal', 'kanchipuram', 'cotton-gadwal', 'silk-gadwal'];
 
 export function OccasionsBanner() {
+  const { data: categories = [] } = useQuery({
+    queryKey: ['occasions-categories'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('id, name, slug')
+        .order('sort_order', { ascending: true });
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Pick preferred slugs first, fall back to first 4
+  const picks = PREFERRED_SLUGS
+    .map(s => categories.find(c => c.slug === s))
+    .filter(Boolean) as { id: string; name: string; slug: string }[];
+  const occasions = (picks.length === 4 ? picks : categories.slice(0, 4)).map((c, i) => ({
+    name: c.name,
+    filter: c.slug,
+    emoji: FALLBACK_EMOJIS[i] || '✨',
+    desc: FALLBACK_DESCS[i] || 'Discover the collection',
+  }));
+
+  if (occasions.length === 0) return null;
+
   return (
     <section className="relative py-28 md:py-36 overflow-hidden">
       <div className="absolute inset-0">
@@ -26,7 +50,6 @@ export function OccasionsBanner() {
       <div className="gopuram-band-inverted absolute top-0 left-0 right-0 opacity-90" />
       <div className="gopuram-band absolute bottom-0 left-0 right-0 opacity-90" />
 
-      {/* Decorative frame */}
       <div className="absolute inset-8 md:inset-16 pointer-events-none">
         <div className="absolute top-0 left-0 w-10 h-10 border-t border-l border-accent/30" />
         <div className="absolute top-0 right-0 w-10 h-10 border-t border-r border-accent/30" />
@@ -38,7 +61,7 @@ export function OccasionsBanner() {
         <div className="lotus-divider mb-6">
           <span className="lotus" />
         </div>
-        
+
         <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold text-background tracking-wide">
           A Saree for Every Occasion
         </h2>
@@ -50,7 +73,7 @@ export function OccasionsBanner() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5 max-w-4xl mx-auto">
           {occasions.map(occ => (
             <Link
-              key={occ.name}
+              key={occ.filter}
               to={`/collections?filter=${occ.filter}`}
               className="group relative bg-background/5 backdrop-blur-md border border-accent/15 p-8 md:p-10 hover:bg-background/10 hover:border-accent/50 transition-all duration-300"
             >
