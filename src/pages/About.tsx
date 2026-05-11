@@ -18,7 +18,7 @@ const About = () => {
       <Navbar /><Breadcrumbs />
       <main>
         <section className="relative h-[40vh] flex items-center justify-center overflow-hidden">
-          <img src={aboutHero} alt="About Manchala Gadwal Sarees" className="absolute inset-0 w-full h-full object-cover" />
+          <img src={aboutHero} alt="Manchala Gadwal Sarees — handloom weaving heritage since 1986" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-foreground/60" />
           <div className="relative text-center text-primary-foreground">
             <h1 className="font-display text-4xl md:text-5xl font-bold">Our Story</h1>
@@ -31,7 +31,7 @@ const About = () => {
             <div className="relative">
               <img
                 src={founderImg}
-                alt="Manchala Madappa, master weaver and founder of Manchala Gadwal Sarees"
+                alt="Traditional handloom weaving a Gadwal silk saree with golden zari border"
                 className="w-full h-auto object-cover shadow-xl"
                 loading="lazy"
                 width={1280}

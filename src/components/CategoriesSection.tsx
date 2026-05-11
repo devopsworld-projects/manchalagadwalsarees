@@ -146,7 +146,7 @@ function CategoryImage({ cat }: { cat: any }) {
     return (
       <img
         src={imgSrc}
-        alt={cat.name}
+        alt={`${cat.name} sarees collection — handwoven by Manchala Gadwal Sarees`}
         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         loading="lazy"
         width={640}

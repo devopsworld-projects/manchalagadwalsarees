@@ -67,7 +67,7 @@ export function HeroSection() {
         >
           <img
             src={slide.image_url}
-            alt={slide.title || 'Hero'}
+            alt={slide.title ? `${slide.title} — handwoven Gadwal sarees` : 'Manchala Gadwal Sarees — authentic handloom Gadwal and Kanchipuram weaves'}
             className="w-full h-full object-cover"
             width={1920}
             height={1080}
