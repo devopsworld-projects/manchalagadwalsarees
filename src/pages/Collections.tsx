@@ -11,7 +11,8 @@ import { PageMeta } from '@/components/PageMeta';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CollectionsSidebar } from '@/components/CollectionsSidebar';
 import { ProductCardSkeleton } from '@/components/ProductCardSkeleton';
-import { ArrowUp, Grid2x2, Grid3x3, LayoutList } from 'lucide-react';
+import { ArrowUp, Grid2x2, Grid3x3, LayoutList, Search, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -35,6 +36,7 @@ const Collections = () => {
   const [page, setPage] = useState(1);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [gridLayout, setGridLayout] = useState<GridLayout>('3');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const handleScroll = () => setShowBackToTop(window.scrollY > 400);
@@ -89,6 +91,14 @@ const Collections = () => {
 
   const filteredAndSorted = useMemo(() => {
     let result = products.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.sku?.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q)
+      );
+    }
     if (selectedColors.length > 0) {
       result = result.filter(p =>
         p.colors?.some((c: string) => selectedColors.some(sc => c.toLowerCase().includes(sc.toLowerCase()) || sc.toLowerCase().includes(c.toLowerCase())))
@@ -105,7 +115,7 @@ const Collections = () => {
       case 'name-az': result = [...result].sort((a, b) => a.name.localeCompare(b.name)); break;
     }
     return result;
-  }, [products, sortBy, priceRange, selectedColors, selectedMaterials]);
+  }, [products, sortBy, priceRange, selectedColors, selectedMaterials, searchQuery]);
 
   const paginatedProducts = filteredAndSorted.slice(0, page * PAGE_SIZE);
   const hasMore = page * PAGE_SIZE < filteredAndSorted.length;
@@ -256,6 +266,27 @@ const Collections = () => {
               </p>
 
               <div className="flex items-center gap-3">
+                {/* Search within category */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder={`Search ${activeLabel.toLowerCase()}...`}
+                    value={searchQuery}
+                    onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+                    className="h-9 w-[180px] md:w-[220px] pl-9 pr-8 text-xs font-body"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label="Clear search"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+
                 {/* Grid layout toggle — desktop only */}
                 <div className="hidden md:flex items-center border border-border">
                   {[
