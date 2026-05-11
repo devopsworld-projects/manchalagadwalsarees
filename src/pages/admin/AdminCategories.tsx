@@ -183,7 +183,7 @@ const AdminCategories = () => {
                 </tr>
               ))}
               {(!categories || categories.length === 0) && (
-                <tr><td colSpan={6} className="p-8 text-center text-muted-foreground font-body">No categories yet.</td></tr>
+                <tr><td colSpan={7} className="p-8 text-center text-muted-foreground font-body">No categories yet.</td></tr>
               )}
             </tbody>
           </table>
