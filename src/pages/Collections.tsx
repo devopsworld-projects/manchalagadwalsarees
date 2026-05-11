@@ -266,6 +266,27 @@ const Collections = () => {
               </p>
 
               <div className="flex items-center gap-3">
+                {/* Search within category */}
+                <div className="relative hidden sm:block">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder={`Search ${activeLabel.toLowerCase()}...`}
+                    value={searchQuery}
+                    onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+                    className="h-9 w-[180px] md:w-[220px] pl-9 pr-8 text-xs font-body"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label="Clear search"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+
                 {/* Grid layout toggle — desktop only */}
                 <div className="hidden md:flex items-center border border-border">
                   {[
