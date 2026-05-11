@@ -101,7 +101,7 @@ const AdminCategories = () => {
 
       {showForm && (
         <div className="fixed inset-0 bg-foreground/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-background rounded-lg w-full max-w-md p-6">
+          <div className="bg-background rounded-lg w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-display text-xl font-semibold">{editing ? 'Edit Category' : 'New Category'}</h3>
               <button onClick={resetForm}><X className="h-5 w-5" /></button>
