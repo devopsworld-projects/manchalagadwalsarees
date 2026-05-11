@@ -91,6 +91,14 @@ const Collections = () => {
 
   const filteredAndSorted = useMemo(() => {
     let result = products.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.sku?.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q)
+      );
+    }
     if (selectedColors.length > 0) {
       result = result.filter(p =>
         p.colors?.some((c: string) => selectedColors.some(sc => c.toLowerCase().includes(sc.toLowerCase()) || sc.toLowerCase().includes(c.toLowerCase())))
@@ -107,7 +115,7 @@ const Collections = () => {
       case 'name-az': result = [...result].sort((a, b) => a.name.localeCompare(b.name)); break;
     }
     return result;
-  }, [products, sortBy, priceRange, selectedColors, selectedMaterials]);
+  }, [products, sortBy, priceRange, selectedColors, selectedMaterials, searchQuery]);
 
   const paginatedProducts = filteredAndSorted.slice(0, page * PAGE_SIZE);
   const hasMore = page * PAGE_SIZE < filteredAndSorted.length;
