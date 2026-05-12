@@ -42,6 +42,10 @@ export function RecentlyViewed({ currentSku }: { currentSku?: string }) {
 
       // Validate against DB — drop items whose product was deleted/deactivated
       const skus = candidates.map(i => i.sku);
+      if (skus.length === 0) {
+        if (!cancelled) setItems([]);
+        return;
+      }
       const { data } = await supabase
         .from('products')
         .select('sku')
