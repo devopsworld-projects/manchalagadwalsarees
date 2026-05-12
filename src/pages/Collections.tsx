@@ -77,14 +77,15 @@ const Collections = () => {
       } else if (activeFilter === 'best-sellers') {
         query = query.eq('is_best_seller', true);
       } else if (activeFilter !== 'all') {
-        const cat = categories.find(c => c.slug === activeFilter);
+        const cat = allCategories.find(c => c.slug === activeFilter);
         if (cat) query = query.eq('category_id', cat.id);
+        else return [];
       }
       const { data, error } = await query;
       if (error) throw error;
       return data;
     },
-    enabled: activeFilter === 'all' || activeFilter === 'new-arrivals' || activeFilter === 'best-sellers' || categories.length > 0,
+    enabled: activeFilter === 'all' || activeFilter === 'new-arrivals' || activeFilter === 'best-sellers' || allCategories.length > 0,
   });
 
   const allTabs = useMemo(() => {
