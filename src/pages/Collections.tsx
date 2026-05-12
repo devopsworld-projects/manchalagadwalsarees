@@ -388,67 +388,130 @@ const Collections = () => {
 
             {/* ─── Empty State ─── */}
             {!isLoading && filteredAndSorted.length === 0 && (
-              <div className="text-center py-24 px-4">
-                <span className="text-accent text-4xl block mb-4">◆</span>
-                {categoryHasNoProducts ? (
-                  <>
-                    <h3 className="font-display text-xl font-bold text-foreground mb-2">
-                      {activeCategory?.name} — Coming Soon
-                    </h3>
-                    <p className="text-muted-foreground font-body max-w-md mx-auto">
-                      Our master weavers are curating this collection. New arrivals will be unveiled here shortly. In the meantime, explore our other heritage weaves.
-                    </p>
-                    <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                      <button
-                        onClick={() => handleFilterChange('all')}
-                        className="px-6 py-2.5 bg-primary text-primary-foreground text-xs font-display tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
-                      >
-                        Browse All Sarees
-                      </button>
-                      <button
-                        onClick={() => handleFilterChange('best-sellers')}
-                        className="px-6 py-2.5 border border-accent text-accent text-xs font-display tracking-[0.15em] uppercase hover:bg-accent hover:text-accent-foreground transition-colors"
-                      >
-                        View Best Sellers
-                      </button>
+              <div className="text-center py-20 px-4">
+                {catalogIsEmpty ? (
+                  <div className="max-w-xl mx-auto bg-gradient-to-b from-card to-background border border-accent/30 shadow-elegant px-6 py-12 sm:py-16 relative overflow-hidden">
+                    {/* Corner motifs */}
+                    <span className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-accent/60" />
+                    <span className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-accent/60" />
+                    <span className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-accent/60" />
+                    <span className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-accent/60" />
+
+                    <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-accent/10 border border-accent/40 mb-5">
+                      <Sparkles className="h-7 w-7 text-accent" />
                     </div>
-                  </>
-                ) : searchQuery.trim() ? (
-                  <>
-                    <h3 className="font-display text-xl font-bold text-foreground mb-2">No Matches for "{searchQuery}"</h3>
-                    <p className="text-muted-foreground font-body max-w-md mx-auto">
-                      We couldn't find sarees matching your search in this collection. Try a different keyword or clear your search.
+                    <h3 className="font-display text-2xl sm:text-3xl font-bold text-primary mb-3 tracking-wide">
+                      Our Looms Are Warming Up
+                    </h3>
+                    <p className="text-muted-foreground font-body max-w-md mx-auto text-sm sm:text-base leading-relaxed">
+                      The catalog is currently empty. Our master weavers are crafting the next collection of authentic Gadwal &amp; Kanchipuram sarees.
+                      {isAdmin
+                        ? ' Add your first product to bring the boutique to life.'
+                        : ' Check back soon — or get in touch and we\'ll notify you the moment new pieces arrive.'}
                     </p>
-                    <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                      <button
-                        onClick={() => { setSearchQuery(''); setPage(1); }}
-                        className="px-6 py-2.5 bg-primary text-primary-foreground text-xs font-display tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
-                      >
-                        Clear Search
-                      </button>
-                      {hasActiveFilters && (
-                        <button
-                          onClick={handleClearFilters}
-                          className="px-6 py-2.5 border border-accent text-accent text-xs font-display tracking-[0.15em] uppercase hover:bg-accent hover:text-accent-foreground transition-colors"
-                        >
-                          Clear Filters
-                        </button>
+
+                    <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+                      {isAdmin ? (
+                        <>
+                          <Link
+                            to="/admin/products"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground text-xs font-display tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors min-h-[44px]"
+                          >
+                            <Plus className="h-4 w-4" /> Add Your First Product
+                          </Link>
+                          <Link
+                            to="/admin/categories"
+                            className="inline-flex items-center px-6 py-3 border border-accent text-accent text-xs font-display tracking-[0.15em] uppercase hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px]"
+                          >
+                            Manage Categories
+                          </Link>
+                        </>
+                      ) : (
+                        <>
+                          {whatsappNumber && (
+                            <a
+                              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi! Please notify me when new sarees are added to your collection.')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground text-xs font-display tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors min-h-[44px]"
+                            >
+                              <MessageCircle className="h-4 w-4" /> Notify Me on WhatsApp
+                            </a>
+                          )}
+                          <Link
+                            to="/contact"
+                            className="inline-flex items-center px-6 py-3 border border-accent text-accent text-xs font-display tracking-[0.15em] uppercase hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px]"
+                          >
+                            Contact Us
+                          </Link>
+                        </>
                       )}
                     </div>
-                  </>
+                  </div>
                 ) : (
                   <>
-                    <h3 className="font-display text-xl font-bold text-foreground mb-2">No Treasures Found</h3>
-                    <p className="text-muted-foreground font-body max-w-md mx-auto">
-                      We couldn't find any sarees matching your criteria. Try adjusting your filters to discover more pieces.
-                    </p>
-                    {hasActiveFilters && (
-                      <button
-                        onClick={handleClearFilters}
-                        className="mt-6 px-6 py-2.5 bg-primary text-primary-foreground text-xs font-display tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
-                      >
-                        Clear All Filters
-                      </button>
+                    <span className="text-accent text-4xl block mb-4">◆</span>
+                    {categoryHasNoProducts ? (
+                      <>
+                        <h3 className="font-display text-xl font-bold text-foreground mb-2">
+                          {activeCategory?.name} — Coming Soon
+                        </h3>
+                        <p className="text-muted-foreground font-body max-w-md mx-auto">
+                          Our master weavers are curating this collection. New arrivals will be unveiled here shortly. In the meantime, explore our other heritage weaves.
+                        </p>
+                        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                          <button
+                            onClick={() => handleFilterChange('all')}
+                            className="px-6 py-2.5 bg-primary text-primary-foreground text-xs font-display tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+                          >
+                            Browse All Sarees
+                          </button>
+                          <button
+                            onClick={() => handleFilterChange('best-sellers')}
+                            className="px-6 py-2.5 border border-accent text-accent text-xs font-display tracking-[0.15em] uppercase hover:bg-accent hover:text-accent-foreground transition-colors"
+                          >
+                            View Best Sellers
+                          </button>
+                        </div>
+                      </>
+                    ) : searchQuery.trim() ? (
+                      <>
+                        <h3 className="font-display text-xl font-bold text-foreground mb-2">No Matches for "{searchQuery}"</h3>
+                        <p className="text-muted-foreground font-body max-w-md mx-auto">
+                          We couldn't find sarees matching your search in this collection. Try a different keyword or clear your search.
+                        </p>
+                        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                          <button
+                            onClick={() => { setSearchQuery(''); setPage(1); }}
+                            className="px-6 py-2.5 bg-primary text-primary-foreground text-xs font-display tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+                          >
+                            Clear Search
+                          </button>
+                          {hasActiveFilters && (
+                            <button
+                              onClick={handleClearFilters}
+                              className="px-6 py-2.5 border border-accent text-accent text-xs font-display tracking-[0.15em] uppercase hover:bg-accent hover:text-accent-foreground transition-colors"
+                            >
+                              Clear Filters
+                            </button>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <h3 className="font-display text-xl font-bold text-foreground mb-2">No Treasures Found</h3>
+                        <p className="text-muted-foreground font-body max-w-md mx-auto">
+                          We couldn't find any sarees matching your criteria. Try adjusting your filters to discover more pieces.
+                        </p>
+                        {hasActiveFilters && (
+                          <button
+                            onClick={handleClearFilters}
+                            className="mt-6 px-6 py-2.5 bg-primary text-primary-foreground text-xs font-display tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+                          >
+                            Clear All Filters
+                          </button>
+                        )}
+                      </>
                     )}
                   </>
                 )}
