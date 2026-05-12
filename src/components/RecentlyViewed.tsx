@@ -54,7 +54,7 @@ export function RecentlyViewed({ currentSku }: { currentSku?: string }) {
     return () => {
       cancelled = true;
     };
-  }, [currentSku]);
+  }, [currentSku, location.pathname]);
 
   if (items.length === 0) return null;
 
