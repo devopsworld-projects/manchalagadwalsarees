@@ -11,10 +11,13 @@ import { PageMeta } from '@/components/PageMeta';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CollectionsSidebar } from '@/components/CollectionsSidebar';
 import { ProductCardSkeleton } from '@/components/ProductCardSkeleton';
-import { ArrowUp, Grid2x2, Grid3x3, LayoutList, Search, X } from 'lucide-react';
+import { ArrowUp, Grid2x2, Grid3x3, LayoutList, Search, X, Sparkles, Plus, MessageCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+import { useStoreSettings } from '@/hooks/useStoreSettings';
 
 const filterTabs = [
   { name: 'All Collections', slug: 'all' },
