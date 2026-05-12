@@ -102,6 +102,11 @@ const Collections = () => {
   );
   const isCategoryView = !!activeCategory;
   const categoryHasNoProducts = isCategoryView && !isLoading && products.length === 0;
+  const catalogIsEmpty =
+    !isLoading && products.length === 0 && activeFilter === 'all';
+  const { isAdmin } = useAuth();
+  const { data: settings } = useStoreSettings();
+  const whatsappNumber = (settings?.whatsapp_number || '').replace(/\D/g, '');
 
   const filteredAndSorted = useMemo(() => {
     let result = products.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
