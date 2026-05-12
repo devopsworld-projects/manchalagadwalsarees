@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useCurrency } from '@/context/CurrencyContext';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -8,6 +8,7 @@ type RecentItem = { id: string; name: string; image: string; price: number; sku:
 export function RecentlyViewed({ currentSku }: { currentSku?: string }) {
   const [items, setItems] = useState<RecentItem[]>([]);
   const { format } = useCurrency();
+  const location = useLocation();
 
   useEffect(() => {
     let cancelled = false;
@@ -53,7 +54,7 @@ export function RecentlyViewed({ currentSku }: { currentSku?: string }) {
     return () => {
       cancelled = true;
     };
-  }, [currentSku]);
+  }, [currentSku, location.pathname]);
 
   if (items.length === 0) return null;
 
