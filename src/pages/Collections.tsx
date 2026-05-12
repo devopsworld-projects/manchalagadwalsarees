@@ -89,9 +89,16 @@ const Collections = () => {
   });
 
   const allTabs = useMemo(() => {
-    const catTabs = categories.map(c => ({ name: c.name, slug: c.slug }));
+    const catTabs = allCategories.map(c => ({ name: c.name, slug: c.slug }));
     return [...filterTabs, ...catTabs];
-  }, [categories]);
+  }, [allCategories]);
+
+  const activeCategory = useMemo(
+    () => allCategories.find(c => c.slug === activeFilter),
+    [allCategories, activeFilter]
+  );
+  const isCategoryView = !!activeCategory;
+  const categoryHasNoProducts = isCategoryView && !isLoading && products.length === 0;
 
   const filteredAndSorted = useMemo(() => {
     let result = products.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
