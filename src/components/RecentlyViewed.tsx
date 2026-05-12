@@ -26,13 +26,26 @@ export function RecentlyViewed({ currentSku }: { currentSku?: string }) {
       );
 
       const candidates = stored.filter(i => i.sku !== currentSku);
-      if (candidates.length === 0) {
+
+      // Check if catalog has ANY active products at all
+      const { count: catalogCount } = await supabase
+        .from('products')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_active', true);
+
+      if (!catalogCount || catalogCount === 0) {
+        // Catalog is empty — wipe Recently Viewed entirely
+        try { localStorage.removeItem('recently-viewed'); } catch {}
         if (!cancelled) setItems([]);
         return;
       }
 
       // Validate against DB — drop items whose product was deleted/deactivated
       const skus = candidates.map(i => i.sku);
+      if (skus.length === 0) {
+        if (!cancelled) setItems([]);
+        return;
+      }
       const { data } = await supabase
         .from('products')
         .select('sku')
@@ -42,10 +55,14 @@ export function RecentlyViewed({ currentSku }: { currentSku?: string }) {
       const validSkus = new Set((data || []).map(p => p.sku));
       const valid = candidates.filter(i => validSkus.has(i.sku)).slice(0, 6);
 
-      // Persist cleaned list back to localStorage
+      // Persist cleaned list back to localStorage (only items still in catalog)
       try {
-        const cleanedAll = stored.filter(i => validSkus.has(i.sku) || i.sku === currentSku);
-        localStorage.setItem('recently-viewed', JSON.stringify(cleanedAll));
+        const cleanedAll = stored.filter(i => validSkus.has(i.sku));
+        if (cleanedAll.length === 0) {
+          localStorage.removeItem('recently-viewed');
+        } else {
+          localStorage.setItem('recently-viewed', JSON.stringify(cleanedAll));
+        }
       } catch {}
 
       if (!cancelled) setItems(valid);
