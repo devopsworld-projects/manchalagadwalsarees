@@ -44,7 +44,7 @@ const Collections = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const { data: categories = [] } = useQuery({
+  const { data: categoriesData = { all: [], withProducts: [], counts: {} as Record<string, number> } } = useQuery({
     queryKey: ['storefront-categories-list'],
     queryFn: async () => {
       const { data: cats, error } = await supabase.from('categories').select('*').order('sort_order');
@@ -57,9 +57,12 @@ const Collections = () => {
       productCounts?.forEach(p => {
         if (p.category_id) counts[p.category_id] = (counts[p.category_id] || 0) + 1;
       });
-      return (cats || []).filter(c => (counts[c.id] || 0) > 0);
+      const all = cats || [];
+      return { all, withProducts: all.filter(c => (counts[c.id] || 0) > 0), counts };
     },
   });
+  const categories = categoriesData.withProducts;
+  const allCategories = categoriesData.all;
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['storefront-products', activeFilter],
