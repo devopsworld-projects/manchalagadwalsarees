@@ -8,6 +8,7 @@ type RecentItem = { id: string; name: string; image: string; price: number; sku:
 export function RecentlyViewed({ currentSku }: { currentSku?: string }) {
   const [items, setItems] = useState<RecentItem[]>([]);
   const { format } = useCurrency();
+  const location = useLocation();
 
   useEffect(() => {
     let cancelled = false;
