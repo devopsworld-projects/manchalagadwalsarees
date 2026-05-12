@@ -26,10 +26,6 @@ export function RecentlyViewed({ currentSku }: { currentSku?: string }) {
       );
 
       const candidates = stored.filter(i => i.sku !== currentSku);
-      if (candidates.length === 0) {
-        if (!cancelled) setItems([]);
-        return;
-      }
 
       // Check if catalog has ANY active products at all
       const { count: catalogCount } = await supabase
