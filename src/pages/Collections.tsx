@@ -44,7 +44,7 @@ const Collections = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const { data: categories = [] } = useQuery({
+  const { data: categoriesData = { all: [], withProducts: [], counts: {} as Record<string, number> } } = useQuery({
     queryKey: ['storefront-categories-list'],
     queryFn: async () => {
       const { data: cats, error } = await supabase.from('categories').select('*').order('sort_order');
@@ -57,9 +57,12 @@ const Collections = () => {
       productCounts?.forEach(p => {
         if (p.category_id) counts[p.category_id] = (counts[p.category_id] || 0) + 1;
       });
-      return (cats || []).filter(c => (counts[c.id] || 0) > 0);
+      const all = cats || [];
+      return { all, withProducts: all.filter(c => (counts[c.id] || 0) > 0), counts };
     },
   });
+  const categories = categoriesData.withProducts;
+  const allCategories = categoriesData.all;
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['storefront-products', activeFilter],
@@ -74,20 +77,28 @@ const Collections = () => {
       } else if (activeFilter === 'best-sellers') {
         query = query.eq('is_best_seller', true);
       } else if (activeFilter !== 'all') {
-        const cat = categories.find(c => c.slug === activeFilter);
+        const cat = allCategories.find(c => c.slug === activeFilter);
         if (cat) query = query.eq('category_id', cat.id);
+        else return [];
       }
       const { data, error } = await query;
       if (error) throw error;
       return data;
     },
-    enabled: activeFilter === 'all' || activeFilter === 'new-arrivals' || activeFilter === 'best-sellers' || categories.length > 0,
+    enabled: activeFilter === 'all' || activeFilter === 'new-arrivals' || activeFilter === 'best-sellers' || allCategories.length > 0,
   });
 
   const allTabs = useMemo(() => {
-    const catTabs = categories.map(c => ({ name: c.name, slug: c.slug }));
+    const catTabs = allCategories.map(c => ({ name: c.name, slug: c.slug }));
     return [...filterTabs, ...catTabs];
-  }, [categories]);
+  }, [allCategories]);
+
+  const activeCategory = useMemo(
+    () => allCategories.find(c => c.slug === activeFilter),
+    [allCategories, activeFilter]
+  );
+  const isCategoryView = !!activeCategory;
+  const categoryHasNoProducts = isCategoryView && !isLoading && products.length === 0;
 
   const filteredAndSorted = useMemo(() => {
     let result = products.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
@@ -369,19 +380,69 @@ const Collections = () => {
 
             {/* ─── Empty State ─── */}
             {!isLoading && filteredAndSorted.length === 0 && (
-              <div className="text-center py-24">
+              <div className="text-center py-24 px-4">
                 <span className="text-accent text-4xl block mb-4">◆</span>
-                <h3 className="font-display text-xl font-bold text-foreground mb-2">No Treasures Found</h3>
-                <p className="text-muted-foreground font-body max-w-md mx-auto">
-                  We couldn't find any sarees matching your criteria. Try adjusting your filters to discover more pieces.
-                </p>
-                {hasActiveFilters && (
-                  <button
-                    onClick={handleClearFilters}
-                    className="mt-6 px-6 py-2.5 bg-primary text-primary-foreground text-xs font-display tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
-                  >
-                    Clear All Filters
-                  </button>
+                {categoryHasNoProducts ? (
+                  <>
+                    <h3 className="font-display text-xl font-bold text-foreground mb-2">
+                      {activeCategory?.name} — Coming Soon
+                    </h3>
+                    <p className="text-muted-foreground font-body max-w-md mx-auto">
+                      Our master weavers are curating this collection. New arrivals will be unveiled here shortly. In the meantime, explore our other heritage weaves.
+                    </p>
+                    <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                      <button
+                        onClick={() => handleFilterChange('all')}
+                        className="px-6 py-2.5 bg-primary text-primary-foreground text-xs font-display tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+                      >
+                        Browse All Sarees
+                      </button>
+                      <button
+                        onClick={() => handleFilterChange('best-sellers')}
+                        className="px-6 py-2.5 border border-accent text-accent text-xs font-display tracking-[0.15em] uppercase hover:bg-accent hover:text-accent-foreground transition-colors"
+                      >
+                        View Best Sellers
+                      </button>
+                    </div>
+                  </>
+                ) : searchQuery.trim() ? (
+                  <>
+                    <h3 className="font-display text-xl font-bold text-foreground mb-2">No Matches for "{searchQuery}"</h3>
+                    <p className="text-muted-foreground font-body max-w-md mx-auto">
+                      We couldn't find sarees matching your search in this collection. Try a different keyword or clear your search.
+                    </p>
+                    <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                      <button
+                        onClick={() => { setSearchQuery(''); setPage(1); }}
+                        className="px-6 py-2.5 bg-primary text-primary-foreground text-xs font-display tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+                      >
+                        Clear Search
+                      </button>
+                      {hasActiveFilters && (
+                        <button
+                          onClick={handleClearFilters}
+                          className="px-6 py-2.5 border border-accent text-accent text-xs font-display tracking-[0.15em] uppercase hover:bg-accent hover:text-accent-foreground transition-colors"
+                        >
+                          Clear Filters
+                        </button>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="font-display text-xl font-bold text-foreground mb-2">No Treasures Found</h3>
+                    <p className="text-muted-foreground font-body max-w-md mx-auto">
+                      We couldn't find any sarees matching your criteria. Try adjusting your filters to discover more pieces.
+                    </p>
+                    {hasActiveFilters && (
+                      <button
+                        onClick={handleClearFilters}
+                        className="mt-6 px-6 py-2.5 bg-primary text-primary-foreground text-xs font-display tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+                      >
+                        Clear All Filters
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             )}
