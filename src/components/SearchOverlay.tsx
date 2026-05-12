@@ -77,7 +77,22 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
             <p className="text-xs text-muted-foreground text-center py-6">Searching...</p>
           )}
           {!loading && query.trim() && results.length === 0 && (
-            <p className="text-xs text-muted-foreground text-center py-6">No products found</p>
+            <div className="text-center py-10 px-6">
+              <span className="text-accent text-3xl block mb-3">◆</span>
+              <p className="font-display text-sm font-bold text-foreground mb-1">
+                No sarees match "{query}"
+              </p>
+              <p className="text-xs text-muted-foreground font-body mb-4">
+                Try a different keyword like a fabric, color or category — or browse our full collection.
+              </p>
+              <Link
+                to="/collections"
+                onClick={onClose}
+                className="inline-block px-5 py-2 bg-primary text-primary-foreground text-[10px] font-display tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+              >
+                Browse All Sarees
+              </Link>
+            </div>
           )}
           {results.map(p => (
             <Link
@@ -102,7 +117,9 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
         </div>
 
         {!query.trim() && (
-          <p className="text-xs text-muted-foreground text-center py-6">Start typing to search products</p>
+          <p className="text-xs text-muted-foreground text-center py-6 font-body">
+            Start typing to search by saree name, fabric or category
+          </p>
         )}
       </div>
     </div>
