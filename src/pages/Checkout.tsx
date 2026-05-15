@@ -49,12 +49,28 @@ export default function Checkout() {
   const [couponLoading, setCouponLoading] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<SavedAddress | null>(null);
   const [useNewAddress, setUseNewAddress] = useState(false);
+  // Read remembered preference (set when user manually chose previously)
+  const remembered = (() => {
+    try {
+      const raw = localStorage.getItem('mgs_shipping_pref');
+      return raw ? JSON.parse(raw) as { destination: 'india' | 'international'; country?: string; region?: string } : null;
+    } catch { return null; }
+  })();
+
   const [destination, setDestination] = useState<'india' | 'international'>(
-    currency.code === 'INR' ? 'india' : 'international'
+    remembered?.destination ?? (currency.code === 'INR' ? 'india' : 'international')
   );
-  const [destinationTouched, setDestinationTouched] = useState(false);
+  const [destinationTouched, setDestinationTouched] = useState(!!remembered);
   const [autoDetectedCountry, setAutoDetectedCountry] = useState<string | null>(null);
   const [locationAccuracyKm, setLocationAccuracyKm] = useState<number | null>(null);
+  const [detectionStatus, setDetectionStatus] = useState<'pending' | 'ok' | 'failed'>('pending');
+  const [overrideCountry, setOverrideCountry] = useState<string>(remembered?.country ?? '');
+  const [overrideRegion, setOverrideRegion] = useState<string>(remembered?.region ?? '');
+
+  // Persist whenever the user explicitly touches destination/override
+  const persistPref = (next: { destination: 'india' | 'international'; country?: string; region?: string }) => {
+    try { localStorage.setItem('mgs_shipping_pref', JSON.stringify(next)); } catch { /* ignore */ }
+  };
 
   // Auto-detect user's location via IP (only if user hasn't manually chosen)
   useEffect(() => {
@@ -63,15 +79,18 @@ export default function Checkout() {
     (async () => {
       try {
         const res = await fetch('https://ipapi.co/json/');
-        if (!res.ok) return;
+        if (!res.ok) throw new Error('bad response');
         const data = await res.json();
-        if (cancelled || !data?.country_code) return;
+        if (cancelled || !data?.country_code) throw new Error('no country');
         const code = String(data.country_code).toUpperCase();
         const accuracyM = data.location_accuracy ? Number(data.location_accuracy) : null;
         setAutoDetectedCountry(data.country_name || code);
         setLocationAccuracyKm(accuracyM ? Math.round(accuracyM / 100) / 10 : null);
+        setDetectionStatus('ok');
+        // Apply auto destination only if user hasn't touched it
+        setDestination(code === 'IN' ? 'india' : 'international');
       } catch {
-        // Silent fail — fall back to currency-based default
+        if (!cancelled) setDetectionStatus('failed');
       }
     })();
     return () => { cancelled = true; };
