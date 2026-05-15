@@ -199,6 +199,80 @@ export default function Checkout() {
     if (items.length === 0) navigate('/collections', { replace: true });
   }, [items.length, navigate, user]);
 
+  // ── Abandoned cart: save draft on entry, mark abandoned on exit ──
+  useEffect(() => {
+    if (!user || items.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const itemsPayload = items.map(it => ({
+        product_id: it.product.id,
+        product_name: it.product.name,
+        price: it.product.price,
+        quantity: it.quantity,
+        image: it.product.image,
+      }));
+      const { data, error } = await supabase
+        .from('abandoned_carts')
+        .insert({
+          user_id: user.id,
+          customer_email: user.email || null,
+          items: itemsPayload,
+          subtotal: totalPrice,
+          currency: currency.code,
+          status: 'active',
+          last_seen_at: new Date().toISOString(),
+        })
+        .select('id')
+        .single();
+      if (!cancelled && !error && data) setCartDraftId(data.id);
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  // Heartbeat + abandon-on-exit
+  useEffect(() => {
+    if (!cartDraftId) return;
+    const heartbeat = setInterval(() => {
+      supabase.from('abandoned_carts').update({
+        last_seen_at: new Date().toISOString(),
+        items: items.map(it => ({
+          product_id: it.product.id, product_name: it.product.name,
+          price: it.product.price, quantity: it.quantity, image: it.product.image,
+        })),
+        subtotal: totalPrice,
+        customer_email: form.email || user?.email || null,
+        customer_name: form.name || null,
+      }).eq('id', cartDraftId).then(() => {});
+    }, 20000);
+
+    const markAbandoned = () => {
+      if (orderPlacedRef.current) return;
+      const payload = JSON.stringify({
+        status: 'abandoned',
+        abandoned_at: new Date().toISOString(),
+      });
+      // best-effort fire-and-forget
+      supabase.from('abandoned_carts')
+        .update({ status: 'abandoned', abandoned_at: new Date().toISOString() })
+        .eq('id', cartDraftId)
+        .then(() => {});
+      void payload;
+    };
+
+    const onVis = () => { if (document.visibilityState === 'hidden') markAbandoned(); };
+    window.addEventListener('beforeunload', markAbandoned);
+    document.addEventListener('visibilitychange', onVis);
+    return () => {
+      clearInterval(heartbeat);
+      window.removeEventListener('beforeunload', markAbandoned);
+      document.removeEventListener('visibilitychange', onVis);
+      // unmount (route change) without order placed → mark abandoned
+      markAbandoned();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartDraftId, items, totalPrice, form.email, form.name]);
+
 
   // When an address is selected, prefill form (saved addresses are India-based)
   useEffect(() => {
