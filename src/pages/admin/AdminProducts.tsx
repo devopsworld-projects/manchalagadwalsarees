@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Pencil, Trash2, X, Upload, FileSpreadsheet, Loader2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Upload, FileSpreadsheet, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Tables, TablesInsert } from '@/integrations/supabase/types';
 import * as XLSX from 'xlsx';
@@ -128,6 +128,31 @@ const AdminProducts = () => {
     onError: (error: any) => {
       toast({ title: 'Bulk delete failed', description: error.message, variant: 'destructive' });
     },
+  });
+
+  const toggleActiveMutation = useMutation({
+    mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
+      const { error } = await supabase.from('products').update({ is_active }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      toast({ title: vars.is_active ? 'Product activated' : 'Product deactivated' });
+    },
+    onError: (err: any) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+  });
+
+  const bulkSetActiveMutation = useMutation({
+    mutationFn: async ({ ids, is_active }: { ids: string[]; is_active: boolean }) => {
+      const { error } = await supabase.from('products').update({ is_active }).in('id', ids);
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      toast({ title: `${vars.ids.length} product(s) ${vars.is_active ? 'activated' : 'deactivated'}` });
+      bulk.clear();
+    },
+    onError: (err: any) => toast({ title: 'Bulk update failed', description: err.message, variant: 'destructive' }),
   });
 
   const resetForm = () => {
@@ -294,13 +319,29 @@ const AdminProducts = () => {
         <h2 className="font-display text-2xl font-bold">Products</h2>
         <div className="flex gap-2">
           {bulk.someSelected && (
-            <button
-              onClick={() => { if (confirm(`Delete ${bulk.count} selected products?`)) bulkDeleteMutation.mutate(Array.from(bulk.selectedIds)); }}
-              disabled={bulkDeleteMutation.isPending}
-              className="flex items-center gap-2 bg-destructive text-destructive-foreground px-4 py-2 text-sm font-body tracking-wider hover:bg-destructive/90 transition-colors disabled:opacity-50"
-            >
-              <Trash2 className="h-4 w-4" /> DELETE {bulk.count}
-            </button>
+            <>
+              <button
+                onClick={() => bulkSetActiveMutation.mutate({ ids: Array.from(bulk.selectedIds), is_active: true })}
+                disabled={bulkSetActiveMutation.isPending}
+                className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 text-sm font-body tracking-wider hover:bg-green-700 transition-colors disabled:opacity-50"
+              >
+                <Eye className="h-4 w-4" /> ACTIVATE {bulk.count}
+              </button>
+              <button
+                onClick={() => bulkSetActiveMutation.mutate({ ids: Array.from(bulk.selectedIds), is_active: false })}
+                disabled={bulkSetActiveMutation.isPending}
+                className="flex items-center gap-2 border border-border px-4 py-2 text-sm font-body tracking-wider hover:bg-muted transition-colors disabled:opacity-50"
+              >
+                <EyeOff className="h-4 w-4" /> DEACTIVATE {bulk.count}
+              </button>
+              <button
+                onClick={() => { if (confirm(`Delete ${bulk.count} selected products?`)) bulkDeleteMutation.mutate(Array.from(bulk.selectedIds)); }}
+                disabled={bulkDeleteMutation.isPending}
+                className="flex items-center gap-2 bg-destructive text-destructive-foreground px-4 py-2 text-sm font-body tracking-wider hover:bg-destructive/90 transition-colors disabled:opacity-50"
+              >
+                <Trash2 className="h-4 w-4" /> DELETE {bulk.count}
+              </button>
+            </>
           )}
           <button onClick={() => setShowBulkImport(true)} className="flex items-center gap-2 border border-border px-4 py-2 text-sm font-body tracking-wider hover:bg-muted transition-colors">
             <FileSpreadsheet className="h-4 w-4" /> BULK IMPORT
@@ -466,9 +507,15 @@ const AdminProducts = () => {
                   <td className="p-3 font-body text-sm text-right font-medium">₹{Number(product.price).toLocaleString()}</td>
                   <td className="p-3 font-body text-sm text-center">{product.stock}</td>
                   <td className="p-3 text-center">
-                    <span className={`inline-block text-[10px] font-body font-bold px-2 py-0.5 rounded-full ${product.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    <button
+                      onClick={() => toggleActiveMutation.mutate({ id: product.id, is_active: !product.is_active })}
+                      disabled={toggleActiveMutation.isPending}
+                      title={`Click to ${product.is_active ? 'deactivate' : 'activate'}`}
+                      className={`inline-flex items-center gap-1 text-[10px] font-body font-bold px-2 py-0.5 rounded-full transition-colors disabled:opacity-50 ${product.is_active ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
+                    >
+                      {product.is_active ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
                       {product.is_active ? 'Active' : 'Inactive'}
-                    </span>
+                    </button>
                   </td>
                   <td className="p-3 text-right">
                     <div className="flex justify-end gap-1">
