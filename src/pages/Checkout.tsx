@@ -49,12 +49,28 @@ export default function Checkout() {
   const [couponLoading, setCouponLoading] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<SavedAddress | null>(null);
   const [useNewAddress, setUseNewAddress] = useState(false);
+  // Read remembered preference (set when user manually chose previously)
+  const remembered = (() => {
+    try {
+      const raw = localStorage.getItem('mgs_shipping_pref');
+      return raw ? JSON.parse(raw) as { destination: 'india' | 'international'; country?: string; region?: string } : null;
+    } catch { return null; }
+  })();
+
   const [destination, setDestination] = useState<'india' | 'international'>(
-    currency.code === 'INR' ? 'india' : 'international'
+    remembered?.destination ?? (currency.code === 'INR' ? 'india' : 'international')
   );
-  const [destinationTouched, setDestinationTouched] = useState(false);
+  const [destinationTouched, setDestinationTouched] = useState(!!remembered);
   const [autoDetectedCountry, setAutoDetectedCountry] = useState<string | null>(null);
   const [locationAccuracyKm, setLocationAccuracyKm] = useState<number | null>(null);
+  const [detectionStatus, setDetectionStatus] = useState<'pending' | 'ok' | 'failed'>('pending');
+  const [overrideCountry, setOverrideCountry] = useState<string>(remembered?.country ?? '');
+  const [overrideRegion, setOverrideRegion] = useState<string>(remembered?.region ?? '');
+
+  // Persist whenever the user explicitly touches destination/override
+  const persistPref = (next: { destination: 'india' | 'international'; country?: string; region?: string }) => {
+    try { localStorage.setItem('mgs_shipping_pref', JSON.stringify(next)); } catch { /* ignore */ }
+  };
 
   // Auto-detect user's location via IP (only if user hasn't manually chosen)
   useEffect(() => {
@@ -63,15 +79,18 @@ export default function Checkout() {
     (async () => {
       try {
         const res = await fetch('https://ipapi.co/json/');
-        if (!res.ok) return;
+        if (!res.ok) throw new Error('bad response');
         const data = await res.json();
-        if (cancelled || !data?.country_code) return;
+        if (cancelled || !data?.country_code) throw new Error('no country');
         const code = String(data.country_code).toUpperCase();
         const accuracyM = data.location_accuracy ? Number(data.location_accuracy) : null;
         setAutoDetectedCountry(data.country_name || code);
         setLocationAccuracyKm(accuracyM ? Math.round(accuracyM / 100) / 10 : null);
+        setDetectionStatus('ok');
+        // Apply auto destination only if user hasn't touched it
+        setDestination(code === 'IN' ? 'india' : 'international');
       } catch {
-        // Silent fail — fall back to currency-based default
+        if (!cancelled) setDetectionStatus('failed');
       }
     })();
     return () => { cancelled = true; };
@@ -273,16 +292,30 @@ export default function Checkout() {
           <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-5">
             {/* Shipping destination */}
             <div>
-              <div className="flex items-baseline justify-between mb-3">
+              <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
                 <h2 className="font-display text-lg font-semibold">Shipping To</h2>
-                {autoDetectedCountry && !destinationTouched && (
-                  <span className="text-xs font-body text-muted-foreground">
-                    Detected: {autoDetectedCountry}
-                    {locationAccuracyKm != null && ` (~${locationAccuracyKm} km accuracy)`}
-                  </span>
-                )}
+                <span className="text-xs font-body text-muted-foreground">
+                  {destinationTouched ? (
+                    'Saved preference — IP detection won\'t override your choice.'
+                  ) : detectionStatus === 'pending' ? (
+                    'Detecting your location…'
+                  ) : detectionStatus === 'ok' && autoDetectedCountry ? (
+                    <>Detected: {autoDetectedCountry}{locationAccuracyKm != null ? ` (~${locationAccuracyKm} km accuracy)` : ' (accuracy unavailable)'}</>
+                  ) : (
+                    'Couldn\'t detect your location — please pick your destination below.'
+                  )}
+                </span>
               </div>
-              <RadioGroup value={destination} onValueChange={(v) => { setDestination(v as 'india' | 'international'); setDestinationTouched(true); }} className="grid sm:grid-cols-2 gap-3">
+              <RadioGroup
+                value={destination}
+                onValueChange={(v) => {
+                  const d = v as 'india' | 'international';
+                  setDestination(d);
+                  setDestinationTouched(true);
+                  persistPref({ destination: d, country: overrideCountry, region: overrideRegion });
+                }}
+                className="grid sm:grid-cols-2 gap-3"
+              >
                 <Label htmlFor="dest-india" className="flex items-center gap-3 border border-border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
                   <RadioGroupItem value="india" id="dest-india" />
                   <div className="flex-1">
@@ -298,6 +331,57 @@ export default function Checkout() {
                   </div>
                 </Label>
               </RadioGroup>
+
+              {/* Manual override: country / state */}
+              <div className="mt-3 grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-body text-muted-foreground mb-1 block">
+                    {destination === 'india' ? 'State (optional)' : 'Country (optional)'}
+                  </label>
+                  {destination === 'india' ? (
+                    <Input
+                      value={overrideRegion}
+                      onChange={(e) => {
+                        setOverrideRegion(e.target.value);
+                        setDestinationTouched(true);
+                        persistPref({ destination, country: overrideCountry, region: e.target.value });
+                      }}
+                      placeholder="e.g. Telangana"
+                      className="font-body h-10"
+                    />
+                  ) : (
+                    <Input
+                      value={overrideCountry}
+                      onChange={(e) => {
+                        setOverrideCountry(e.target.value);
+                        setDestinationTouched(true);
+                        persistPref({ destination, country: e.target.value, region: overrideRegion });
+                      }}
+                      placeholder="e.g. United States"
+                      className="font-body h-10"
+                    />
+                  )}
+                </div>
+                {destinationTouched && (
+                  <div className="flex items-end">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try { localStorage.removeItem('mgs_shipping_pref'); } catch { /* ignore */ }
+                        setDestinationTouched(false);
+                        setOverrideCountry('');
+                        setOverrideRegion('');
+                        if (detectionStatus === 'ok' && autoDetectedCountry) {
+                          setDestination(autoDetectedCountry.toLowerCase().includes('india') ? 'india' : 'international');
+                        }
+                      }}
+                      className="text-xs font-body text-primary underline"
+                    >
+                      Reset to auto-detected
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Saved addresses */}
