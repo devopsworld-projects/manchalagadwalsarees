@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Pencil, Trash2, X, Upload, FileSpreadsheet, Loader2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Upload, FileSpreadsheet, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Tables, TablesInsert } from '@/integrations/supabase/types';
 import * as XLSX from 'xlsx';
