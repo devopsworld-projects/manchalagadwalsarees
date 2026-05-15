@@ -1275,6 +1275,16 @@ export type Database = {
           last_sign_in_at: string
         }[]
       }
+      validate_coupon: {
+        Args: { p_code: string; p_order_total: number }
+        Returns: {
+          code: string
+          discount_type: string
+          discount_value: number
+          id: string
+          min_order_amount: number
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
