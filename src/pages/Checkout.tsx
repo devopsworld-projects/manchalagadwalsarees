@@ -59,7 +59,13 @@ export default function Checkout() {
     queryFn: async () => (await supabase.from('tax_rules').select('*').eq('is_active', true)).data || [],
   });
 
+  const totalQty = items.reduce((sum, it) => sum + it.quantity, 0);
+  const isOverseas = currency.code !== 'INR';
   const shipping = (() => {
+    // Overseas shipping: ₹2800 for first saree, ₹1200 each additional (in INR)
+    if (isOverseas) {
+      return totalQty > 0 ? 2800 + Math.max(0, totalQty - 1) * 1200 : 0;
+    }
     const r = shippingRates[0] as any;
     if (!r) return 0;
     if (r.type === 'free_above' && totalPrice >= (r.free_above_amount || 0)) return 0;
