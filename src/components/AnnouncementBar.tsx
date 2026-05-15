@@ -25,7 +25,7 @@ export function AnnouncementBar() {
     <div className="bg-foreground text-background relative overflow-hidden">
       {/* Top gold line */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-accent to-transparent opacity-60" />
-      <div className="flex animate-marquee whitespace-nowrap py-2">
+      <div className="flex animate-marquee whitespace-nowrap py-2 pr-10">
         {[...announcements, ...announcements].map((text, i) => (
           <span key={i} className="mx-8 text-[11px] font-body tracking-[0.08em] text-background/80">
             <span className="text-accent mr-2">◆</span>
@@ -35,7 +35,7 @@ export function AnnouncementBar() {
       </div>
       <button
         onClick={() => setVisible(false)}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-background/50 hover:text-background transition-colors"
+        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 h-7 w-7 flex items-center justify-center rounded-full bg-foreground/80 text-background/70 hover:text-background hover:bg-foreground transition-colors"
         aria-label="Close announcements"
       >
         <X className="h-3.5 w-3.5" />
