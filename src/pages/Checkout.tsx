@@ -87,8 +87,9 @@ export default function Checkout() {
         setAutoDetectedCountry(data.country_name || code);
         setLocationAccuracyKm(accuracyM ? Math.round(accuracyM / 100) / 10 : null);
         setDetectionStatus('ok');
-        // Apply auto destination only if user hasn't touched it
-        setDestination(code === 'IN' ? 'india' : 'international');
+        // NOTE: We deliberately do NOT change `destination` here.
+        // Shipping cost depends on the DELIVERY address, not the customer's IP.
+        // IP detection is shown only as a hint (e.g. customer in India shipping to USA).
       } catch {
         if (!cancelled) setDetectionStatus('failed');
       }
