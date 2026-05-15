@@ -507,9 +507,15 @@ const AdminProducts = () => {
                   <td className="p-3 font-body text-sm text-right font-medium">₹{Number(product.price).toLocaleString()}</td>
                   <td className="p-3 font-body text-sm text-center">{product.stock}</td>
                   <td className="p-3 text-center">
-                    <span className={`inline-block text-[10px] font-body font-bold px-2 py-0.5 rounded-full ${product.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    <button
+                      onClick={() => toggleActiveMutation.mutate({ id: product.id, is_active: !product.is_active })}
+                      disabled={toggleActiveMutation.isPending}
+                      title={`Click to ${product.is_active ? 'deactivate' : 'activate'}`}
+                      className={`inline-flex items-center gap-1 text-[10px] font-body font-bold px-2 py-0.5 rounded-full transition-colors disabled:opacity-50 ${product.is_active ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
+                    >
+                      {product.is_active ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
                       {product.is_active ? 'Active' : 'Inactive'}
-                    </span>
+                    </button>
                   </td>
                   <td className="p-3 text-right">
                     <div className="flex justify-end gap-1">
