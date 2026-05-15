@@ -31,6 +31,12 @@ export default function Orders() {
     if (!authLoading && !user) navigate('/login', { replace: true });
   }, [user, authLoading, navigate]);
 
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!authLoading && !user) navigate('/login', { replace: true });
+  }, [user, authLoading, navigate]);
+
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['user-orders', user?.id],
     queryFn: async () => {
@@ -43,6 +49,18 @@ export default function Orders() {
       return data;
     },
     enabled: !!user,
+  });
+
+  const cancelOrder = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('orders').update({ status: 'cancelled' }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-orders', user?.id] });
+      toast.success('Order cancelled');
+    },
+    onError: (e: any) => toast.error(e.message || 'Failed to cancel'),
   });
 
   if (authLoading) return null;
