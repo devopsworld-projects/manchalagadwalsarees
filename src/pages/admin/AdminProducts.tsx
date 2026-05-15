@@ -130,6 +130,31 @@ const AdminProducts = () => {
     },
   });
 
+  const toggleActiveMutation = useMutation({
+    mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
+      const { error } = await supabase.from('products').update({ is_active }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      toast({ title: vars.is_active ? 'Product activated' : 'Product deactivated' });
+    },
+    onError: (err: any) => toast({ title: 'Failed', description: err.message, variant: 'destructive' }),
+  });
+
+  const bulkSetActiveMutation = useMutation({
+    mutationFn: async ({ ids, is_active }: { ids: string[]; is_active: boolean }) => {
+      const { error } = await supabase.from('products').update({ is_active }).in('id', ids);
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      toast({ title: `${vars.ids.length} product(s) ${vars.is_active ? 'activated' : 'deactivated'}` });
+      bulk.clear();
+    },
+    onError: (err: any) => toast({ title: 'Bulk update failed', description: err.message, variant: 'destructive' }),
+  });
+
   const resetForm = () => {
     setForm({ sku: '', name: '', description: '', price: '', original_price: '', category_id: '', colors: '', is_new: false, is_best_seller: false, is_active: true, stock: '0', images: '', specifications: {} });
     setVariants([]);
