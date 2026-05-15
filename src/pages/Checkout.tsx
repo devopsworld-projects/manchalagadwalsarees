@@ -54,6 +54,7 @@ export default function Checkout() {
   );
   const [destinationTouched, setDestinationTouched] = useState(false);
   const [autoDetectedCountry, setAutoDetectedCountry] = useState<string | null>(null);
+  const [locationAccuracyKm, setLocationAccuracyKm] = useState<number | null>(null);
 
   // Auto-detect user's location via IP (only if user hasn't manually chosen)
   useEffect(() => {
