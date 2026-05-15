@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -49,6 +49,8 @@ export default function Checkout() {
   const [couponLoading, setCouponLoading] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<SavedAddress | null>(null);
   const [useNewAddress, setUseNewAddress] = useState(false);
+  const [cartDraftId, setCartDraftId] = useState<string | null>(null);
+  const orderPlacedRef = useRef(false);
   // Read remembered preference (set when user manually chose previously)
   const remembered = (() => {
     try {
@@ -197,6 +199,80 @@ export default function Checkout() {
     if (items.length === 0) navigate('/collections', { replace: true });
   }, [items.length, navigate, user]);
 
+  // ── Abandoned cart: save draft on entry, mark abandoned on exit ──
+  useEffect(() => {
+    if (!user || items.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const itemsPayload = items.map(it => ({
+        product_id: it.product.id,
+        product_name: it.product.name,
+        price: it.product.price,
+        quantity: it.quantity,
+        image: it.product.image,
+      }));
+      const { data, error } = await supabase
+        .from('abandoned_carts')
+        .insert({
+          user_id: user.id,
+          customer_email: user.email || null,
+          items: itemsPayload,
+          subtotal: totalPrice,
+          currency: currency.code,
+          status: 'active',
+          last_seen_at: new Date().toISOString(),
+        })
+        .select('id')
+        .single();
+      if (!cancelled && !error && data) setCartDraftId(data.id);
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  // Heartbeat + abandon-on-exit
+  useEffect(() => {
+    if (!cartDraftId) return;
+    const heartbeat = setInterval(() => {
+      supabase.from('abandoned_carts').update({
+        last_seen_at: new Date().toISOString(),
+        items: items.map(it => ({
+          product_id: it.product.id, product_name: it.product.name,
+          price: it.product.price, quantity: it.quantity, image: it.product.image,
+        })),
+        subtotal: totalPrice,
+        customer_email: form.email || user?.email || null,
+        customer_name: form.name || null,
+      }).eq('id', cartDraftId).then(() => {});
+    }, 20000);
+
+    const markAbandoned = () => {
+      if (orderPlacedRef.current) return;
+      const payload = JSON.stringify({
+        status: 'abandoned',
+        abandoned_at: new Date().toISOString(),
+      });
+      // best-effort fire-and-forget
+      supabase.from('abandoned_carts')
+        .update({ status: 'abandoned', abandoned_at: new Date().toISOString() })
+        .eq('id', cartDraftId)
+        .then(() => {});
+      void payload;
+    };
+
+    const onVis = () => { if (document.visibilityState === 'hidden') markAbandoned(); };
+    window.addEventListener('beforeunload', markAbandoned);
+    document.addEventListener('visibilitychange', onVis);
+    return () => {
+      clearInterval(heartbeat);
+      window.removeEventListener('beforeunload', markAbandoned);
+      document.removeEventListener('visibilitychange', onVis);
+      // unmount (route change) without order placed → mark abandoned
+      markAbandoned();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartDraftId, items, totalPrice, form.email, form.name]);
+
 
   // When an address is selected, prefill form (saved addresses are India-based)
   useEffect(() => {
@@ -251,10 +327,33 @@ export default function Checkout() {
       const status = paymentRef === 'COD' ? 'pending' : 'confirmed';
       const notesText = form.notes ? `${form.notes} | Payment: ${paymentRef}` : `Payment: ${paymentRef}`;
 
+      // Atomically redeem coupon (locks row, validates, increments usage_count)
+      let finalDiscount = 0;
+      let finalCouponCode: string | null = null;
+      if (appliedCoupon?.code) {
+        const { data: redeemed, error: redeemErr } = await supabase.rpc('redeem_coupon', {
+          p_code: appliedCoupon.code,
+          p_order_total: totalPrice,
+        });
+        if (redeemErr) {
+          toast.error(redeemErr.message || 'Coupon could not be redeemed');
+          setAppliedCoupon(null);
+          setLoading(false);
+          return;
+        }
+        const r = Array.isArray(redeemed) ? redeemed[0] : redeemed;
+        finalDiscount = Number(r?.discount_amount || 0);
+        finalCouponCode = r?.code || appliedCoupon.code;
+      }
+
+      const finalTotal = totalPrice + shipping + taxAmount - finalDiscount;
+
       const { data: order, error: orderError } = await supabase.from('orders').insert({
         customer_name: form.name, customer_email: form.email,
         customer_phone: form.phone || null, shipping_address: fullAddress,
-        notes: notesText, total: totalPrice, user_id: user?.id || null, status,
+        notes: notesText, total: finalTotal, user_id: user?.id || null, status,
+        coupon_code: finalCouponCode,
+        discount_amount: finalDiscount,
       }).select('id').single();
       if (orderError) throw orderError;
 
@@ -264,6 +363,16 @@ export default function Checkout() {
       }));
       const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
       if (itemsError) throw itemsError;
+
+      // Mark abandoned-cart draft as recovered
+      orderPlacedRef.current = true;
+      if (cartDraftId) {
+        await supabase.from('abandoned_carts').update({
+          status: 'recovered',
+          recovered_order_id: order.id,
+          recovered_at: new Date().toISOString(),
+        }).eq('id', cartDraftId);
+      }
 
       if (!isExpress) clearCart();
       const method = paymentRef === 'COD' ? 'cod' : 'online';
