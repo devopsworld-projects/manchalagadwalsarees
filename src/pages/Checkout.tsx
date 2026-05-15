@@ -140,9 +140,21 @@ export default function Checkout() {
 
   const [form, setForm] = useState({
     name: '', email: user?.email || '', phone: '',
-    address: '', city: '', state: '', pincode: '', notes: '',
+    address: '', city: '', state: '', pincode: '',
+    country: remembered?.destination === 'international' ? (remembered?.country ?? '') : 'India',
+    notes: '',
   });
   const update = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
+
+  // Keep destination toggle and form.country in sync
+  const setCountry = (value: string) => {
+    update('country', value);
+    const isIndia = value.trim().toLowerCase() === 'india';
+    const next: 'india' | 'international' = isIndia ? 'india' : 'international';
+    setDestination(next);
+    setDestinationTouched(true);
+    persistPref({ destination: next, country: isIndia ? '' : value, region: overrideRegion });
+  };
 
   const codCheck = useMemo(() => {
     if (!codConfig.enabled) return { ok: false, reason: 'Cash on Delivery is unavailable.' };
@@ -183,7 +195,7 @@ export default function Checkout() {
   }, [items.length, navigate, user]);
 
 
-  // When an address is selected, prefill form
+  // When an address is selected, prefill form (saved addresses are India-based)
   useEffect(() => {
     if (selectedAddress) {
       setForm(f => ({
@@ -194,12 +206,14 @@ export default function Checkout() {
         city: selectedAddress.city,
         state: selectedAddress.state,
         pincode: selectedAddress.pincode,
+        country: 'India',
       }));
       setUseNewAddress(false);
     }
   }, [selectedAddress]);
 
-  const fullAddress = `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`;
+  const isIntl = destination === 'international';
+  const fullAddress = `${form.address}, ${form.city}, ${form.state} ${form.pincode}, ${form.country || (isIntl ? '' : 'India')}`.replace(/\s+,/g, ',').trim();
 
   const validateForm = (): string | null => {
     if (form.name.trim().length < 2) return 'Please enter a valid name';
@@ -207,8 +221,14 @@ export default function Checkout() {
     if (form.phone && !/^[+]?\d[\d\s-]{7,14}$/.test(form.phone.trim())) return 'Please enter a valid phone number';
     if (form.address.trim().length < 5) return 'Please enter a complete address';
     if (form.city.trim().length < 2) return 'Please enter a valid city';
-    if (form.state.trim().length < 2) return 'Please enter a valid state';
-    if (!/^\d{6}$/.test(form.pincode)) return 'Please enter a valid 6-digit PIN code';
+    if (form.state.trim().length < 2) return `Please enter a valid ${isIntl ? 'state/province/region' : 'state'}`;
+    if (isIntl) {
+      if (form.country.trim().length < 2) return 'Please enter the destination country';
+      if (form.country.trim().toLowerCase() === 'india') return 'Country is India — switch destination to India';
+      if (!/^[A-Za-z0-9\s\-]{3,12}$/.test(form.pincode.trim())) return 'Please enter a valid postal/ZIP code (3–12 chars)';
+    } else {
+      if (!/^\d{6}$/.test(form.pincode)) return 'Please enter a valid 6-digit PIN code';
+    }
     return null;
   };
 
@@ -314,7 +334,9 @@ export default function Checkout() {
                   const d = v as 'india' | 'international';
                   setDestination(d);
                   setDestinationTouched(true);
-                  persistPref({ destination: d, country: overrideCountry, region: overrideRegion });
+                  // Sync the recipient address country with the toggle
+                  setForm(f => ({ ...f, country: d === 'india' ? 'India' : (f.country.trim().toLowerCase() === 'india' ? '' : f.country) }));
+                  persistPref({ destination: d, country: d === 'india' ? '' : form.country, region: overrideRegion });
                 }}
                 className="grid sm:grid-cols-2 gap-3"
               >
@@ -334,56 +356,27 @@ export default function Checkout() {
                 </Label>
               </RadioGroup>
 
-              {/* Manual override: country / state */}
-              <div className="mt-3 grid sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-body text-muted-foreground mb-1 block">
-                    {destination === 'india' ? 'State (optional)' : 'Country (optional)'}
-                  </label>
-                  {destination === 'india' ? (
-                    <Input
-                      value={overrideRegion}
-                      onChange={(e) => {
-                        setOverrideRegion(e.target.value);
-                        setDestinationTouched(true);
-                        persistPref({ destination, country: overrideCountry, region: e.target.value });
-                      }}
-                      placeholder="e.g. Telangana"
-                      className="font-body h-10"
-                    />
-                  ) : (
-                    <Input
-                      value={overrideCountry}
-                      onChange={(e) => {
-                        setOverrideCountry(e.target.value);
-                        setDestinationTouched(true);
-                        persistPref({ destination, country: e.target.value, region: overrideRegion });
-                      }}
-                      placeholder="e.g. United States"
-                      className="font-body h-10"
-                    />
-                  )}
+              {destinationTouched && (
+                <div className="mt-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try { localStorage.removeItem('mgs_shipping_pref'); } catch { /* ignore */ }
+                      setDestinationTouched(false);
+                      setOverrideCountry('');
+                      setOverrideRegion('');
+                      if (detectionStatus === 'ok' && autoDetectedCountry) {
+                        const guess: 'india' | 'international' = autoDetectedCountry.toLowerCase().includes('india') ? 'india' : 'international';
+                        setDestination(guess);
+                        setForm(f => ({ ...f, country: guess === 'india' ? 'India' : '' }));
+                      }
+                    }}
+                    className="text-xs font-body text-primary underline"
+                  >
+                    Reset to auto-detected
+                  </button>
                 </div>
-                {destinationTouched && (
-                  <div className="flex items-end">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        try { localStorage.removeItem('mgs_shipping_pref'); } catch { /* ignore */ }
-                        setDestinationTouched(false);
-                        setOverrideCountry('');
-                        setOverrideRegion('');
-                        if (detectionStatus === 'ok' && autoDetectedCountry) {
-                          setDestination(autoDetectedCountry.toLowerCase().includes('india') ? 'india' : 'international');
-                        }
-                      }}
-                      className="text-xs font-body text-primary underline"
-                    >
-                      Reset to auto-detected
-                    </button>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
 
             {/* Saved addresses */}
@@ -396,39 +389,63 @@ export default function Checkout() {
               </button>
             </div>
 
-            {(useNewAddress || !selectedAddress) && (
+            {(useNewAddress || !selectedAddress || isIntl) && (
               <>
-                <h2 className="font-display text-lg font-semibold">Shipping Details</h2>
+                <div>
+                  <h2 className="font-display text-lg font-semibold">Recipient Delivery Address</h2>
+                  <p className="text-xs text-muted-foreground font-body mt-0.5">
+                    {isIntl ? 'Where the parcel will be delivered overseas.' : 'Where the parcel will be delivered in India.'}
+                  </p>
+                </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-body text-muted-foreground mb-1 block">Full Name *</label>
-                    <Input value={form.name} onChange={e => update('name', e.target.value)} required className="font-body" />
+                    <label className="text-xs font-body text-muted-foreground mb-1 block">Recipient Full Name *</label>
+                    <Input value={form.name} onChange={e => update('name', e.target.value)} required maxLength={100} className="font-body" />
                   </div>
                   <div>
                     <label className="text-xs font-body text-muted-foreground mb-1 block">Email *</label>
-                    <Input type="email" value={form.email} onChange={e => update('email', e.target.value)} required className="font-body" />
+                    <Input type="email" value={form.email} onChange={e => update('email', e.target.value)} required maxLength={255} className="font-body" />
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs font-body text-muted-foreground mb-1 block">Phone</label>
-                  <Input type="tel" value={form.phone} onChange={e => update('phone', e.target.value)} placeholder="+91 XXXXX XXXXX" className="font-body" />
+                  <label className="text-xs font-body text-muted-foreground mb-1 block">Recipient Phone</label>
+                  <Input type="tel" value={form.phone} onChange={e => update('phone', e.target.value)} maxLength={20} placeholder={isIntl ? '+1 555 555 5555' : '+91 XXXXX XXXXX'} className="font-body" />
                 </div>
                 <div>
-                  <label className="text-xs font-body text-muted-foreground mb-1 block">Address *</label>
-                  <Textarea value={form.address} onChange={e => update('address', e.target.value)} required rows={2} className="font-body" />
+                  <label className="text-xs font-body text-muted-foreground mb-1 block">Street Address *</label>
+                  <Textarea value={form.address} onChange={e => update('address', e.target.value)} required rows={2} maxLength={300} className="font-body" />
+                </div>
+                <div>
+                  <label className="text-xs font-body text-muted-foreground mb-1 block">Country *</label>
+                  <Input
+                    value={form.country}
+                    onChange={e => setCountry(e.target.value)}
+                    required
+                    maxLength={60}
+                    placeholder={isIntl ? 'e.g. United States' : 'India'}
+                    className="font-body h-11"
+                  />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="text-xs font-body text-muted-foreground mb-1 block">City *</label>
-                    <Input value={form.city} onChange={e => update('city', e.target.value)} required className="font-body h-11" />
+                    <Input value={form.city} onChange={e => update('city', e.target.value)} required maxLength={80} className="font-body h-11" />
                   </div>
                   <div>
-                    <label className="text-xs font-body text-muted-foreground mb-1 block">State *</label>
-                    <Input value={form.state} onChange={e => update('state', e.target.value)} required className="font-body h-11" />
+                    <label className="text-xs font-body text-muted-foreground mb-1 block">{isIntl ? 'State / Province *' : 'State *'}</label>
+                    <Input value={form.state} onChange={e => update('state', e.target.value)} required maxLength={80} className="font-body h-11" />
                   </div>
                   <div>
-                    <label className="text-xs font-body text-muted-foreground mb-1 block">PIN Code *</label>
-                    <Input value={form.pincode} onChange={e => update('pincode', e.target.value)} required pattern="[0-9]{6}" inputMode="numeric" className="font-body h-11" />
+                    <label className="text-xs font-body text-muted-foreground mb-1 block">{isIntl ? 'Postal / ZIP Code *' : 'PIN Code *'}</label>
+                    <Input
+                      value={form.pincode}
+                      onChange={e => update('pincode', e.target.value)}
+                      required
+                      maxLength={12}
+                      pattern={isIntl ? '[A-Za-z0-9 \\-]{3,12}' : '[0-9]{6}'}
+                      inputMode={isIntl ? 'text' : 'numeric'}
+                      className="font-body h-11"
+                    />
                   </div>
                 </div>
               </>
