@@ -29,7 +29,7 @@ export default function Checkout() {
   const location = useLocation();
   const { items: cartItems, totalPrice: cartTotalPrice, clearCart } = useCart();
   const { user } = useAuth();
-  const { format } = useCurrency();
+  const { format, currency } = useCurrency();
   const { data: settings } = useStoreSettings();
 
   // Express ("Buy Now") item passed via navigation state
@@ -59,7 +59,13 @@ export default function Checkout() {
     queryFn: async () => (await supabase.from('tax_rules').select('*').eq('is_active', true)).data || [],
   });
 
+  const totalQty = items.reduce((sum, it) => sum + it.quantity, 0);
+  const isOverseas = currency.code !== 'INR';
   const shipping = (() => {
+    // Overseas shipping: ₹2800 for first saree, ₹1200 each additional (in INR)
+    if (isOverseas) {
+      return totalQty > 0 ? 2800 + Math.max(0, totalQty - 1) * 1200 : 0;
+    }
     const r = shippingRates[0] as any;
     if (!r) return 0;
     if (r.type === 'free_above' && totalPrice >= (r.free_above_amount || 0)) return 0;
@@ -354,7 +360,7 @@ export default function Checkout() {
               <div className="space-y-2">
                 <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Subtotal</span><span>{format(totalPrice)}</span></div>
                 {discount > 0 && <div className="flex justify-between font-body text-sm text-green-600"><span>Discount</span><span>-{format(discount)}</span></div>}
-                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Shipping</span><span className={shipping === 0 ? 'text-green-600' : ''}>{shipping === 0 ? 'Free' : format(shipping)}</span></div>
+                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Shipping{isOverseas ? ' (International)' : ''}</span><span className={shipping === 0 ? 'text-green-600' : ''}>{shipping === 0 ? 'Free' : format(shipping)}</span></div>
                 {taxAmount > 0 && <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Tax ({taxRate}%)</span><span>{format(taxAmount)}</span></div>}
                 <div className="flex justify-between font-body font-bold text-lg pt-2 border-t border-border"><span>Total</span><span>{format(grandTotal)}</span></div>
               </div>
