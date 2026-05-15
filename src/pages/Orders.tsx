@@ -135,15 +135,34 @@ export default function Orders() {
                     ))}
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-border pt-3">
+                  {(order as any).tracking_number && (
+                    <div className="flex items-center gap-2 text-xs font-body text-muted-foreground border-t border-border pt-3 mb-2">
+                      <Truck className="h-3.5 w-3.5" />
+                      <span>{(order as any).courier || 'Shipment'}: <span className="font-semibold text-foreground">{(order as any).tracking_number}</span></span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between border-t border-border pt-3 gap-3">
                     {order.shipping_address && (
-                      <p className="font-body text-xs text-muted-foreground truncate max-w-[60%]">
+                      <p className="font-body text-xs text-muted-foreground truncate max-w-[50%]">
                         📍 {order.shipping_address}
                       </p>
                     )}
-                    <span className="font-display text-lg font-bold ml-auto">
-                      {format(order.total)}
-                    </span>
+                    <div className="flex items-center gap-3 ml-auto">
+                      {order.status === 'pending' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => { if (confirm('Cancel this order?')) cancelOrder.mutate(order.id); }}
+                          disabled={cancelOrder.isPending}
+                          className="h-8 text-xs"
+                        >
+                          <X className="h-3 w-3 mr-1" /> Cancel
+                        </Button>
+                      )}
+                      <span className="font-display text-lg font-bold">
+                        {format(order.total)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               );
