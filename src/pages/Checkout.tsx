@@ -67,8 +67,9 @@ export default function Checkout() {
         const data = await res.json();
         if (cancelled || !data?.country_code) return;
         const code = String(data.country_code).toUpperCase();
+        const accuracyM = data.location_accuracy ? Number(data.location_accuracy) : null;
         setAutoDetectedCountry(data.country_name || code);
-        setDestination(code === 'IN' ? 'india' : 'international');
+        setLocationAccuracyKm(accuracyM ? Math.round(accuracyM / 100) / 10 : null);
       } catch {
         // Silent fail — fall back to currency-based default
       }
