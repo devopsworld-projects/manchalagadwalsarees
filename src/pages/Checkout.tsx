@@ -334,7 +334,9 @@ export default function Checkout() {
                   const d = v as 'india' | 'international';
                   setDestination(d);
                   setDestinationTouched(true);
-                  persistPref({ destination: d, country: overrideCountry, region: overrideRegion });
+                  // Sync the recipient address country with the toggle
+                  setForm(f => ({ ...f, country: d === 'india' ? 'India' : (f.country.trim().toLowerCase() === 'india' ? '' : f.country) }));
+                  persistPref({ destination: d, country: d === 'india' ? '' : form.country, region: overrideRegion });
                 }}
                 className="grid sm:grid-cols-2 gap-3"
               >
@@ -354,56 +356,27 @@ export default function Checkout() {
                 </Label>
               </RadioGroup>
 
-              {/* Manual override: country / state */}
-              <div className="mt-3 grid sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-body text-muted-foreground mb-1 block">
-                    {destination === 'india' ? 'State (optional)' : 'Country (optional)'}
-                  </label>
-                  {destination === 'india' ? (
-                    <Input
-                      value={overrideRegion}
-                      onChange={(e) => {
-                        setOverrideRegion(e.target.value);
-                        setDestinationTouched(true);
-                        persistPref({ destination, country: overrideCountry, region: e.target.value });
-                      }}
-                      placeholder="e.g. Telangana"
-                      className="font-body h-10"
-                    />
-                  ) : (
-                    <Input
-                      value={overrideCountry}
-                      onChange={(e) => {
-                        setOverrideCountry(e.target.value);
-                        setDestinationTouched(true);
-                        persistPref({ destination, country: e.target.value, region: overrideRegion });
-                      }}
-                      placeholder="e.g. United States"
-                      className="font-body h-10"
-                    />
-                  )}
+              {destinationTouched && (
+                <div className="mt-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try { localStorage.removeItem('mgs_shipping_pref'); } catch { /* ignore */ }
+                      setDestinationTouched(false);
+                      setOverrideCountry('');
+                      setOverrideRegion('');
+                      if (detectionStatus === 'ok' && autoDetectedCountry) {
+                        const guess: 'india' | 'international' = autoDetectedCountry.toLowerCase().includes('india') ? 'india' : 'international';
+                        setDestination(guess);
+                        setForm(f => ({ ...f, country: guess === 'india' ? 'India' : '' }));
+                      }
+                    }}
+                    className="text-xs font-body text-primary underline"
+                  >
+                    Reset to auto-detected
+                  </button>
                 </div>
-                {destinationTouched && (
-                  <div className="flex items-end">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        try { localStorage.removeItem('mgs_shipping_pref'); } catch { /* ignore */ }
-                        setDestinationTouched(false);
-                        setOverrideCountry('');
-                        setOverrideRegion('');
-                        if (detectionStatus === 'ok' && autoDetectedCountry) {
-                          setDestination(autoDetectedCountry.toLowerCase().includes('india') ? 'india' : 'international');
-                        }
-                      }}
-                      className="text-xs font-body text-primary underline"
-                    >
-                      Reset to auto-detected
-                    </button>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
 
             {/* Saved addresses */}
