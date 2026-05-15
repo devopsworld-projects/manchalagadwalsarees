@@ -42,6 +42,17 @@ const AdminOrders = () => {
     },
   });
 
+  const updateTracking = useMutation({
+    mutationFn: async ({ id, tracking_number, courier }: { id: string; tracking_number: string; courier: string }) => {
+      const { error } = await supabase.from('orders').update({ tracking_number, courier } as any).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+      toast({ title: 'Tracking updated' });
+    },
+  });
+
   const filteredOrders = orders?.filter(order => {
     const matchesSearch = !searchQuery ||
       order.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
