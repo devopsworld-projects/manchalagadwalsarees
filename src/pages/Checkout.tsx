@@ -383,7 +383,18 @@ export default function Checkout() {
               <div className="space-y-2">
                 <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Subtotal</span><span>{format(totalPrice)}</span></div>
                 {discount > 0 && <div className="flex justify-between font-body text-sm text-green-600"><span>Discount</span><span>-{format(discount)}</span></div>}
-                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Shipping{isOverseas ? ' (International)' : ''}</span><span className={shipping === 0 ? 'text-green-600' : ''}>{shipping === 0 ? 'Free' : format(shipping)}</span></div>
+                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Shipping{isOverseas ? ' (International)' : ' (India)'}</span><span className={shipping === 0 ? 'text-green-600' : ''}>{shipping === 0 ? 'Free' : format(shipping)}</span></div>
+                {isOverseas && totalQty > 0 && (
+                  <div className="ml-3 pl-3 border-l border-border space-y-1 text-xs font-body text-muted-foreground">
+                    <div className="flex justify-between"><span>1st saree</span><span>{format(OVERSEAS_FIRST)}</span></div>
+                    {totalQty > 1 && (
+                      <div className="flex justify-between">
+                        <span>+ {totalQty - 1} additional × {format(OVERSEAS_ADDITIONAL)}</span>
+                        <span>{format((totalQty - 1) * OVERSEAS_ADDITIONAL)}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
                 {taxAmount > 0 && <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Tax ({taxRate}%)</span><span>{format(taxAmount)}</span></div>}
                 <div className="flex justify-between font-body font-bold text-lg pt-2 border-t border-border"><span>Total</span><span>{format(grandTotal)}</span></div>
               </div>
