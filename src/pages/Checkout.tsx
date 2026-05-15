@@ -49,6 +49,9 @@ export default function Checkout() {
   const [couponLoading, setCouponLoading] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<SavedAddress | null>(null);
   const [useNewAddress, setUseNewAddress] = useState(false);
+  const [destination, setDestination] = useState<'india' | 'international'>(
+    currency.code === 'INR' ? 'india' : 'international'
+  );
 
   const { data: shippingRates = [] } = useQuery({
     queryKey: ['shipping-rates'],
