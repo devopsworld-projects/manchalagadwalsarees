@@ -239,49 +239,65 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Desktop: split nav with centered wordmark */}
-          <nav className="hidden md:flex flex-1 items-center justify-end gap-6">
-            <div data-testid="currency-desktop" className="flex items-center">
-              <CurrencySelector />
-            </div>
-            <span aria-hidden="true" className="h-4 w-px bg-border/80" />
-            {menuItems.slice(0, Math.ceil(menuItems.length / 2)).map(item => (
-              <MegaNavItem
-                key={item.id}
-                item={item}
-                isOpen={openDropdown === item.id}
-                onOpen={() => setOpenDropdown(item.id)}
-                onClose={() => setOpenDropdown(null)}
-                isActive={isItemActive(item, location.pathname, location.search)}
-              />
-            ))}
-          </nav>
+          {/* Desktop: split nav with centered wordmark — cap visible items per side, rest live in mobile/burger menu */}
+          {(() => {
+            const MAX_PER_SIDE = 5;
+            const leftItems = menuItems.slice(0, MAX_PER_SIDE);
+            const rightItems = menuItems.slice(MAX_PER_SIDE, MAX_PER_SIDE * 2);
+            return (
+              <>
+                <nav className="hidden md:flex flex-1 items-center justify-end gap-5 lg:gap-6 min-w-0">
+                  <div data-testid="currency-desktop" className="flex items-center">
+                    <CurrencySelector />
+                  </div>
+                  <span aria-hidden="true" className="h-4 w-px bg-border/80" />
+                  {leftItems.map(item => (
+                    <MegaNavItem
+                      key={item.id}
+                      item={item}
+                      isOpen={openDropdown === item.id}
+                      onOpen={() => setOpenDropdown(item.id)}
+                      onClose={() => setOpenDropdown(null)}
+                      isActive={isItemActive(item, location.pathname, location.search)}
+                    />
+                  ))}
+                </nav>
 
-          {/* Wordmark logo (Kankatala-style) — shown on all breakpoints */}
-          <Link to="/" className="flex flex-col items-center shrink-0 px-2 md:px-6 group" aria-label="Manchala Gadwal Sarees">
-            <span className="font-display text-2xl sm:text-3xl lg:text-[34px] font-bold tracking-[0.08em] text-primary leading-none">
-              MANCHALA
-            </span>
-            <span className="flex items-center gap-2 mt-1 sm:mt-1.5">
-              <span className="h-px w-4 sm:w-6 bg-accent/60" />
-              <span className="font-body text-[8px] sm:text-[9px] tracking-[0.35em] sm:tracking-[0.4em] text-accent uppercase whitespace-nowrap">Gadwal Sarees</span>
-              <span className="h-px w-4 sm:w-6 bg-accent/60" />
-            </span>
-          </Link>
+                {/* Wordmark logo (Kankatala-style) — shown on all breakpoints */}
+                <Link to="/" className="flex flex-col items-center shrink-0 px-2 md:px-6 group" aria-label="Manchala Gadwal Sarees">
+                  <span className="font-display text-2xl sm:text-3xl lg:text-[34px] font-bold tracking-[0.08em] text-primary leading-none">
+                    MANCHALA
+                  </span>
+                  <span className="flex items-center gap-2 mt-1 sm:mt-1.5">
+                    <span className="h-px w-4 sm:w-6 bg-accent/60" />
+                    <span className="font-body text-[8px] sm:text-[9px] tracking-[0.35em] sm:tracking-[0.4em] text-accent uppercase whitespace-nowrap">Gadwal Sarees</span>
+                    <span className="h-px w-4 sm:w-6 bg-accent/60" />
+                  </span>
+                </Link>
 
-          <nav className="hidden md:flex flex-1 items-center justify-start gap-7">
-            {menuItems.slice(Math.ceil(menuItems.length / 2)).map(item => (
-              <MegaNavItem
-                key={item.id}
-                item={item}
-                isOpen={openDropdown === item.id}
-                onOpen={() => setOpenDropdown(item.id)}
-                onClose={() => setOpenDropdown(null)}
-                isActive={isItemActive(item, location.pathname, location.search)}
-              />
-            ))}
-          </nav>
-
+                <nav className="hidden md:flex flex-1 items-center justify-start gap-5 lg:gap-7 min-w-0">
+                  {rightItems.map(item => (
+                    <MegaNavItem
+                      key={item.id}
+                      item={item}
+                      isOpen={openDropdown === item.id}
+                      onOpen={() => setOpenDropdown(item.id)}
+                      onClose={() => setOpenDropdown(null)}
+                      isActive={isItemActive(item, location.pathname, location.search)}
+                    />
+                  ))}
+                  {menuItems.length > MAX_PER_SIDE * 2 && (
+                    <Link
+                      to="/collections"
+                      className="text-xs tracking-[0.18em] font-display font-medium text-primary/80 hover:text-accent uppercase whitespace-nowrap"
+                    >
+                      All ▾
+                    </Link>
+                  )}
+                </nav>
+              </>
+            );
+          })()}
           {/* Right actions */}
           <div className="flex items-center gap-0.5 sm:gap-1">
             <button
