@@ -140,9 +140,21 @@ export default function Checkout() {
 
   const [form, setForm] = useState({
     name: '', email: user?.email || '', phone: '',
-    address: '', city: '', state: '', pincode: '', notes: '',
+    address: '', city: '', state: '', pincode: '',
+    country: remembered?.destination === 'international' ? (remembered?.country ?? '') : 'India',
+    notes: '',
   });
   const update = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
+
+  // Keep destination toggle and form.country in sync
+  const setCountry = (value: string) => {
+    update('country', value);
+    const isIndia = value.trim().toLowerCase() === 'india';
+    const next: 'india' | 'international' = isIndia ? 'india' : 'international';
+    setDestination(next);
+    setDestinationTouched(true);
+    persistPref({ destination: next, country: isIndia ? '' : value, region: overrideRegion });
+  };
 
   const codCheck = useMemo(() => {
     if (!codConfig.enabled) return { ok: false, reason: 'Cash on Delivery is unavailable.' };
