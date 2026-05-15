@@ -373,154 +373,187 @@ export function Navbar() {
         <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
       </div>
 
-      {/* ─── Mobile Nav Drawer (full-screen) ─── */}
-      {mobileOpen && (
-        <>
-          <div className="fixed inset-0 bg-foreground/40 backdrop-blur-sm z-40 md:hidden" onClick={() => setMobileOpen(false)} />
-          <nav className="fixed inset-0 bg-background z-50 md:hidden flex flex-col shadow-2xl animate-in slide-in-from-left duration-300">
-            {/* Maroon header with centered wordmark */}
-            <div className="relative bg-primary text-primary-foreground px-5 pt-5 pb-6">
-              <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-accent/50 via-accent to-accent/50" />
-              <div data-testid="currency-drawer" className="absolute left-3 top-3 [&_button]:text-primary-foreground/80 [&_button:hover]:text-accent">
-                <CurrencySelector />
-              </div>
-              <button
-                onClick={() => setMobileOpen(false)}
-                className="absolute right-3 top-3 p-2 text-primary-foreground/80 hover:text-accent transition-colors"
-                aria-label="Close menu"
-              >
-                <X className="h-5 w-5" />
-              </button>
-              <Link to="/" onClick={() => setMobileOpen(false)} className="flex flex-col items-center mt-1">
-                {/* Image logo on very narrow phones; wordmark when space allows */}
-                <img 
-                  src={logoSrc} 
-                  alt="Manchala Gadwal Sarees" 
-                  className="h-16 w-auto block xs:hidden brightness-110 drop-shadow-[0_0_10px_rgba(212,175,55,0.25)]" 
-                />
-                <span className="hidden xs:block font-display text-2xl sm:text-3xl font-bold tracking-[0.1em] leading-none">
-                  MANCHALA
-                </span>
-                <span className="hidden xs:flex items-center gap-2 mt-2">
-                  <span className="h-px w-6 bg-accent/70" />
-                  <span className="font-body text-[9px] tracking-[0.4em] text-accent uppercase">
-                    Gadwal Sarees
-                  </span>
-                  <span className="h-px w-6 bg-accent/70" />
-                </span>
-              </Link>
-            </div>
+      {/* ─── Mobile Nav Drawer (side, dense) ─── */}
+      {mobileOpen && (() => {
+        // Auto-group flat menu items by family for better hierarchy
+        const allItems = [...menuItems, ...mobileMenuItems];
+        const groupOf = (label: string) => {
+          const l = label.toLowerCase();
+          if (l.includes('gadwal')) return 'Gadwal Sarees';
+          if (l.includes('kanchi') || l.includes('korvai')) return 'Kanchipuram Sarees';
+          if (l.includes('bandhani') || l.includes('kalamkari') || l.includes('tissue') || l.includes('silk') || l.includes('cotton') || l.includes('bridal') || l.includes('vintage')) return 'Other Collections';
+          return 'Shop';
+        };
+        const groups = allItems.reduce<Record<string, typeof allItems>>((acc, it) => {
+          // Items that already have children render as their own group
+          if ((it.children || []).length > 0) {
+            acc[it.label] = [...(acc[it.label] || []), it];
+          } else {
+            const g = groupOf(it.label);
+            acc[g] = [...(acc[g] || []), it];
+          }
+          return acc;
+        }, {});
+        const groupNames = Object.keys(groups);
 
-            {/* Menu items */}
-            <div className="flex-1 overflow-y-auto overscroll-contain p-5 space-y-0.5">
-              {[...menuItems, ...mobileMenuItems].map(item => {
-                const children = item.children || [];
-                const hasChildren = children.length > 0;
-                const itemActive = isItemActive(item, location.pathname, location.search);
-
-                if (!hasChildren) {
-                  return (
-                    <Link
-                      key={item.id}
-                      to={getItemUrl(item)}
-                      onClick={() => setMobileOpen(false)}
-                      aria-current={itemActive ? 'page' : undefined}
-                      className={`flex items-center gap-3 py-3 text-[13px] tracking-[0.2em] font-display font-bold ${itemActive ? 'text-accent border-l-2 border-accent pl-3 -ml-3' : 'text-foreground/90'} hover:text-accent active:text-accent min-h-[44px] uppercase transition-colors`}
-                    >
-                      {item.label}
-                    </Link>
-                  );
-                }
-
-                return (
-                  <div key={item.id}>
-                    <button
-                      onClick={() => setMobileExpanded(mobileExpanded === item.id ? null : item.id)}
-                      aria-current={itemActive ? 'page' : undefined}
-                      className={`flex items-center justify-between w-full py-3 text-[13px] tracking-[0.2em] font-display font-bold ${itemActive ? 'text-accent' : 'text-foreground/90'} hover:text-accent active:text-accent min-h-[44px] uppercase transition-colors`}
-                    >
-                      <span className={itemActive ? 'border-l-2 border-accent pl-3 -ml-3' : ''}>{item.label}</span>
-                      <ChevronDown className={`h-4 w-4 text-accent/50 transition-transform duration-300 ${mobileExpanded === item.id ? 'rotate-180' : ''}`} />
-                    </button>
-                    {mobileExpanded === item.id && (
-                      <div className="pl-4 pb-2 space-y-0.5 border-l-2 border-accent/30 ml-2">
-                        {children.map(child => {
-                          const childActive = isUrlActive(getItemUrl(child), location.pathname, location.search);
-                          return (
-                            <Link
-                              key={child.id}
-                              to={getItemUrl(child)}
-                              onClick={() => { setMobileOpen(false); setMobileExpanded(null); }}
-                              aria-current={childActive ? 'page' : undefined}
-                              className={`flex items-center py-2.5 text-sm tracking-[0.08em] font-body font-semibold ${childActive ? 'text-accent' : 'text-foreground/80'} hover:text-accent active:text-accent transition-colors min-h-[44px]`}
-                            >
-                              <span className={`w-2 h-[1px] ${childActive ? 'bg-accent' : 'bg-accent/30'} mr-3`} />
-                              {child.label}
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    )}
+        return (
+          <>
+            <div className="fixed inset-0 bg-foreground/50 z-40 md:hidden animate-in fade-in duration-150" onClick={() => setMobileOpen(false)} />
+            <nav className="fixed inset-y-0 left-0 w-[88vw] max-w-[360px] bg-background z-50 md:hidden flex flex-col shadow-2xl animate-in slide-in-from-left duration-200">
+              {/* Compact header */}
+              <div className="relative bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between">
+                <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 min-w-0">
+                  <img src={logoSrc} alt="" className="h-8 w-8 object-contain shrink-0" />
+                  <div className="flex flex-col leading-tight min-w-0">
+                    <span className="font-display text-sm font-bold tracking-[0.12em] truncate">MANCHALA</span>
+                    <span className="font-body text-[8px] tracking-[0.3em] text-accent uppercase truncate">Gadwal Sarees</span>
                   </div>
-                );
-              })}
-
-              <div className="ornate-line my-4" />
-
-              {/* Account & utility links */}
-              <div className="space-y-0.5">
-                <Link
-                  to="/wishlist"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 py-3 text-[12px] tracking-[0.2em] font-display text-foreground/70 hover:text-accent min-h-[44px] sm:hidden uppercase transition-colors"
-                >
-                  <Heart className="h-4 w-4 text-accent/50" /> Wishlist
                 </Link>
-                {user ? (
-                  <>
-                    <Link to="/account" onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 py-3 text-[12px] tracking-[0.2em] font-display text-foreground/70 hover:text-accent min-h-[44px] md:hidden uppercase transition-colors">
-                      <User className="h-4 w-4 text-accent/50" /> My Account
-                    </Link>
-                    <Link to="/account/orders" onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 py-3 text-[12px] tracking-[0.2em] font-display text-foreground/70 hover:text-accent min-h-[44px] md:hidden uppercase transition-colors">
-                      <Package className="h-4 w-4 text-accent/50" /> My Orders
-                    </Link>
-                    <button onClick={async () => { setMobileOpen(false); await signOut(); }}
-                      className="flex items-center gap-3 py-3 text-[12px] tracking-[0.2em] font-display text-destructive hover:text-foreground min-h-[44px] md:hidden w-full text-left uppercase transition-colors">
-                      <LogOut className="h-4 w-4" /> Logout
-                    </button>
-                  </>
-                ) : (
-                  <Link to="/login" onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-3 py-3 text-[12px] tracking-[0.2em] font-display text-foreground/70 hover:text-accent min-h-[44px] md:hidden uppercase transition-colors">
-                    <User className="h-4 w-4 text-accent/50" /> Login / Register
-                  </Link>
-                )}
-                {topBarItems.map(item => (
-                  <Link key={item.id} to={getItemUrl(item)} onClick={() => setMobileOpen(false)}
-                    className="block py-3 text-[12px] tracking-[0.2em] font-display text-foreground/70 hover:text-accent min-h-[44px] uppercase transition-colors">
-                    {item.label}
-                  </Link>
-                ))}
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  className="p-2 -mr-2 text-primary-foreground/90 hover:text-accent transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  aria-label="Close menu"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
-            </div>
 
-            {/* Bottom CTA */}
-            <div className="p-5 border-t border-border">
-              <a
-                href="https://wa.me/919885879188"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-3 bg-foreground text-background text-[10px] font-display tracking-[0.2em] uppercase hover:bg-primary transition-colors"
-              >
-                <Phone className="h-3.5 w-3.5 text-accent" />
-                Call / WhatsApp Us
-              </a>
-            </div>
-          </nav>
-        </>
-      )}
+              {/* Account strip */}
+              <div className="bg-secondary/40 border-b border-border px-4 py-3">
+                {user ? (
+                  <div className="flex items-center justify-between gap-2">
+                    <Link to="/account" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 min-w-0 flex-1">
+                      <span className="h-9 w-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-display text-sm shrink-0">
+                        {(user.email || '?')[0].toUpperCase()}
+                      </span>
+                      <div className="flex flex-col leading-tight min-w-0">
+                        <span className="font-body font-semibold text-[12px] text-foreground truncate">My Account</span>
+                        <span className="font-body text-[10px] text-muted-foreground truncate">{user.email}</span>
+                      </div>
+                    </Link>
+                    <button
+                      onClick={async () => { setMobileOpen(false); await signOut(); }}
+                      className="p-2 text-destructive hover:bg-destructive/5 rounded min-h-[40px] min-w-[40px] flex items-center justify-center"
+                      aria-label="Logout"
+                    >
+                      <LogOut className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Link to="/login" onClick={() => setMobileOpen(false)} className="flex-1 text-center py-2 bg-primary text-primary-foreground text-[11px] tracking-[0.15em] font-display uppercase font-semibold hover:bg-primary/90 transition-colors">
+                      Login
+                    </Link>
+                    <Link to="/login?mode=register" onClick={() => setMobileOpen(false)} className="flex-1 text-center py-2 border border-primary text-primary text-[11px] tracking-[0.15em] font-display uppercase font-semibold hover:bg-primary/5 transition-colors">
+                      Register
+                    </Link>
+                  </div>
+                )}
+
+                {/* Quick action grid */}
+                <div className="grid grid-cols-3 gap-2 mt-3">
+                  <Link to="/wishlist" onClick={() => setMobileOpen(false)} className="flex flex-col items-center gap-1 py-2 bg-background border border-border hover:border-accent hover:text-accent transition-colors">
+                    <Heart className="h-4 w-4 text-accent" />
+                    <span className="text-[9px] tracking-[0.15em] font-display uppercase">Wishlist</span>
+                  </Link>
+                  {user && (
+                    <Link to="/account/orders" onClick={() => setMobileOpen(false)} className="flex flex-col items-center gap-1 py-2 bg-background border border-border hover:border-accent hover:text-accent transition-colors">
+                      <Package className="h-4 w-4 text-accent" />
+                      <span className="text-[9px] tracking-[0.15em] font-display uppercase">Orders</span>
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => { setMobileOpen(false); setSearchOpen(true); }}
+                    className="flex flex-col items-center gap-1 py-2 bg-background border border-border hover:border-accent hover:text-accent transition-colors"
+                  >
+                    <Search className="h-4 w-4 text-accent" />
+                    <span className="text-[9px] tracking-[0.15em] font-display uppercase">Search</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Grouped, collapsible items */}
+              <div className="flex-1 overflow-y-auto overscroll-contain">
+                {groupNames.map((g, gi) => {
+                  const items = groups[g];
+                  const isOpen = mobileExpanded === g;
+                  return (
+                    <div key={g} className={gi > 0 ? 'border-t border-border' : ''}>
+                      <button
+                        onClick={() => setMobileExpanded(isOpen ? null : g)}
+                        className="flex items-center justify-between w-full px-4 py-3 text-[11px] tracking-[0.22em] font-display font-bold text-primary uppercase hover:bg-secondary/40 transition-colors min-h-[44px]"
+                        aria-expanded={isOpen}
+                      >
+                        <span>{g}</span>
+                        <ChevronDown className={`h-4 w-4 text-accent transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                      {isOpen && (
+                        <ul className="pb-2">
+                          {items.map(it => {
+                            const itActive = isItemActive(it, location.pathname, location.search);
+                            return (
+                              <li key={it.id}>
+                                <Link
+                                  to={getItemUrl(it)}
+                                  onClick={() => { setMobileOpen(false); setMobileExpanded(null); }}
+                                  aria-current={itActive ? 'page' : undefined}
+                                  className={`flex items-center gap-3 pl-7 pr-4 py-2.5 text-[12.5px] font-body ${itActive ? 'text-accent font-semibold bg-accent/5 border-l-2 border-accent' : 'text-foreground/85 border-l-2 border-transparent'} hover:text-accent active:bg-accent/5 transition-colors min-h-[40px] capitalize`}
+                                >
+                                  <span className={`h-1 w-1 rounded-full ${itActive ? 'bg-accent' : 'bg-accent/40'}`} />
+                                  {it.label}
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {topBarItems.length > 0 && (
+                  <div className="border-t border-border bg-secondary/20">
+                    <p className="px-4 pt-3 pb-1 text-[9px] tracking-[0.25em] font-display text-muted-foreground uppercase">Help & Info</p>
+                    <ul className="pb-2">
+                      {topBarItems.map(item => (
+                        <li key={item.id}>
+                          <Link
+                            to={getItemUrl(item)}
+                            onClick={() => setMobileOpen(false)}
+                            className="block px-4 py-2.5 text-[12px] font-body text-foreground/75 hover:text-accent hover:bg-secondary/40 transition-colors min-h-[40px]"
+                          >
+                            {item.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              {/* Sticky bottom CTAs */}
+              <div className="grid grid-cols-2 border-t border-border">
+                <a
+                  href="tel:+919885879188"
+                  className="flex items-center justify-center gap-2 py-3 bg-foreground text-background text-[10px] font-display tracking-[0.18em] uppercase hover:bg-primary transition-colors"
+                >
+                  <Phone className="h-3.5 w-3.5 text-accent" />
+                  Call
+                </a>
+                <a
+                  href={`https://wa.me/${settings?.whatsapp_number || '919885879188'}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 py-3 bg-[#25D366] text-white text-[10px] font-display tracking-[0.18em] uppercase hover:opacity-90 transition-opacity"
+                >
+                  <WhatsAppIcon className="h-3.5 w-3.5" />
+                  WhatsApp
+                </a>
+              </div>
+            </nav>
+          </>
+        );
+      })()}
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   );
