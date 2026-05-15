@@ -87,8 +87,9 @@ export default function Checkout() {
         setAutoDetectedCountry(data.country_name || code);
         setLocationAccuracyKm(accuracyM ? Math.round(accuracyM / 100) / 10 : null);
         setDetectionStatus('ok');
-        // Apply auto destination only if user hasn't touched it
-        setDestination(code === 'IN' ? 'india' : 'international');
+        // NOTE: We deliberately do NOT change `destination` here.
+        // Shipping cost depends on the DELIVERY address, not the customer's IP.
+        // IP detection is shown only as a hint (e.g. customer in India shipping to USA).
       } catch {
         if (!cancelled) setDetectionStatus('failed');
       }
@@ -292,20 +293,21 @@ export default function Checkout() {
           <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-5">
             {/* Shipping destination */}
             <div>
-              <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
-                <h2 className="font-display text-lg font-semibold">Shipping To</h2>
+              <div className="flex items-baseline justify-between mb-1 gap-3 flex-wrap">
+                <h2 className="font-display text-lg font-semibold">Delivery Destination</h2>
                 <span className="text-xs font-body text-muted-foreground">
-                  {destinationTouched ? (
-                    'Saved preference — IP detection won\'t override your choice.'
-                  ) : detectionStatus === 'pending' ? (
+                  {detectionStatus === 'pending' ? (
                     'Detecting your location…'
                   ) : detectionStatus === 'ok' && autoDetectedCountry ? (
-                    <>Detected: {autoDetectedCountry}{locationAccuracyKm != null ? ` (~${locationAccuracyKm} km accuracy)` : ' (accuracy unavailable)'}</>
+                    <>You appear to be in {autoDetectedCountry}{locationAccuracyKm != null ? ` (~${locationAccuracyKm} km)` : ''} — change below if shipping elsewhere.</>
                   ) : (
-                    'Couldn\'t detect your location — please pick your destination below.'
+                    'Couldn\'t detect your location — please pick where the parcel is going below.'
                   )}
                 </span>
               </div>
+              <p className="text-xs font-body text-muted-foreground mb-3">
+                Shipping is calculated from the <strong>delivery address</strong>, not your current location. If you're in India and gifting overseas, choose <em>International</em>.
+              </p>
               <RadioGroup
                 value={destination}
                 onValueChange={(v) => {
