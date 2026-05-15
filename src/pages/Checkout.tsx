@@ -195,7 +195,7 @@ export default function Checkout() {
   }, [items.length, navigate, user]);
 
 
-  // When an address is selected, prefill form
+  // When an address is selected, prefill form (saved addresses are India-based)
   useEffect(() => {
     if (selectedAddress) {
       setForm(f => ({
@@ -206,12 +206,14 @@ export default function Checkout() {
         city: selectedAddress.city,
         state: selectedAddress.state,
         pincode: selectedAddress.pincode,
+        country: 'India',
       }));
       setUseNewAddress(false);
     }
   }, [selectedAddress]);
 
-  const fullAddress = `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`;
+  const isIntl = destination === 'international';
+  const fullAddress = `${form.address}, ${form.city}, ${form.state} ${form.pincode}, ${form.country || (isIntl ? '' : 'India')}`.replace(/\s+,/g, ',').trim();
 
   const validateForm = (): string | null => {
     if (form.name.trim().length < 2) return 'Please enter a valid name';
@@ -219,8 +221,14 @@ export default function Checkout() {
     if (form.phone && !/^[+]?\d[\d\s-]{7,14}$/.test(form.phone.trim())) return 'Please enter a valid phone number';
     if (form.address.trim().length < 5) return 'Please enter a complete address';
     if (form.city.trim().length < 2) return 'Please enter a valid city';
-    if (form.state.trim().length < 2) return 'Please enter a valid state';
-    if (!/^\d{6}$/.test(form.pincode)) return 'Please enter a valid 6-digit PIN code';
+    if (form.state.trim().length < 2) return `Please enter a valid ${isIntl ? 'state/province/region' : 'state'}`;
+    if (isIntl) {
+      if (form.country.trim().length < 2) return 'Please enter the destination country';
+      if (form.country.trim().toLowerCase() === 'india') return 'Country is India — switch destination to India';
+      if (!/^[A-Za-z0-9\s\-]{3,12}$/.test(form.pincode.trim())) return 'Please enter a valid postal/ZIP code (3–12 chars)';
+    } else {
+      if (!/^\d{6}$/.test(form.pincode)) return 'Please enter a valid 6-digit PIN code';
+    }
     return null;
   };
 
