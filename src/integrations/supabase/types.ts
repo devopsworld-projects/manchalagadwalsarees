@@ -569,41 +569,62 @@ export type Database = {
       }
       orders: {
         Row: {
+          cancelled_at: string | null
+          coupon_code: string | null
+          courier: string | null
           created_at: string
           customer_email: string
           customer_name: string
           customer_phone: string | null
+          discount_amount: number
           id: string
           notes: string | null
+          payment_id: string | null
+          payment_status: string
           shipping_address: string | null
           status: string
           total: number
+          tracking_number: string | null
           updated_at: string
           user_id: string | null
         }
         Insert: {
+          cancelled_at?: string | null
+          coupon_code?: string | null
+          courier?: string | null
           created_at?: string
           customer_email: string
           customer_name: string
           customer_phone?: string | null
+          discount_amount?: number
           id?: string
           notes?: string | null
+          payment_id?: string | null
+          payment_status?: string
           shipping_address?: string | null
           status?: string
           total: number
+          tracking_number?: string | null
           updated_at?: string
           user_id?: string | null
         }
         Update: {
+          cancelled_at?: string | null
+          coupon_code?: string | null
+          courier?: string | null
           created_at?: string
           customer_email?: string
           customer_name?: string
           customer_phone?: string | null
+          discount_amount?: number
           id?: string
           notes?: string | null
+          payment_id?: string | null
+          payment_status?: string
           shipping_address?: string | null
           status?: string
           total?: number
+          tracking_number?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -636,6 +657,54 @@ export type Database = {
           page_path?: string
           title?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          order_id: string
+          provider: string
+          provider_order_id: string | null
+          provider_payment_id: string | null
+          raw: Json | null
+          signature: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          id?: string
+          order_id: string
+          provider?: string
+          provider_order_id?: string | null
+          provider_payment_id?: string | null
+          raw?: Json | null
+          signature?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          order_id?: string
+          provider?: string
+          provider_order_id?: string | null
+          provider_payment_id?: string | null
+          raw?: Json | null
+          signature?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -878,6 +947,9 @@ export type Database = {
           id: string
           order_id: string
           reason: string
+          refund_amount: number | null
+          refund_reference: string | null
+          refunded_at: string | null
           status: string
           updated_at: string
           user_id: string
@@ -888,6 +960,9 @@ export type Database = {
           id?: string
           order_id: string
           reason: string
+          refund_amount?: number | null
+          refund_reference?: string | null
+          refunded_at?: string | null
           status?: string
           updated_at?: string
           user_id: string
@@ -898,6 +973,9 @@ export type Database = {
           id?: string
           order_id?: string
           reason?: string
+          refund_amount?: number | null
+          refund_reference?: string | null
+          refunded_at?: string | null
           status?: string
           updated_at?: string
           user_id?: string
@@ -1273,6 +1351,16 @@ export type Database = {
           email: string
           id: string
           last_sign_in_at: string
+        }[]
+      }
+      redeem_coupon: {
+        Args: { p_code: string; p_order_total: number }
+        Returns: {
+          code: string
+          discount_amount: number
+          discount_type: string
+          discount_value: number
+          id: string
         }[]
       }
       validate_coupon: {
