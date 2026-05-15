@@ -29,7 +29,7 @@ export default function Checkout() {
   const location = useLocation();
   const { items: cartItems, totalPrice: cartTotalPrice, clearCart } = useCart();
   const { user } = useAuth();
-  const { format } = useCurrency();
+  const { format, currency } = useCurrency();
   const { data: settings } = useStoreSettings();
 
   // Express ("Buy Now") item passed via navigation state
