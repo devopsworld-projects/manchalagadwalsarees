@@ -327,10 +327,33 @@ export default function Checkout() {
       const status = paymentRef === 'COD' ? 'pending' : 'confirmed';
       const notesText = form.notes ? `${form.notes} | Payment: ${paymentRef}` : `Payment: ${paymentRef}`;
 
+      // Atomically redeem coupon (locks row, validates, increments usage_count)
+      let finalDiscount = 0;
+      let finalCouponCode: string | null = null;
+      if (appliedCoupon?.code) {
+        const { data: redeemed, error: redeemErr } = await supabase.rpc('redeem_coupon', {
+          p_code: appliedCoupon.code,
+          p_order_total: totalPrice,
+        });
+        if (redeemErr) {
+          toast.error(redeemErr.message || 'Coupon could not be redeemed');
+          setAppliedCoupon(null);
+          setLoading(false);
+          return;
+        }
+        const r = Array.isArray(redeemed) ? redeemed[0] : redeemed;
+        finalDiscount = Number(r?.discount_amount || 0);
+        finalCouponCode = r?.code || appliedCoupon.code;
+      }
+
+      const finalTotal = totalPrice + shipping + taxAmount - finalDiscount;
+
       const { data: order, error: orderError } = await supabase.from('orders').insert({
         customer_name: form.name, customer_email: form.email,
         customer_phone: form.phone || null, shipping_address: fullAddress,
-        notes: notesText, total: totalPrice, user_id: user?.id || null, status,
+        notes: notesText, total: finalTotal, user_id: user?.id || null, status,
+        coupon_code: finalCouponCode,
+        discount_amount: finalDiscount,
       }).select('id').single();
       if (orderError) throw orderError;
 
@@ -340,6 +363,16 @@ export default function Checkout() {
       }));
       const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
       if (itemsError) throw itemsError;
+
+      // Mark abandoned-cart draft as recovered
+      orderPlacedRef.current = true;
+      if (cartDraftId) {
+        await supabase.from('abandoned_carts').update({
+          status: 'recovered',
+          recovered_order_id: order.id,
+          recovered_at: new Date().toISOString(),
+        }).eq('id', cartDraftId);
+      }
 
       if (!isExpress) clearCart();
       const method = paymentRef === 'COD' ? 'cod' : 'online';
