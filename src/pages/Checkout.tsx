@@ -49,6 +49,9 @@ export default function Checkout() {
   const [couponLoading, setCouponLoading] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<SavedAddress | null>(null);
   const [useNewAddress, setUseNewAddress] = useState(false);
+  const [destination, setDestination] = useState<'india' | 'international'>(
+    currency.code === 'INR' ? 'india' : 'international'
+  );
 
   const { data: shippingRates = [] } = useQuery({
     queryKey: ['shipping-rates'],
@@ -60,16 +63,15 @@ export default function Checkout() {
   });
 
   const totalQty = items.reduce((sum, it) => sum + it.quantity, 0);
-  const isOverseas = currency.code !== 'INR';
+  const isOverseas = destination === 'international';
+  const OVERSEAS_FIRST = 2800;
+  const OVERSEAS_ADDITIONAL = 1200;
   const shipping = (() => {
-    // Overseas shipping: ₹2800 for first saree, ₹1200 each additional (in INR)
+    // International: ₹2800 first saree + ₹1200 each additional. India: free.
     if (isOverseas) {
-      return totalQty > 0 ? 2800 + Math.max(0, totalQty - 1) * 1200 : 0;
+      return totalQty > 0 ? OVERSEAS_FIRST + Math.max(0, totalQty - 1) * OVERSEAS_ADDITIONAL : 0;
     }
-    const r = shippingRates[0] as any;
-    if (!r) return 0;
-    if (r.type === 'free_above' && totalPrice >= (r.free_above_amount || 0)) return 0;
-    return Number(r.rate || 0);
+    return 0;
   })();
   const taxRate = taxRules.length > 0 ? Number((taxRules[0] as any).rate || 0) : 0;
   const taxAmount = Math.round(totalPrice * taxRate / 100);
@@ -244,6 +246,27 @@ export default function Checkout() {
 
         <div className="grid lg:grid-cols-5 gap-6 md:gap-8">
           <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-5">
+            {/* Shipping destination */}
+            <div>
+              <h2 className="font-display text-lg font-semibold mb-3">Shipping To</h2>
+              <RadioGroup value={destination} onValueChange={(v) => setDestination(v as 'india' | 'international')} className="grid sm:grid-cols-2 gap-3">
+                <Label htmlFor="dest-india" className="flex items-center gap-3 border border-border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
+                  <RadioGroupItem value="india" id="dest-india" />
+                  <div className="flex-1">
+                    <p className="font-body text-sm font-medium">India</p>
+                    <p className="font-body text-xs text-green-600">Free shipping</p>
+                  </div>
+                </Label>
+                <Label htmlFor="dest-intl" className="flex items-center gap-3 border border-border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
+                  <RadioGroupItem value="international" id="dest-intl" />
+                  <div className="flex-1">
+                    <p className="font-body text-sm font-medium">International</p>
+                    <p className="font-body text-xs text-muted-foreground">{format(OVERSEAS_FIRST)} first saree, +{format(OVERSEAS_ADDITIONAL)} each additional</p>
+                  </div>
+                </Label>
+              </RadioGroup>
+            </div>
+
             {/* Saved addresses */}
             <AddressPicker selectedId={selectedAddress?.id || null} onSelect={(a) => { setSelectedAddress(a); setUseNewAddress(false); }} />
 
@@ -360,7 +383,18 @@ export default function Checkout() {
               <div className="space-y-2">
                 <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Subtotal</span><span>{format(totalPrice)}</span></div>
                 {discount > 0 && <div className="flex justify-between font-body text-sm text-green-600"><span>Discount</span><span>-{format(discount)}</span></div>}
-                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Shipping{isOverseas ? ' (International)' : ''}</span><span className={shipping === 0 ? 'text-green-600' : ''}>{shipping === 0 ? 'Free' : format(shipping)}</span></div>
+                <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Shipping{isOverseas ? ' (International)' : ' (India)'}</span><span className={shipping === 0 ? 'text-green-600' : ''}>{shipping === 0 ? 'Free' : format(shipping)}</span></div>
+                {isOverseas && totalQty > 0 && (
+                  <div className="ml-3 pl-3 border-l border-border space-y-1 text-xs font-body text-muted-foreground">
+                    <div className="flex justify-between"><span>1st saree</span><span>{format(OVERSEAS_FIRST)}</span></div>
+                    {totalQty > 1 && (
+                      <div className="flex justify-between">
+                        <span>+ {totalQty - 1} additional × {format(OVERSEAS_ADDITIONAL)}</span>
+                        <span>{format((totalQty - 1) * OVERSEAS_ADDITIONAL)}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
                 {taxAmount > 0 && <div className="flex justify-between font-body text-sm"><span className="text-muted-foreground">Tax ({taxRate}%)</span><span>{format(taxAmount)}</span></div>}
                 <div className="flex justify-between font-body font-bold text-lg pt-2 border-t border-border"><span>Total</span><span>{format(grandTotal)}</span></div>
               </div>
