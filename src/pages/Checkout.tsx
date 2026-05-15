@@ -246,6 +246,27 @@ export default function Checkout() {
 
         <div className="grid lg:grid-cols-5 gap-6 md:gap-8">
           <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-5">
+            {/* Shipping destination */}
+            <div>
+              <h2 className="font-display text-lg font-semibold mb-3">Shipping To</h2>
+              <RadioGroup value={destination} onValueChange={(v) => setDestination(v as 'india' | 'international')} className="grid sm:grid-cols-2 gap-3">
+                <Label htmlFor="dest-india" className="flex items-center gap-3 border border-border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
+                  <RadioGroupItem value="india" id="dest-india" />
+                  <div className="flex-1">
+                    <p className="font-body text-sm font-medium">India</p>
+                    <p className="font-body text-xs text-green-600">Free shipping</p>
+                  </div>
+                </Label>
+                <Label htmlFor="dest-intl" className="flex items-center gap-3 border border-border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
+                  <RadioGroupItem value="international" id="dest-intl" />
+                  <div className="flex-1">
+                    <p className="font-body text-sm font-medium">International</p>
+                    <p className="font-body text-xs text-muted-foreground">{format(OVERSEAS_FIRST)} first saree, +{format(OVERSEAS_ADDITIONAL)} each additional</p>
+                  </div>
+                </Label>
+              </RadioGroup>
+            </div>
+
             {/* Saved addresses */}
             <AddressPicker selectedId={selectedAddress?.id || null} onSelect={(a) => { setSelectedAddress(a); setUseNewAddress(false); }} />
 
