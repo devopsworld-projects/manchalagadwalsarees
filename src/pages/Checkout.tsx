@@ -179,14 +179,17 @@ export default function Checkout() {
   const applyCoupon = async () => {
     if (!couponCode.trim()) return;
     setCouponLoading(true);
-    const { data, error } = await supabase.from('coupons').select('*').eq('code', couponCode.toUpperCase().trim()).eq('is_active', true).maybeSingle();
+    // Server-side validation via secure RPC (active, not expired, under quota, meets minimum)
+    const { data, error } = await supabase.rpc('validate_coupon', {
+      p_code: couponCode.trim(),
+      p_order_total: totalPrice,
+    });
     setCouponLoading(false);
-    if (error || !data) { toast.error('Invalid coupon code'); return; }
-    if (data.expires_at && new Date(data.expires_at) < new Date()) { toast.error('Coupon has expired'); return; }
-    if (data.max_uses && data.usage_count >= data.max_uses) { toast.error('Coupon usage limit reached'); return; }
-    if (totalPrice < (data.min_order_amount || 0)) { toast.error(`Minimum order ${format(data.min_order_amount)}`); return; }
-    setAppliedCoupon(data);
-    toast.success(`Coupon applied!`);
+    if (error) { toast.error('Could not validate coupon'); return; }
+    const coupon = Array.isArray(data) ? data[0] : data;
+    if (!coupon) { toast.error('Invalid, expired, or ineligible coupon'); return; }
+    setAppliedCoupon(coupon);
+    toast.success('Coupon applied!');
   };
 
   useEffect(() => {
