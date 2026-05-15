@@ -49,6 +49,8 @@ export default function Checkout() {
   const [couponLoading, setCouponLoading] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<SavedAddress | null>(null);
   const [useNewAddress, setUseNewAddress] = useState(false);
+  const [cartDraftId, setCartDraftId] = useState<string | null>(null);
+  const orderPlacedRef = (typeof window !== 'undefined') ? (window as any).__mgsOrderPlacedRef ||= { current: false } : { current: false };
   // Read remembered preference (set when user manually chose previously)
   const remembered = (() => {
     try {
