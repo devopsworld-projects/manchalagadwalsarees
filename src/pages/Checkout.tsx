@@ -52,6 +52,29 @@ export default function Checkout() {
   const [destination, setDestination] = useState<'india' | 'international'>(
     currency.code === 'INR' ? 'india' : 'international'
   );
+  const [destinationTouched, setDestinationTouched] = useState(false);
+  const [autoDetectedCountry, setAutoDetectedCountry] = useState<string | null>(null);
+
+  // Auto-detect user's location via IP (only if user hasn't manually chosen)
+  useEffect(() => {
+    if (destinationTouched) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled || !data?.country_code) return;
+        const code = String(data.country_code).toUpperCase();
+        setAutoDetectedCountry(data.country_name || code);
+        setDestination(code === 'IN' ? 'india' : 'international');
+      } catch {
+        // Silent fail — fall back to currency-based default
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { data: shippingRates = [] } = useQuery({
     queryKey: ['shipping-rates'],
