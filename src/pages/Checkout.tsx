@@ -389,39 +389,63 @@ export default function Checkout() {
               </button>
             </div>
 
-            {(useNewAddress || !selectedAddress) && (
+            {(useNewAddress || !selectedAddress || isIntl) && (
               <>
-                <h2 className="font-display text-lg font-semibold">Shipping Details</h2>
+                <div>
+                  <h2 className="font-display text-lg font-semibold">Recipient Delivery Address</h2>
+                  <p className="text-xs text-muted-foreground font-body mt-0.5">
+                    {isIntl ? 'Where the parcel will be delivered overseas.' : 'Where the parcel will be delivered in India.'}
+                  </p>
+                </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-body text-muted-foreground mb-1 block">Full Name *</label>
-                    <Input value={form.name} onChange={e => update('name', e.target.value)} required className="font-body" />
+                    <label className="text-xs font-body text-muted-foreground mb-1 block">Recipient Full Name *</label>
+                    <Input value={form.name} onChange={e => update('name', e.target.value)} required maxLength={100} className="font-body" />
                   </div>
                   <div>
                     <label className="text-xs font-body text-muted-foreground mb-1 block">Email *</label>
-                    <Input type="email" value={form.email} onChange={e => update('email', e.target.value)} required className="font-body" />
+                    <Input type="email" value={form.email} onChange={e => update('email', e.target.value)} required maxLength={255} className="font-body" />
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs font-body text-muted-foreground mb-1 block">Phone</label>
-                  <Input type="tel" value={form.phone} onChange={e => update('phone', e.target.value)} placeholder="+91 XXXXX XXXXX" className="font-body" />
+                  <label className="text-xs font-body text-muted-foreground mb-1 block">Recipient Phone</label>
+                  <Input type="tel" value={form.phone} onChange={e => update('phone', e.target.value)} maxLength={20} placeholder={isIntl ? '+1 555 555 5555' : '+91 XXXXX XXXXX'} className="font-body" />
                 </div>
                 <div>
-                  <label className="text-xs font-body text-muted-foreground mb-1 block">Address *</label>
-                  <Textarea value={form.address} onChange={e => update('address', e.target.value)} required rows={2} className="font-body" />
+                  <label className="text-xs font-body text-muted-foreground mb-1 block">Street Address *</label>
+                  <Textarea value={form.address} onChange={e => update('address', e.target.value)} required rows={2} maxLength={300} className="font-body" />
+                </div>
+                <div>
+                  <label className="text-xs font-body text-muted-foreground mb-1 block">Country *</label>
+                  <Input
+                    value={form.country}
+                    onChange={e => setCountry(e.target.value)}
+                    required
+                    maxLength={60}
+                    placeholder={isIntl ? 'e.g. United States' : 'India'}
+                    className="font-body h-11"
+                  />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="text-xs font-body text-muted-foreground mb-1 block">City *</label>
-                    <Input value={form.city} onChange={e => update('city', e.target.value)} required className="font-body h-11" />
+                    <Input value={form.city} onChange={e => update('city', e.target.value)} required maxLength={80} className="font-body h-11" />
                   </div>
                   <div>
-                    <label className="text-xs font-body text-muted-foreground mb-1 block">State *</label>
-                    <Input value={form.state} onChange={e => update('state', e.target.value)} required className="font-body h-11" />
+                    <label className="text-xs font-body text-muted-foreground mb-1 block">{isIntl ? 'State / Province *' : 'State *'}</label>
+                    <Input value={form.state} onChange={e => update('state', e.target.value)} required maxLength={80} className="font-body h-11" />
                   </div>
                   <div>
-                    <label className="text-xs font-body text-muted-foreground mb-1 block">PIN Code *</label>
-                    <Input value={form.pincode} onChange={e => update('pincode', e.target.value)} required pattern="[0-9]{6}" inputMode="numeric" className="font-body h-11" />
+                    <label className="text-xs font-body text-muted-foreground mb-1 block">{isIntl ? 'Postal / ZIP Code *' : 'PIN Code *'}</label>
+                    <Input
+                      value={form.pincode}
+                      onChange={e => update('pincode', e.target.value)}
+                      required
+                      maxLength={12}
+                      pattern={isIntl ? '[A-Za-z0-9 \\-]{3,12}' : '[0-9]{6}'}
+                      inputMode={isIntl ? 'text' : 'numeric'}
+                      className="font-body h-11"
+                    />
                   </div>
                 </div>
               </>
