@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
@@ -9,9 +9,10 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Footer } from '@/components/Footer';
 import { PageMeta } from '@/components/PageMeta';
 import { Badge } from '@/components/ui/badge';
-import { Package, ArrowLeft, ShoppingBag } from 'lucide-react';
+import { Package, ArrowLeft, ShoppingBag, Truck, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCurrency } from '@/context/CurrencyContext';
+import { toast } from 'sonner';
 
 const statusColors: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
@@ -30,6 +31,12 @@ export default function Orders() {
     if (!authLoading && !user) navigate('/login', { replace: true });
   }, [user, authLoading, navigate]);
 
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!authLoading && !user) navigate('/login', { replace: true });
+  }, [user, authLoading, navigate]);
+
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['user-orders', user?.id],
     queryFn: async () => {
@@ -42,6 +49,18 @@ export default function Orders() {
       return data;
     },
     enabled: !!user,
+  });
+
+  const cancelOrder = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('orders').update({ status: 'cancelled' }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-orders', user?.id] });
+      toast.success('Order cancelled');
+    },
+    onError: (e: any) => toast.error(e.message || 'Failed to cancel'),
   });
 
   if (authLoading) return null;
@@ -116,15 +135,34 @@ export default function Orders() {
                     ))}
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-border pt-3">
+                  {(order as any).tracking_number && (
+                    <div className="flex items-center gap-2 text-xs font-body text-muted-foreground border-t border-border pt-3 mb-2">
+                      <Truck className="h-3.5 w-3.5" />
+                      <span>{(order as any).courier || 'Shipment'}: <span className="font-semibold text-foreground">{(order as any).tracking_number}</span></span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between border-t border-border pt-3 gap-3">
                     {order.shipping_address && (
-                      <p className="font-body text-xs text-muted-foreground truncate max-w-[60%]">
+                      <p className="font-body text-xs text-muted-foreground truncate max-w-[50%]">
                         📍 {order.shipping_address}
                       </p>
                     )}
-                    <span className="font-display text-lg font-bold ml-auto">
-                      {format(order.total)}
-                    </span>
+                    <div className="flex items-center gap-3 ml-auto">
+                      {order.status === 'pending' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => { if (confirm('Cancel this order?')) cancelOrder.mutate(order.id); }}
+                          disabled={cancelOrder.isPending}
+                          className="h-8 text-xs"
+                        >
+                          <X className="h-3 w-3 mr-1" /> Cancel
+                        </Button>
+                      )}
+                      <span className="font-display text-lg font-bold">
+                        {format(order.total)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               );

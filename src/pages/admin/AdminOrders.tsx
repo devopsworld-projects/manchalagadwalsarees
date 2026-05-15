@@ -42,6 +42,17 @@ const AdminOrders = () => {
     },
   });
 
+  const updateTracking = useMutation({
+    mutationFn: async ({ id, tracking_number, courier }: { id: string; tracking_number: string; courier: string }) => {
+      const { error } = await supabase.from('orders').update({ tracking_number, courier } as any).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+      toast({ title: 'Tracking updated' });
+    },
+  });
+
   const filteredOrders = orders?.filter(order => {
     const matchesSearch = !searchQuery ||
       order.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -193,7 +204,26 @@ const AdminOrders = () => {
                                       <p className="font-body text-sm">{order.shipping_address}</p>
                                     </div>
                                   </div>
-                                )}
+                              )}
+                              {/* Tracking editor */}
+                              <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-2 items-end bg-muted/20 rounded-lg p-3">
+                                <div>
+                                  <p className="font-body text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Courier</p>
+                                  <Input defaultValue={(order as any).courier || ''} id={`courier-${order.id}`} placeholder="e.g. Delhivery" className="h-9 text-sm" />
+                                </div>
+                                <div>
+                                  <p className="font-body text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Tracking #</p>
+                                  <Input defaultValue={(order as any).tracking_number || ''} id={`track-${order.id}`} placeholder="AWB / tracking number" className="h-9 text-sm" />
+                                </div>
+                                <button
+                                  onClick={() => {
+                                    const c = (document.getElementById(`courier-${order.id}`) as HTMLInputElement)?.value || '';
+                                    const t = (document.getElementById(`track-${order.id}`) as HTMLInputElement)?.value || '';
+                                    updateTracking.mutate({ id: order.id, tracking_number: t, courier: c });
+                                  }}
+                                  className="h-9 px-4 rounded-md bg-primary text-primary-foreground text-xs font-body font-semibold uppercase tracking-wider hover:opacity-90"
+                                >Save</button>
+                              </div>
                               </div>
                               {order.notes && (
                                 <div className="flex items-start gap-2.5 bg-muted/30 rounded-lg p-3">
