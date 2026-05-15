@@ -292,16 +292,30 @@ export default function Checkout() {
           <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-5">
             {/* Shipping destination */}
             <div>
-              <div className="flex items-baseline justify-between mb-3">
+              <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
                 <h2 className="font-display text-lg font-semibold">Shipping To</h2>
-                {autoDetectedCountry && !destinationTouched && (
-                  <span className="text-xs font-body text-muted-foreground">
-                    Detected: {autoDetectedCountry}
-                    {locationAccuracyKm != null && ` (~${locationAccuracyKm} km accuracy)`}
-                  </span>
-                )}
+                <span className="text-xs font-body text-muted-foreground">
+                  {destinationTouched ? (
+                    'Saved preference — IP detection won\'t override your choice.'
+                  ) : detectionStatus === 'pending' ? (
+                    'Detecting your location…'
+                  ) : detectionStatus === 'ok' && autoDetectedCountry ? (
+                    <>Detected: {autoDetectedCountry}{locationAccuracyKm != null ? ` (~${locationAccuracyKm} km accuracy)` : ' (accuracy unavailable)'}</>
+                  ) : (
+                    'Couldn\'t detect your location — please pick your destination below.'
+                  )}
+                </span>
               </div>
-              <RadioGroup value={destination} onValueChange={(v) => { setDestination(v as 'india' | 'international'); setDestinationTouched(true); }} className="grid sm:grid-cols-2 gap-3">
+              <RadioGroup
+                value={destination}
+                onValueChange={(v) => {
+                  const d = v as 'india' | 'international';
+                  setDestination(d);
+                  setDestinationTouched(true);
+                  persistPref({ destination: d, country: overrideCountry, region: overrideRegion });
+                }}
+                className="grid sm:grid-cols-2 gap-3"
+              >
                 <Label htmlFor="dest-india" className="flex items-center gap-3 border border-border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
                   <RadioGroupItem value="india" id="dest-india" />
                   <div className="flex-1">
@@ -317,6 +331,57 @@ export default function Checkout() {
                   </div>
                 </Label>
               </RadioGroup>
+
+              {/* Manual override: country / state */}
+              <div className="mt-3 grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-body text-muted-foreground mb-1 block">
+                    {destination === 'india' ? 'State (optional)' : 'Country (optional)'}
+                  </label>
+                  {destination === 'india' ? (
+                    <Input
+                      value={overrideRegion}
+                      onChange={(e) => {
+                        setOverrideRegion(e.target.value);
+                        setDestinationTouched(true);
+                        persistPref({ destination, country: overrideCountry, region: e.target.value });
+                      }}
+                      placeholder="e.g. Telangana"
+                      className="font-body h-10"
+                    />
+                  ) : (
+                    <Input
+                      value={overrideCountry}
+                      onChange={(e) => {
+                        setOverrideCountry(e.target.value);
+                        setDestinationTouched(true);
+                        persistPref({ destination, country: e.target.value, region: overrideRegion });
+                      }}
+                      placeholder="e.g. United States"
+                      className="font-body h-10"
+                    />
+                  )}
+                </div>
+                {destinationTouched && (
+                  <div className="flex items-end">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try { localStorage.removeItem('mgs_shipping_pref'); } catch { /* ignore */ }
+                        setDestinationTouched(false);
+                        setOverrideCountry('');
+                        setOverrideRegion('');
+                        if (detectionStatus === 'ok' && autoDetectedCountry) {
+                          setDestination(autoDetectedCountry.toLowerCase().includes('india') ? 'india' : 'international');
+                        }
+                      }}
+                      className="text-xs font-body text-primary underline"
+                    >
+                      Reset to auto-detected
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Saved addresses */}
