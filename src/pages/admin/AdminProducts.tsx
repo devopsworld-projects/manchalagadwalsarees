@@ -319,13 +319,29 @@ const AdminProducts = () => {
         <h2 className="font-display text-2xl font-bold">Products</h2>
         <div className="flex gap-2">
           {bulk.someSelected && (
-            <button
-              onClick={() => { if (confirm(`Delete ${bulk.count} selected products?`)) bulkDeleteMutation.mutate(Array.from(bulk.selectedIds)); }}
-              disabled={bulkDeleteMutation.isPending}
-              className="flex items-center gap-2 bg-destructive text-destructive-foreground px-4 py-2 text-sm font-body tracking-wider hover:bg-destructive/90 transition-colors disabled:opacity-50"
-            >
-              <Trash2 className="h-4 w-4" /> DELETE {bulk.count}
-            </button>
+            <>
+              <button
+                onClick={() => bulkSetActiveMutation.mutate({ ids: Array.from(bulk.selectedIds), is_active: true })}
+                disabled={bulkSetActiveMutation.isPending}
+                className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 text-sm font-body tracking-wider hover:bg-green-700 transition-colors disabled:opacity-50"
+              >
+                <Eye className="h-4 w-4" /> ACTIVATE {bulk.count}
+              </button>
+              <button
+                onClick={() => bulkSetActiveMutation.mutate({ ids: Array.from(bulk.selectedIds), is_active: false })}
+                disabled={bulkSetActiveMutation.isPending}
+                className="flex items-center gap-2 border border-border px-4 py-2 text-sm font-body tracking-wider hover:bg-muted transition-colors disabled:opacity-50"
+              >
+                <EyeOff className="h-4 w-4" /> DEACTIVATE {bulk.count}
+              </button>
+              <button
+                onClick={() => { if (confirm(`Delete ${bulk.count} selected products?`)) bulkDeleteMutation.mutate(Array.from(bulk.selectedIds)); }}
+                disabled={bulkDeleteMutation.isPending}
+                className="flex items-center gap-2 bg-destructive text-destructive-foreground px-4 py-2 text-sm font-body tracking-wider hover:bg-destructive/90 transition-colors disabled:opacity-50"
+              >
+                <Trash2 className="h-4 w-4" /> DELETE {bulk.count}
+              </button>
+            </>
           )}
           <button onClick={() => setShowBulkImport(true)} className="flex items-center gap-2 border border-border px-4 py-2 text-sm font-body tracking-wider hover:bg-muted transition-colors">
             <FileSpreadsheet className="h-4 w-4" /> BULK IMPORT
