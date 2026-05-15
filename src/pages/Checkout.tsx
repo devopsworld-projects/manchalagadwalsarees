@@ -54,6 +54,7 @@ export default function Checkout() {
   );
   const [destinationTouched, setDestinationTouched] = useState(false);
   const [autoDetectedCountry, setAutoDetectedCountry] = useState<string | null>(null);
+  const [locationAccuracyKm, setLocationAccuracyKm] = useState<number | null>(null);
 
   // Auto-detect user's location via IP (only if user hasn't manually chosen)
   useEffect(() => {
@@ -66,8 +67,9 @@ export default function Checkout() {
         const data = await res.json();
         if (cancelled || !data?.country_code) return;
         const code = String(data.country_code).toUpperCase();
+        const accuracyM = data.location_accuracy ? Number(data.location_accuracy) : null;
         setAutoDetectedCountry(data.country_name || code);
-        setDestination(code === 'IN' ? 'india' : 'international');
+        setLocationAccuracyKm(accuracyM ? Math.round(accuracyM / 100) / 10 : null);
       } catch {
         // Silent fail — fall back to currency-based default
       }
@@ -274,7 +276,10 @@ export default function Checkout() {
               <div className="flex items-baseline justify-between mb-3">
                 <h2 className="font-display text-lg font-semibold">Shipping To</h2>
                 {autoDetectedCountry && !destinationTouched && (
-                  <span className="text-xs font-body text-muted-foreground">Detected: {autoDetectedCountry}</span>
+                  <span className="text-xs font-body text-muted-foreground">
+                    Detected: {autoDetectedCountry}
+                    {locationAccuracyKm != null && ` (~${locationAccuracyKm} km accuracy)`}
+                  </span>
                 )}
               </div>
               <RadioGroup value={destination} onValueChange={(v) => { setDestination(v as 'india' | 'international'); setDestinationTouched(true); }} className="grid sm:grid-cols-2 gap-3">
