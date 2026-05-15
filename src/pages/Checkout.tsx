@@ -276,7 +276,10 @@ export default function Checkout() {
               <div className="flex items-baseline justify-between mb-3">
                 <h2 className="font-display text-lg font-semibold">Shipping To</h2>
                 {autoDetectedCountry && !destinationTouched && (
-                  <span className="text-xs font-body text-muted-foreground">Detected: {autoDetectedCountry}</span>
+                  <span className="text-xs font-body text-muted-foreground">
+                    Detected: {autoDetectedCountry}
+                    {locationAccuracyKm != null && ` (~${locationAccuracyKm} km accuracy)`}
+                  </span>
                 )}
               </div>
               <RadioGroup value={destination} onValueChange={(v) => { setDestination(v as 'india' | 'international'); setDestinationTouched(true); }} className="grid sm:grid-cols-2 gap-3">
