@@ -63,16 +63,15 @@ export default function Checkout() {
   });
 
   const totalQty = items.reduce((sum, it) => sum + it.quantity, 0);
-  const isOverseas = currency.code !== 'INR';
+  const isOverseas = destination === 'international';
+  const OVERSEAS_FIRST = 2800;
+  const OVERSEAS_ADDITIONAL = 1200;
   const shipping = (() => {
-    // Overseas shipping: ₹2800 for first saree, ₹1200 each additional (in INR)
+    // International: ₹2800 first saree + ₹1200 each additional. India: free.
     if (isOverseas) {
-      return totalQty > 0 ? 2800 + Math.max(0, totalQty - 1) * 1200 : 0;
+      return totalQty > 0 ? OVERSEAS_FIRST + Math.max(0, totalQty - 1) * OVERSEAS_ADDITIONAL : 0;
     }
-    const r = shippingRates[0] as any;
-    if (!r) return 0;
-    if (r.type === 'free_above' && totalPrice >= (r.free_above_amount || 0)) return 0;
-    return Number(r.rate || 0);
+    return 0;
   })();
   const taxRate = taxRules.length > 0 ? Number((taxRules[0] as any).rate || 0) : 0;
   const taxAmount = Math.round(totalPrice * taxRate / 100);
