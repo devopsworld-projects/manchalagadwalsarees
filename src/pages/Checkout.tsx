@@ -271,8 +271,13 @@ export default function Checkout() {
           <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-5">
             {/* Shipping destination */}
             <div>
-              <h2 className="font-display text-lg font-semibold mb-3">Shipping To</h2>
-              <RadioGroup value={destination} onValueChange={(v) => setDestination(v as 'india' | 'international')} className="grid sm:grid-cols-2 gap-3">
+              <div className="flex items-baseline justify-between mb-3">
+                <h2 className="font-display text-lg font-semibold">Shipping To</h2>
+                {autoDetectedCountry && !destinationTouched && (
+                  <span className="text-xs font-body text-muted-foreground">Detected: {autoDetectedCountry}</span>
+                )}
+              </div>
+              <RadioGroup value={destination} onValueChange={(v) => { setDestination(v as 'india' | 'international'); setDestinationTouched(true); }} className="grid sm:grid-cols-2 gap-3">
                 <Label htmlFor="dest-india" className="flex items-center gap-3 border border-border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
                   <RadioGroupItem value="india" id="dest-india" />
                   <div className="flex-1">
