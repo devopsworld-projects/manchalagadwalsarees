@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      abandoned_carts: {
+        Row: {
+          abandoned_at: string | null
+          created_at: string
+          currency: string
+          customer_email: string | null
+          customer_name: string | null
+          id: string
+          items: Json
+          last_seen_at: string
+          recovered_at: string | null
+          recovered_order_id: string | null
+          status: string
+          subtotal: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          abandoned_at?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          id?: string
+          items?: Json
+          last_seen_at?: string
+          recovered_at?: string | null
+          recovered_order_id?: string | null
+          status?: string
+          subtotal?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          abandoned_at?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          id?: string
+          items?: Json
+          last_seen_at?: string
+          recovered_at?: string | null
+          recovered_order_id?: string | null
+          status?: string
+          subtotal?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       audit_log: {
         Row: {
           action: string
